@@ -414,6 +414,8 @@
       word-break: break-word;
       font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
       min-height: auto;
+      max-height: 600px;
+      overflow-y: auto;
     }
     .extra-marriage-section .extra-panel .label {
       font-weight: 600;  
@@ -548,6 +550,55 @@
       color: #8ab4ff;
       font-size: 1.1rem;
       letter-spacing: 3px;
+    }
+    /* 性格解析卡片样式 */
+    .personality-card {
+      background: rgba(255, 255, 255, 0.04);
+      border-radius: 16px;
+      padding: 14px 18px;
+      margin-bottom: 12px;
+      border-left: 4px solid rgba(60, 120, 255, 0.4);
+    }
+    .personality-card .card-title {
+      font-size: 1.05rem;
+      font-weight: 600;
+      color: #8ab4ff;
+      margin-bottom: 4px;
+    }
+    .personality-card .card-subtitle {
+      font-size: 0.85rem;
+      color: #8899bb;
+      margin-bottom: 6px;
+    }
+    .personality-card .card-body {
+      font-size: 0.95rem;
+      line-height: 1.9;
+      color: #c8d0e0;
+    }
+    .personality-card .card-body .tag {
+      display: inline-block;
+      background: rgba(60, 120, 255, 0.15);
+      color: #8ab4ff;
+      padding: 0 12px;
+      border-radius: 20px;
+      font-size: 0.8rem;
+      margin: 2px 4px 2px 0;
+    }
+    .personality-card.male-card {
+      border-left-color: rgba(60, 180, 255, 0.6);
+    }
+    .personality-card.female-card {
+      border-left-color: rgba(255, 120, 200, 0.6);
+    }
+    .personality-card.advice-card {
+      border-left-color: rgba(255, 200, 80, 0.6);
+      background: rgba(255, 200, 80, 0.06);
+    }
+    .personality-traits {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 4px;
     }
     /* 响应式 */
     @media (max-width: 820px) {
@@ -723,12 +774,19 @@
         <div class="input-error" id="femaleDateError"></div>
       </div>
 
-      <!-- 性别 -->
+      <!-- 性别选择器 - 男方性别和女方性别分别选择 -->
       <div class="input-group" style="grid-column: span 1;">
-        <label>⚥ 性别 (用于八字排盘)</label>
+        <label>⚥ 男方性别</label>
         <div class="gender-group">
-          <label><input type="radio" name="gender" value="male" checked> 男</label>
-          <label><input type="radio" name="gender" value="female"> 女</label>
+          <label><input type="radio" name="maleGender" value="male" checked> 男</label>
+          <label><input type="radio" name="maleGender" value="female"> 女</label>
+        </div>
+      </div>
+      <div class="input-group" style="grid-column: span 1;">
+        <label>⚥ 女方性别</label>
+        <div class="gender-group">
+          <label><input type="radio" name="femaleGender" value="male"> 男</label>
+          <label><input type="radio" name="femaleGender" value="female" checked> 女</label>
         </div>
       </div>
     </div>
@@ -745,12 +803,13 @@
       </div>
     </div>
 
-    <!-- 多功能合婚栏 (星座、姓名五格、嫁娶择日) -->
+    <!-- 多功能合婚栏 (星座、姓名五格、嫁娶择日、性格解析) -->
     <div class="extra-marriage-section" id="extraMarriageSection">
       <div class="extra-tabs">
         <button class="btn-extra active" data-target="zodiac">♈ 星座合婚</button>
         <button class="btn-extra" data-target="wuge">📛 姓名五格</button>
         <button class="btn-extra" data-target="wedding">💒 嫁娶择日</button>
+        <button class="btn-extra" data-target="personality">🧠 性格解析</button>
       </div>
       <div class="extra-panel" id="extraPanel">
         <!-- 默认显示星座合婚内容 -->
@@ -841,7 +900,18 @@
         '桐': 10, '楠': 13, '榕': 14, '樟': 15, '森': 12, '树': 16, '木': 4,
         '本': 5, '术': 5, '朴': 6, '朵': 6, '机': 6, '权': 22, '欣': 8,
         '惠': 12, '思': 9, '彦': 9, '博': 12, '智': 12, '德': 15, '仁': 4,
-        '义': 13, '礼': 18, '信': 9, '勇': 9, '毅': 15, '恒': 9, '善': 12
+        '义': 13, '礼': 18, '信': 9, '勇': 9, '毅': 15, '恒': 9, '善': 12,
+        '国': 11, '建': 9, '峰': 10, '涛': 17, '超': 12, '伟': 10, '强': 11,
+        '文': 4, '武': 8, '永': 5, '远': 14, '世': 5, '昌': 8, '盛': 11,
+        '兴': 15, '旺': 8, '达': 13, '宏': 7, '大': 3, '中': 4, '正': 5,
+        '和': 8, '平': 5, '安': 6, '宁': 14, '定': 8, '国': 11, '家': 10,
+        '民': 5, '族': 11, '华': 12, '夏': 10, '商': 11, '周': 8, '秦': 10,
+        '汉': 14, '唐': 10, '宋': 7, '明': 8, '清': 12,
+        // 补充更多常用字
+        '雅': 12, '睿': 14, '涵': 11, '熙': 13, '彤': 7, '萱': 15, '绮': 14,
+        '雯': 12, '梦': 14, '岚': 12, '歆': 13, '诗': 13, '书': 10, '画': 12,
+        '棋': 12, '琴': 13, '墨': 15, '砚': 12, '竹': 6, '兰': 20, '梅': 11,
+        '荷': 13, '莲': 15, '萍': 12, '蓉': 16, '芙': 10, '薇': 19, '萱': 15
       };
 
       // 获取 DOM 元素引用
@@ -911,17 +981,44 @@
             day: solar.getDay()
           };
         } catch (e) {
-          console.warn('农历转换失败，使用偏移算法:', e);
+          console.warn('农历转换失败，使用降级方案:', e);
+          // 改进降级方案：安全处理月份和日期溢出
+          var targetMonth = lunarMonth;
+          var targetDay = lunarDay;
+          
+          // 安全处理月份：如果月份为12（腊月），转换后为1月（下一年）
+          if (lunarMonth === 12) {
+            targetMonth = 1;
+          } else {
+            targetMonth = Math.min(lunarMonth + 1, 12);
+          }
+          
+          // 安全处理日期：根据月份调整天数
+          var maxDay = 30;
+          if (targetMonth === 2) maxDay = 28;
+          else if ([4, 6, 9, 11].indexOf(targetMonth) !== -1) maxDay = 30;
+          else maxDay = 31;
+          targetDay = Math.min(lunarDay + 1, maxDay);
+          
+          // 如果是腊月，年份+1
+          var targetYear = (lunarMonth === 12) ? lunarYear + 1 : lunarYear;
+          
           return {
-            year: lunarYear,
-            month: lunarMonth + 1,
-            day: lunarDay + 2
+            year: targetYear,
+            month: targetMonth,
+            day: targetDay
           };
         }
       }
 
-      // ============ 完整节气数据 (使用 lunar-javascript 库) ============
+      // ============ 获取精确节气日期 (使用 lunar-javascript 库) ============
+      // 【修复2】增强节气缓存，提高性能
+      var _jieQiCache = {};
+
       function getJieQiDate(year, month) {
+        var cacheKey = year + '-' + month;
+        if (_jieQiCache[cacheKey]) return _jieQiCache[cacheKey];
+        
         try {
           var solar = Solar.fromYmd(year, month, 1);
           var lunar = solar.getLunar();
@@ -934,20 +1031,34 @@
           for (var key in jieMap) {
             if (jq[key]) {
               var dateStr = jq[key];
-              var parts = dateStr.split('-');
-              if (parseInt(parts[1]) === month) {
-                return { name: key, day: parseInt(parts[2]) };
+              if (typeof dateStr === 'string') {
+                var match = dateStr.match(/(\d{4})-(\d{1,2})-(\d{1,2})/);
+                if (match) {
+                  var m = parseInt(match[2]);
+                  var d = parseInt(match[3]);
+                  if (m === month) {
+                    var result = { name: key, day: d };
+                    _jieQiCache[cacheKey] = result;
+                    return result;
+                  }
+                }
               }
             }
           }
+          _jieQiCache[cacheKey] = null;
           return null;
         } catch (e) {
+          console.warn('获取节气日期失败:', e);
+          _jieQiCache[cacheKey] = null;
           return null;
         }
       }
 
-      // 获取多个节气日期
+      // 获取多个节气日期（带缓存）
       function getJieQiDates(year) {
+        var cacheKey = 'year-' + year;
+        if (_jieQiCache[cacheKey]) return _jieQiCache[cacheKey];
+        
         var result = {};
         var jieQiNames = ['立春', '惊蛰', '清明', '立夏', '芒种', '小暑', '立秋', '白露', '寒露', '立冬', '大雪', '小寒',
           '春分', '秋分', '夏至', '冬至'
@@ -958,67 +1069,95 @@
             result[jieQiNames[i]] = { year: year, month: i + 1, day: jq.day };
           }
         }
+        _jieQiCache[cacheKey] = result;
         return result;
+      }
+
+      // 精确获取立春日期
+      function getLiChunDay(year) {
+        try {
+          var solar = Solar.fromYmd(year, 2, 1);
+          var lunar = solar.getLunar();
+          var jq = lunar.getJieQiTable() || {};
+          if (jq['立春']) {
+            var dateStr = jq['立春'];
+            var match = dateStr.match(/(\d{4})-(\d{1,2})-(\d{1,2})/);
+            if (match) {
+              return parseInt(match[3]);
+            }
+          }
+        } catch (e) {
+          // 降级：使用近似值
+        }
+        return 4;
       }
 
       // ---------- 年柱排盘 (基于立春) ----------
       function getYearGanZhi(solarYear, solarMonth, solarDay) {
         var year = solarYear;
-        try {
-          var solar = Solar.fromYmd(solarYear, 2, 1);
-          var lunar = solar.getLunar();
-          var jq = lunar.getJieQiTable();
-          if (jq && jq['立春']) {
-            var parts = jq['立春'].split('-');
-            var liChunDay = parseInt(parts[2]);
-            if (solarMonth < 2 || (solarMonth === 2 && solarDay < liChunDay)) {
-              year = solarYear - 1;
-            }
-          }
-        } catch (e) {
-          if (solarMonth < 2 || (solarMonth === 2 && solarDay < 4)) {
-            year = solarYear - 1;
-          }
+        var liChunDay = getLiChunDay(solarYear);
+        if (solarMonth < 2 || (solarMonth === 2 && solarDay < liChunDay)) {
+          year = solarYear - 1;
         }
         var gan = TIAN_GAN[(year - 4) % 10];
         var zhi = DI_ZHI[(year - 4) % 12];
         return { gan: gan, zhi: zhi, year: year };
       }
 
-      // ========== 【修复3】月柱排盘 - 重构节气逻辑 ==========
+      // ========== 月柱排盘（改进版：使用精确节气） ==========
       function getMonthGanZhi(solarYear, solarMonth, solarDay, yearGan) {
-        // 节气表：从立春开始，每个节气的月份和大致日期
-        // 月份用数字表示，1=正月(立春)，2=二月(惊蛰)... 12=十二月(小寒)
+        // 【修复2】使用精确节气日期
+        function getJieQiDay(year, month, name) {
+          try {
+            var solar = Solar.fromYmd(year, month, 1);
+            var lunar = solar.getLunar();
+            var jq = lunar.getJieQiTable() || {};
+            if (jq[name]) {
+              var match = jq[name].match(/(\d{4})-(\d{1,2})-(\d{1,2})/);
+              if (match) return parseInt(match[3]);
+            }
+          } catch (e) {}
+          return null;
+        }
+
+        // 获取各节气的精确日期
+        var liChun = getJieQiDay(solarYear, 2, '立春') || 4;
+        var jingZhe = getJieQiDay(solarYear, 3, '惊蛰') || 6;
+        var qingMing = getJieQiDay(solarYear, 4, '清明') || 5;
+        var liXia = getJieQiDay(solarYear, 5, '立夏') || 6;
+        var mangZhong = getJieQiDay(solarYear, 6, '芒种') || 6;
+        var xiaoShu = getJieQiDay(solarYear, 7, '小暑') || 7;
+        var liQiu = getJieQiDay(solarYear, 8, '立秋') || 7;
+        var baiLu = getJieQiDay(solarYear, 9, '白露') || 8;
+        var hanLu = getJieQiDay(solarYear, 10, '寒露') || 8;
+        var liDong = getJieQiDay(solarYear, 11, '立冬') || 7;
+        var daXue = getJieQiDay(solarYear, 12, '大雪') || 7;
+        var xiaoHan = getJieQiDay(solarYear, 1, '小寒') || 6;
+
         var jieQi = [
-          { month: 2, day: 4, zhi: '寅' },   // 立春 - 正月
-          { month: 3, day: 6, zhi: '卯' },   // 惊蛰 - 二月
-          { month: 4, day: 5, zhi: '辰' },   // 清明 - 三月
-          { month: 5, day: 6, zhi: '巳' },   // 立夏 - 四月
-          { month: 6, day: 6, zhi: '午' },   // 芒种 - 五月
-          { month: 7, day: 7, zhi: '未' },   // 小暑 - 六月
-          { month: 8, day: 7, zhi: '申' },   // 立秋 - 七月
-          { month: 9, day: 8, zhi: '酉' },   // 白露 - 八月
-          { month: 10, day: 8, zhi: '戌' },  // 寒露 - 九月
-          { month: 11, day: 7, zhi: '亥' },  // 立冬 - 十月
-          { month: 12, day: 7, zhi: '子' },  // 大雪 - 冬月
-          { month: 1, day: 6, zhi: '丑' }    // 小寒 - 腊月（跨年，用于次年的判断）
+          { month: 2, day: liChun, zhi: '寅' },
+          { month: 3, day: jingZhe, zhi: '卯' },
+          { month: 4, day: qingMing, zhi: '辰' },
+          { month: 5, day: liXia, zhi: '巳' },
+          { month: 6, day: mangZhong, zhi: '午' },
+          { month: 7, day: xiaoShu, zhi: '未' },
+          { month: 8, day: liQiu, zhi: '申' },
+          { month: 9, day: baiLu, zhi: '酉' },
+          { month: 10, day: hanLu, zhi: '戌' },
+          { month: 11, day: liDong, zhi: '亥' },
+          { month: 12, day: daXue, zhi: '子' },
+          { month: 1, day: xiaoHan, zhi: '丑' }
         ];
 
-        var zhi = '寅'; // 默认值
-
-        // 先处理立春前的特殊情况：2月4日之前属于"丑月"（上一年的十二月）
-        if (solarMonth === 1 || (solarMonth === 2 && solarDay < 4)) {
-          zhi = '丑';
+        var zhi = '寅';
+        if (solarMonth === 1) {
+          zhi = (solarDay >= xiaoHan) ? '丑' : '子';
         } else {
-          // 从后往前遍历，找到第一个符合的节气
           for (var i = jieQi.length - 1; i >= 0; i--) {
             var jq = jieQi[i];
             var m = jq.month;
             var d = jq.day;
-            
-            // 处理跨年情况：小寒(1月6日)用于确定腊月
-            // 对于1月6日之前，仍在上一年的冬月(子月)
-            // 但我们已经在上面的if中处理了1月，所以这里主要处理2月及以后
+            if (m === 1) continue;
             if (solarMonth > m || (solarMonth === m && solarDay >= d)) {
               zhi = jq.zhi;
               break;
@@ -1026,11 +1165,9 @@
           }
         }
 
-        // 五鼠遁：根据年干确定正月(寅月)的天干
         var yearGanIndex = TIAN_GAN.indexOf(yearGan);
-        var startIndex = (yearGanIndex * 2 + 2) % 10; // 寅月天干起始
+        var startIndex = (yearGanIndex * 2 + 2) % 10;
         var zhiIndex = DI_ZHI.indexOf(zhi);
-        // 计算当前地支相对寅月的偏移（寅=2，子=0，丑=1，卯=3...）
         var monthZhiOffset = (zhiIndex - 2 + 12) % 12;
         var ganIndex = (startIndex + monthZhiOffset) % 10;
         var gan = TIAN_GAN[ganIndex];
@@ -1040,28 +1177,30 @@
 
       // ---------- 日柱排盘 (使用lunar-javascript库) ----------
       function getDayGanZhi(solarYear, solarMonth, solarDay) {
-          try {
-              var solar = Solar.fromYmd(solarYear, solarMonth, solarDay);
-              var lunar = solar.getLunar();
-              var dayGanZhi = lunar.getDayInGanZhi();
-              if (dayGanZhi && dayGanZhi.length === 2) {
-                  return [dayGanZhi[0], dayGanZhi[1]];
-              }
-          } catch (e) {
-              // 库调用失败，使用降级算法
+        try {
+          var solar = Solar.fromYmd(solarYear, solarMonth, solarDay);
+          var lunar = solar.getLunar();
+          var dayGanZhi = lunar.getDayInGanZhi();
+          if (dayGanZhi && dayGanZhi.length === 2) {
+            return [dayGanZhi[0], dayGanZhi[1]];
           }
-          
-          // 降级算法：使用 Date.UTC 计算天数差
-          var baseUTC = Date.UTC(1900, 0, 1);
-          var targetUTC = Date.UTC(solarYear, solarMonth - 1, solarDay);
-          var diffDays = Math.floor((targetUTC - baseUTC) / 86400000);
-          
-          // 计算天干（甲=0, 乙=1, ..., 癸=9）
-          var ganIndex = ((diffDays % 10) + 10) % 10;
-          // 计算地支（子=0, 丑=1, ..., 亥=11）
-          var zhiIndex = ((diffDays % 12) + 12) % 12;
-          
-          return [TIAN_GAN[ganIndex], DI_ZHI[zhiIndex]];
+        } catch (e) {
+          console.warn('日柱获取失败，使用降级算法:', e);
+        }
+        
+        // 降级算法：使用更精确的基准日期
+        // 基准日期：1900年1月1日 = 甲戌日（已验证）
+        var baseUTC = Date.UTC(1900, 0, 1);
+        var targetUTC = Date.UTC(solarYear, solarMonth - 1, solarDay);
+        var diffDays = Math.floor((targetUTC - baseUTC) / 86400000);
+        
+        var baseGanIndex = 0;   // 甲
+        var baseZhiIndex = 10;  // 戌
+        
+        var ganIndex = ((baseGanIndex + diffDays) % 10 + 10) % 10;
+        var zhiIndex = ((baseZhiIndex + diffDays) % 12 + 12) % 12;
+        
+        return [TIAN_GAN[ganIndex], DI_ZHI[zhiIndex]];
       }
 
       // ---------- 时柱排盘 (五鼠遁) ----------
@@ -1073,7 +1212,7 @@
         return { gan: TIAN_GAN[ganIndex], zhi: DI_ZHI[hourZhiIndex] };
       }
 
-      // ---------- 完整八字排盘（【修复1】性别传入修正） ----------
+      // ---------- 完整八字排盘（使用各自的性别） ----------
       function getBazi(year, month, day, hour, gender, isLunar) {
         var solarYear = year,
           solarMonth = month,
@@ -1086,8 +1225,8 @@
             solarDay = solar.day;
           } else {
             solarYear = year;
-            solarMonth = month + 1;
-            solarDay = day + 2;
+            solarMonth = Math.min(month + 1, 12);
+            solarDay = Math.min(day + 1, 28);
           }
         }
         var yearResult = getYearGanZhi(solarYear, solarMonth, solarDay);
@@ -1104,120 +1243,135 @@
           day: [dayGan, dayZhi],
           hour: [hourResult.gan, hourResult.zhi],
           solarDate: { year: solarYear, month: solarMonth, day: solarDay },
-          gender: gender
+          gender: gender,
+          // 保存原始数据用于性格解析
+          raw: { year: year, month: month, day: day, hour: hour, isLunar: isLunar }
         };
       }
 
-      // ========== 【修复2】大运起运 - 修正地支行运方向 ==========
-	  // ========== 辅助函数：UTC日期加减天数 ==========
+      // ========== 大运起运 ==========
       function addDaysToUTC(year, month, day, days) {
-          var utcTime = Date.UTC(year, month - 1, day);
-          var newTime = utcTime + days * 86400000;
-          var date = new Date(newTime);
-          return {
-              year: date.getUTCFullYear(),
-              month: date.getUTCMonth() + 1,
-              day: date.getUTCDate()
-          };
+        var utcTime = Date.UTC(year, month - 1, day);
+        var newTime = utcTime + days * 86400000;
+        var date = new Date(newTime);
+        return {
+          year: date.getUTCFullYear(),
+          month: date.getUTCMonth() + 1,
+          day: date.getUTCDate()
+        };
       }
-      function getDaYun(yearGan, gender, birthYear, birthMonth, birthDay, monthZhi) {
-          var isYang = (TIAN_GAN.indexOf(yearGan) % 2 === 0);
-          var maleOrder;
-          if (gender === 'male') {
-              maleOrder = isYang ? 1 : -1;
+
+      function getDaYun(yearGan, monthGan, monthZhi, gender, birthYear, birthMonth, birthDay) {
+        var isYang = (TIAN_GAN.indexOf(yearGan) % 2 === 0);
+        var maleOrder;
+        if (gender === 'male') {
+          maleOrder = isYang ? 1 : -1;
+        } else {
+          maleOrder = isYang ? -1 : 1;
+        }
+        
+        var startAge = 1;
+        try {
+          var birthUTC = Date.UTC(birthYear, birthMonth - 1, birthDay);
+          var days = 0;
+          var found = false;
+          var jieList = ['立春', '惊蛰', '清明', '立夏', '芒种', '小暑', '立秋', '白露', '寒露', '立冬', '大雪', '小寒'];
+          var maxSearchDays = 120;
+
+          if (maleOrder === 1) {
+            for (var i = 1; i <= maxSearchDays && !found; i++) {
+              var target = addDaysToUTC(birthYear, birthMonth, birthDay, i);
+              var y = target.year;
+              var m = target.month;
+              var d = target.day;
+              
+              try {
+                var solar = Solar.fromYmd(y, m, d);
+                var lunar = solar.getLunar();
+                var jq = lunar.getJieQiTable() || {};
+                for (var k = 0; k < jieList.length; k++) {
+                  var key = jieList[k];
+                  if (jq[key]) {
+                    var dateStr = jq[key];
+                    var match = dateStr.match(/(\d{4})-(\d{1,2})-(\d{1,2})/);
+                    if (match) {
+                      var year2 = parseInt(match[1]);
+                      var month2 = parseInt(match[2]);
+                      var day2 = parseInt(match[3]);
+                      if (year2 === y && month2 === m && day2 === d) {
+                        days = i;
+                        found = true;
+                        break;
+                      }
+                    }
+                  }
+                }
+              } catch (e) { /* 忽略单个日期错误 */ }
+            }
           } else {
-              maleOrder = isYang ? -1 : 1;
-          }
-          
-          var startAge = 1;
-          try {
-              // 使用 Date.UTC 计算天数差（不受时区影响）
-              var birthUTC = Date.UTC(birthYear, birthMonth - 1, birthDay);
-              var days = 0;
-              var found = false;
-              var jieList = ['立春', '惊蛰', '清明', '立夏', '芒种', '小暑', '立秋', '白露', '寒露', '立冬', '大雪', '小寒'];
-              var maxSearchDays = 120; // 最多搜索120天
-      
-              if (maleOrder === 1) {
-                  // 顺行：向后查找下一个节气
-                  for (var i = 1; i <= maxSearchDays && !found; i++) {
-                      // 使用全局 addDaysToUTC 计算目标日期
-                      var target = addDaysToUTC(birthYear, birthMonth, birthDay, i);
-                      var y = target.year;
-                      var m = target.month;
-                      var d = target.day;
-                      
-                      try {
-                          var solar = Solar.fromYmd(y, m, d);
-                          var lunar = solar.getLunar();
-                          var jq = lunar.getJieQiTable();
-                          for (var k = 0; k < jieList.length; k++) {
-                              var key = jieList[k];
-                              if (jq && jq[key]) {
-                                  var parts = jq[key].split('-');
-                                  if (parseInt(parts[0]) === y && parseInt(parts[1]) === m && parseInt(parts[2]) === d) {
-                                      days = i;
-                                      found = true;
-                                      break;
-                                  }
-                              }
-                          }
-                      } catch (e) { /* 忽略单个日期错误 */ }
+            for (var i2 = 1; i2 <= maxSearchDays && !found; i2++) {
+              var target2 = addDaysToUTC(birthYear, birthMonth, birthDay, -i2);
+              var y2 = target2.year;
+              var m2 = target2.month;
+              var d2 = target2.day;
+              
+              try {
+                var solar2 = Solar.fromYmd(y2, m2, d2);
+                var lunar2 = solar2.getLunar();
+                var jq2 = lunar2.getJieQiTable() || {};
+                for (var k2 = 0; k2 < jieList.length; k2++) {
+                  var key2 = jieList[k2];
+                  if (jq2[key2]) {
+                    var dateStr2 = jq2[key2];
+                    var match2 = dateStr2.match(/(\d{4})-(\d{1,2})-(\d{1,2})/);
+                    if (match2) {
+                      var year3 = parseInt(match2[1]);
+                      var month3 = parseInt(match2[2]);
+                      var day3 = parseInt(match2[3]);
+                      if (year3 === y2 && month3 === m2 && day3 === d2) {
+                        days = i2;
+                        found = true;
+                        break;
+                      }
+                    }
                   }
-              } else {
-                  // 逆行：向前查找上一个节气
-                  for (var i2 = 1; i2 <= maxSearchDays && !found; i2++) {
-                      // 使用全局 addDaysToUTC 计算目标日期（负数天数表示向前）
-                      var target2 = addDaysToUTC(birthYear, birthMonth, birthDay, -i2);
-                      var y2 = target2.year;
-                      var m2 = target2.month;
-                      var d2 = target2.day;
-                      
-                      try {
-                          var solar2 = Solar.fromYmd(y2, m2, d2);
-                          var lunar2 = solar2.getLunar();
-                          var jq2 = lunar2.getJieQiTable();
-                          for (var k2 = 0; k2 < jieList.length; k2++) {
-                              var key2 = jieList[k2];
-                              if (jq2 && jq2[key2]) {
-                                  var parts2 = jq2[key2].split('-');
-                                  if (parseInt(parts2[0]) === y2 && parseInt(parts2[1]) === m2 && parseInt(parts2[2]) === d2) {
-                                      days = i2;
-                                      found = true;
-                                      break;
-                                  }
-                              }
-                          }
-                      } catch (e) { /* 忽略单个日期错误 */ }
-                  }
-              }
-      
-              if (days > 0) {
-                  startAge = Math.ceil(days / 3);
-              } else {
-                  // 降级：如果没找到节气，使用估算
-                  startAge = Math.floor((birthDay + birthMonth * 2) / 3) % 10 + 1;
-              }
-          } catch (e) {
-              startAge = Math.floor((birthDay + birthMonth * 3) / 3) % 10 + 1;
+                }
+              } catch (e) { /* 忽略单个日期错误 */ }
+            }
           }
-      
-          // 【修复】大运天干地支：从月柱开始顺逆排布
-          var startGanIndex = TIAN_GAN.indexOf(yearGan);
-          var startZhiIndex = DI_ZHI.indexOf(monthZhi);
-          
-          var daYunList = [];
-          for (var i3 = 0; i3 < 6; i3++) {
-              var ganIdx = ((startGanIndex + i3 * maleOrder) % 10 + 10) % 10;
-              var zhiIdx = ((startZhiIndex + i3 * maleOrder) % 12 + 12) % 12;
-              daYunList.push(TIAN_GAN[ganIdx] + DI_ZHI[zhiIdx]);
+
+          if (days > 0) {
+            startAge = Math.max(1, Math.ceil(days / 3));
+          } else {
+            startAge = Math.max(1, Math.floor((birthDay + birthMonth * 2) / 3) % 10 + 1);
           }
-          return { startAge: startAge, list: daYunList };
+        } catch (e) {
+          startAge = Math.max(1, Math.floor((birthDay + birthMonth * 3) / 3) % 10 + 1);
+        }
+
+        // 【修复5】大运排盘增加安全校验
+        var startGanIndex = TIAN_GAN.indexOf(monthGan);
+        var startZhiIndex = DI_ZHI.indexOf(monthZhi);
+        if (startGanIndex === -1) startGanIndex = 0;
+        if (startZhiIndex === -1) startZhiIndex = 0;
+        
+        var daYunList = [];
+        for (var i3 = 0; i3 < 6; i3++) {
+          var ganIdx = ((startGanIndex + i3 * maleOrder) % 10 + 10) % 10;
+          var zhiIdx = ((startZhiIndex + i3 * maleOrder) % 12 + 12) % 12;
+          daYunList.push(TIAN_GAN[ganIdx] + DI_ZHI[zhiIdx]);
+        }
+        return { startAge: startAge, list: daYunList };
       }
 
       // ---------- 其他辅助函数 ----------
       function getNaYin(gz) {
-        return NA_YIN_MAP[gz] || '松柏木';
+        var result = NA_YIN_MAP[gz];
+        if (!result) {
+          console.warn('未找到纳音映射:', gz, '，使用默认值"松柏木"');
+          return '松柏木';
+        }
+        return result;
       }
 
       function getWuXingShengKe(element1, element2) {
@@ -1276,6 +1430,7 @@
         return '天乙贵人: ' + (ty.length ? ty.join('、') : '无') + '；文昌贵人: ' + (wc || '无') + '；红鸾: ' + (hl || '无');
       }
 
+      // 改进配偶星计算 - 根据日干五行和性别动态计算
       function getPeiOuXing(dayGan, gender) {
         var wuxingMap = { '甲': '木', '乙': '木', '丙': '火', '丁': '火', '戊': '土', '己': '土', '庚': '金', '辛': '金', '壬': '水',
           '癸': '水' };
@@ -1396,14 +1551,18 @@
 
       // ========== 星座合婚 ==========
       function getZodiacSign(month, day) {
+        // 【修复8】改进星座边界处理
         for (var i = 0; i < 12; i++) {
           var startMonth = ZODIAC_START_MONTH[i];
           var startDay = ZODIAC_START_DAY[i];
           var nextIndex = (i + 1) % 12;
           var nextMonth = ZODIAC_START_MONTH[nextIndex];
           var nextDay = ZODIAC_START_DAY[nextIndex];
+          // 处理摩羯座跨年边界
           if (month === 12 && day >= 22) return ZODIAC_SIGNS[0];
           if (month === 1 && day < 20) return ZODIAC_SIGNS[0];
+          // 1月20日：水瓶座开始（摩羯座到1月19日）
+          if (month === 1 && day >= 20) return ZODIAC_SIGNS[1];
           if ((month === startMonth && day >= startDay) || (month === nextMonth && day < nextDay)) {
             return ZODIAC_SIGNS[i];
           }
@@ -1448,7 +1607,6 @@
 
       // ========== 姓名五格合婚 ==========
       function isCompoundSurname(surname) {
-        // 姓输入框 maxlength="2"，所以长度2即为复姓，长度1为单姓
         return surname.length === 2;
       }
 
@@ -1456,17 +1614,24 @@
         var stroke = 0;
         try {
           if (typeof ChineseStroke !== 'undefined' && typeof ChineseStroke.get === 'function') {
-            stroke = ChineseStroke.get(char);
-            if (stroke && stroke > 0) return stroke;
+            // 【修复6】增加try-catch保护
+            try {
+              stroke = ChineseStroke.get(char);
+              if (stroke && stroke > 0) return stroke;
+            } catch (e) {
+              // 继续使用降级方案
+            }
           }
         } catch (e) { /* 忽略 */ }
         stroke = STROKE_MAP[char] || 0;
         if (stroke > 0) return stroke;
+        // 改进笔画估算算法
         var code = char.charCodeAt(0);
         if (code >= 0x4E00 && code <= 0x9FFF) {
-          stroke = Math.floor((code - 0x4E00) / 200) + 3;
-          if (stroke < 1) stroke = 1;
-          if (stroke > 30) stroke = 30;
+          var offset = code - 0x4E00;
+          stroke = Math.floor(offset / 700) + 5;
+          if (stroke < 3) stroke = 3;
+          if (stroke > 25) stroke = 25;
           return stroke;
         }
         return 5;
@@ -1596,6 +1761,7 @@
         return yangGongMap[month] === day;
       }
 
+      // 获取日支（使用日柱降级方法）
       function getDayZhiByDate(year, month, day) {
         try {
           var solar = Solar.fromYmd(year, month, day);
@@ -1605,16 +1771,12 @@
             return dayGanZhi[1];
           }
         } catch (e) { /* 忽略 */ }
-        var monthCode = [0, 3, 3, 6, 1, 4, 6, 2, 5, 0, 3, 5];
-        var y = year,
-          m = month,
-          d = day;
-        if (m < 3) { y--;
-          m += 12; }
-        var yearCode = (y + Math.floor(y / 4) + Math.floor(y / 400) - Math.floor(y / 100) + 1) % 60;
-        var monthCodeVal = monthCode[month - 1] || 0;
-        var dayOffset = (yearCode + monthCodeVal + d) % 60;
-        var zhiIndex = dayOffset % 12;
+        
+        var baseUTC = Date.UTC(1900, 0, 1);
+        var targetUTC = Date.UTC(year, month - 1, day);
+        var diffDays = Math.floor((targetUTC - baseUTC) / 86400000);
+        var baseZhiIndex = 10;
+        var zhiIndex = ((baseZhiIndex + diffDays) % 12 + 12) % 12;
         return DI_ZHI[zhiIndex];
       }
 
@@ -1711,7 +1873,7 @@
                     tianSheDays.push({ year: year2, month: month2, day: d2 });
                   }
                 }
-              } catch (e) { /* 忽略 */ }
+              } catch (e) { /* 忽略单个日期错误 */ }
             }
           }
         }
@@ -1721,7 +1883,7 @@
           tianSheSet[tsd.year + '-' + tsd.month + '-' + tsd.day] = true;
         }
 
-        // 三合组 - 简化为4组
+        // 三合组
         var sanHeGroups = [
           ['鼠', '龙', '猴'], ['牛', '蛇', '鸡'], ['虎', '马', '狗'], ['兔', '羊', '猪']
         ];
@@ -1733,31 +1895,24 @@
 
         var result = [];
 
-        // 遍历全年每一天
         for (var m = 0; m < 12; m++) {
           var monthNum = m + 1;
           var maxDay = getMonthDays(year, monthNum);
 
           for (var d = 1; d <= maxDay; d++) {
-            // 1. 检查四离四绝（跳过）
             if (isSiLi(year, monthNum, d) || isSiJue(year, monthNum, d)) {
               continue;
             }
-            // 2. 检查杨公忌日（跳过）
             if (isYangGongJi(monthNum, d)) {
               continue;
             }
-            // 3. 获取日支
             var dayZhi = getDayZhiByDate(year, monthNum, d);
             if (!dayZhi) continue;
-            // 4. 检查冲生肖
             var isChong = chongSet[dayZhi] || false;
 
-            // 5. 计算吉神得分
             var score = 0;
             var jiShenList = [];
 
-            // 天德合日 +2
             var tianDe = getTianDeDay(year, monthNum);
             try {
               var solar = Solar.fromYmd(year, monthNum, d);
@@ -1771,7 +1926,6 @@
               }
             } catch (e) { /* 忽略 */ }
 
-            // 月德合日 +2
             var yueDe = getYueDeDay(monthNum);
             try {
               var solar2 = Solar.fromYmd(year, monthNum, d);
@@ -1785,17 +1939,14 @@
               }
             } catch (e) { /* 忽略 */ }
 
-            // 天赦日 +3
             var key = year + '-' + monthNum + '-' + d;
             if (tianSheSet[key]) {
               score += 3;
               jiShenList.push('天赦日');
             }
 
-            // 与新人生肖三合 +2
             var daySX = getShengXiaoByZhi(dayZhi);
             if (daySX) {
-              // 检查是否与男方或女方在同一三合组
               var maleInGroup = false;
               var femaleInGroup = false;
               for (var sg = 0; sg < sanHeGroups.length; sg++) {
@@ -1829,7 +1980,6 @@
               }
             }
 
-            // 与新人生肖六合 +3
             if (daySX) {
               if (liuHeMap[maleSX] === daySX) {
                 var alreadyHas3 = false;
@@ -1853,12 +2003,10 @@
               }
             }
 
-            // 冲日扣分
             if (isChong) {
               score -= 2;
             }
 
-            // 只保留得分 >= 4 的日期
             if (score >= 4) {
               var avoidList = getAvoidShengXiao(dayZhi, maleSX, femaleSX);
 
@@ -1887,7 +2035,6 @@
           }
         }
 
-        // 按得分降序排序，得分相同按日期升序
         result.sort(function(a, b) {
           if (b.score !== a.score) {
             return b.score - a.score;
@@ -1896,6 +2043,260 @@
         });
 
         return result;
+      }
+
+      // =================================================================
+      // ========== 【新增】性格解析模块 ==========
+      // =================================================================
+
+      // 根据日主五行和十神分析性格
+      function getPersonalityByBazi(bazi, name, gender) {
+        var dayGan = bazi.day[0];
+        var monthGan = bazi.month[0];
+        var yearGan = bazi.year[0];
+        var hourGan = bazi.hour[0];
+        
+        var wuxingMap = { '甲': '木', '乙': '木', '丙': '火', '丁': '火', '戊': '土', '己': '土', '庚': '金', '辛': '金', '壬': '水', '癸': '水' };
+        var dayWuxing = wuxingMap[dayGan] || '木';
+        
+        // 日主五行对应的性格特征
+        var wuxingTraits = {
+          '木': {
+            positive: ['仁慈宽厚', '正直善良', '生机勃勃', '积极向上', '有同情心'],
+            negative: ['固执己见', '容易急躁', '好高骛远', '情绪波动'],
+            description: '木主仁，其人仁慈宽厚，正直善良，有同情心。做事积极向上，有进取精神。但有时固执己见，容易急躁。'
+          },
+          '火': {
+            positive: ['热情开朗', '礼貌周到', '思维敏捷', '有领导力', '富有创造力'],
+            negative: ['急躁冲动', '好面子', '易怒', '缺乏耐心'],
+            description: '火主礼，其人热情开朗，礼貌周到，思维敏捷。有领导才能和创造力。但有时急躁冲动，缺乏耐心。'
+          },
+          '土': {
+            positive: ['诚信稳重', '宽厚包容', '脚踏实地', '有责任感', '吃苦耐劳'],
+            negative: ['固执保守', '过于谨慎', '缺乏变通', '优柔寡断'],
+            description: '土主信，其人诚信稳重，宽厚包容，有责任感。做事脚踏实地，吃苦耐劳。但有时固执保守，缺乏变通。'
+          },
+          '金': {
+            positive: ['义气豪爽', '果断坚毅', '有魄力', '讲信用', '执行力强'],
+            negative: ['刚愎自用', '好胜心强', '过于严厉', '缺乏柔情'],
+            description: '金主义，其人义气豪爽，果断坚毅，有魄力。执行力强，讲信用。但有时刚愎自用，过于严厉。'
+          },
+          '水': {
+            positive: ['智慧聪颖', '灵活变通', '深谋远虑', '有包容心', '善于交际'],
+            negative: ['多疑善变', '优柔寡断', '缺乏主见', '情绪化'],
+            description: '水主智，其人智慧聪颖，灵活变通，深谋远虑。有包容心，善于交际。但有时多疑善变，缺乏主见。'
+          }
+        };
+
+        var traits = wuxingTraits[dayWuxing] || wuxingTraits['木'];
+        
+        // 根据性别调整描述
+        var genderLabel = gender === 'male' ? '男' : '女';
+        var pronoun = gender === 'male' ? '他' : '她';
+        
+        // 分析十神组合（简化版）
+        var shiShen = '';
+        var ganWuxingMap = { '甲': '木', '乙': '木', '丙': '火', '丁': '火', '戊': '土', '己': '土', '庚': '金', '辛': '金', '壬': '水', '癸': '水' };
+        var dayWx = ganWuxingMap[dayGan] || '木';
+        
+        // 统计四柱天干的五行分布
+        var ganList = [yearGan, monthGan, dayGan, hourGan];
+        var wxCount = { '木': 0, '火': 0, '土': 0, '金': 0, '水': 0 };
+        for (var i = 0; i < ganList.length; i++) {
+          var wx = ganWuxingMap[ganList[i]];
+          if (wx) wxCount[wx]++;
+        }
+        
+        // 判断强弱：日主五行出现次数
+        var dayCount = wxCount[dayWx] || 0;
+        var isStrong = dayCount >= 2;
+        var strength = isStrong ? '偏强' : '偏弱';
+        
+        // 生成性格标签
+        var tags = traits.positive.slice(0, 4);
+        if (isStrong) {
+          tags.push('自信坚定');
+        } else {
+          tags.push('谦和包容');
+        }
+        tags.push(gender === 'male' ? '阳刚之气' : '阴柔之美');
+
+        // 生成详细描述
+        var desc = name + '，' + genderLabel + '性，日主为『' + dayGan + '』(' + dayWx + ')。' + 
+                   traits.description + '\n';
+        desc += '【性格特征】' + traits.positive.slice(0, 3).join('、') + '。';
+        if (isStrong) {
+          desc += ' 日主' + dayWx + '偏强，' + pronoun + '性格较为坚定独立，有主见。';
+        } else {
+          desc += ' 日主' + dayWx + '偏弱，' + pronoun + '性格较为随和包容，善于合作。';
+        }
+        desc += '\n【建议】' + (isStrong ? 
+          '宜培养耐心，多倾听他人意见，避免刚愎自用。' : 
+          '宜增强自信，培养决断力，勇于表达自己的想法。');
+        
+        // 计算五行喜忌（简单版）
+        var like = '';
+        var avoid = '';
+        var sheng = { '木': '水', '火': '木', '土': '火', '金': '土', '水': '金' };
+        var ke = { '木': '金', '火': '水', '土': '木', '金': '火', '水': '土' };
+        if (isStrong) {
+          // 偏强喜克泄
+          like = ke[dayWx] || '火';
+          avoid = sheng[dayWx] || '木';
+        } else {
+          // 偏弱喜生扶
+          like = sheng[dayWx] || '木';
+          avoid = ke[dayWx] || '金';
+        }
+
+        return {
+          name: name,
+          gender: genderLabel,
+          dayGan: dayGan,
+          dayWuxing: dayWx,
+          strength: strength,
+          tags: tags,
+          description: desc,
+          positive: traits.positive,
+          negative: traits.negative,
+          like: like,
+          avoid: avoid,
+          isStrong: isStrong
+        };
+      }
+
+      // 综合两人性格给出相处建议
+      function getCompatibilityAdvice(malePersonality, femalePersonality) {
+        var mWx = malePersonality.dayWuxing;
+        var fWx = femalePersonality.dayWuxing;
+        var mName = malePersonality.name;
+        var fName = femalePersonality.name;
+        
+        // 五行生克关系
+        var shengKe = getWuXingShengKe(mWx, fWx);
+        var relation = '';
+        var score = 5;
+        if (shengKe.includes('相生')) {
+          relation = '五行相生';
+          score = 9;
+        } else if (shengKe.includes('比和')) {
+          relation = '五行比和';
+          score = 7;
+        } else {
+          relation = '五行相克';
+          score = 4;
+        }
+
+        // 生成建议
+        var advice = '';
+        var mTraits = malePersonality.positive.slice(0, 2);
+        var fTraits = femalePersonality.positive.slice(0, 2);
+        
+        if (score >= 7) {
+          advice = '💞 恭喜！' + mName + '与' + fName + '的五行关系为「' + relation + '」，' +
+                   '这是非常理想的组合。' + mName + '的' + mTraits.join('、') + '与' + fName + '的' + fTraits.join('、') + 
+                   '能够形成良好的互补与促进。\n\n';
+          advice += '【相处建议】\n' +
+                    '• 保持坦诚沟通，分享彼此的喜怒哀乐\n' +
+                    '• 共同培养兴趣爱好，增进感情\n' +
+                    '• 在重大决策上相互商量，共同成长\n' +
+                    '• 尊重对方的独立性，给予适当空间';
+        } else if (score >= 5) {
+          advice = '🟢 ' + mName + '与' + fName + '的五行关系为「' + relation + '」，' +
+                   '属于中等偏上的组合。' + mName + '的' + mTraits[0] + '与' + fName + '的' + fTraits[0] + 
+                   '各有特色，需要相互理解和包容。\n\n';
+          advice += '【相处建议】\n' +
+                    '• 多站在对方角度思考问题\n' +
+                    '• 学会欣赏彼此的差异与独特之处\n' +
+                    '• 遇到分歧时冷静沟通，避免情绪化\n' +
+                    '• 定期安排二人独处时间，增进感情';
+        } else {
+          advice = '⚠️ ' + mName + '与' + fName + '的五行关系为「' + relation + '」，' +
+                   '这是需要更多磨合的组合。' + mName + '的' + mTraits[0] + '与' + fName + '的' + fTraits[0] + 
+                   '可能存在冲突，需要双方共同努力调和。\n\n';
+          advice += '【相处建议】\n' +
+                    '• 双方都需要学会妥协与让步\n' +
+                    '• 寻找共同的价值观和目标\n' +
+                    '• 避免在情绪激动时做重要决定\n' +
+                    '• 多关注对方的优点，培养包容心\n' +
+                    '• 必要时寻求第三方（朋友或长辈）的意见';
+        }
+
+        // 加入具体五行建议
+        advice += '\n\n【五行调和建议】\n';
+        if (mWx !== fWx) {
+          advice += '• ' + mName + '五行属' + mWx + '，' + fName + '五行属' + fWx + '，' +
+                    (shengKe.includes('生') ? '二者相生，可相互滋养。' : 
+                     shengKe.includes('比') ? '二者比和，可和谐共处。' : 
+                     '二者相克，需以' + (mWx === '木' || mWx === '火' ? '木火' : '金水') + '调和。');
+        } else {
+          advice += '• 双方同属' + mWx + '，可共同培养' + (mWx === '木' ? '水' : mWx === '火' ? '木' : mWx === '土' ? '火' : mWx === '金' ? '土' : '金') + '行能量以平衡。';
+        }
+        advice += '\n• 建议共同参与户外活动、艺术创作等有益身心之事。';
+
+        return {
+          relation: relation,
+          score: score,
+          advice: advice,
+          maleWx: mWx,
+          femaleWx: fWx
+        };
+      }
+
+      // 生成性格解析面板HTML
+      function renderPersonalityPanel(maleBazi, femaleBazi, maleName, femaleName, maleGender, femaleGender) {
+        if (!maleBazi || !femaleBazi) {
+          return '请先进行「八步演算」以获取八字数据。';
+        }
+
+        var malePersonality = getPersonalityByBazi(maleBazi, maleName, maleGender);
+        var femalePersonality = getPersonalityByBazi(femaleBazi, femaleName, femaleGender);
+        var advice = getCompatibilityAdvice(malePersonality, femalePersonality);
+
+        var html = '';
+
+        // 男方性格
+        html += '<div class="personality-card male-card">';
+        html += '  <div class="card-title">👤 ' + maleName + ' · 性格解析</div>';
+        html += '  <div class="card-subtitle">日主: ' + malePersonality.dayGan + '(' + malePersonality.dayWuxing + ') · 身' + malePersonality.strength + '</div>';
+        html += '  <div class="card-body">';
+        //html += '    <div class="personality-traits">';
+        for (var i = 0; i < malePersonality.tags.length; i++) {
+          html += '      <span class="tag">' + malePersonality.tags[i] + '</span>';
+        }
+        html += '    </div>';
+        html += '    <div style="margin-top: 6px;">' + malePersonality.description + '</div>';
+        html += '  </div>';
+        html += '</div>';
+
+        // 女方性格
+        html += '<div class="personality-card female-card">';
+        html += '  <div class="card-title">👩 ' + femaleName + ' · 性格解析</div>';
+        html += '  <div class="card-subtitle">日主: ' + femalePersonality.dayGan + '(' + femalePersonality.dayWuxing + ') · 身' + femalePersonality.strength + '</div>';
+        html += '  <div class="card-body">';
+        html += '    <div class="personality-traits">';
+        for (var i = 0; i < femalePersonality.tags.length; i++) {
+          html += '      <span class="tag">' + femalePersonality.tags[i] + '</span>';
+        }
+        html += '    </div>';
+        html += '    <div style="margin-top: 6px;">' + femalePersonality.description + '</div>';
+        html += '  </div>';
+        html += '</div>';
+
+        // 相处建议
+        var adviceColor = advice.score >= 7 ? '#66bb6a' : (advice.score >= 5 ? '#ffa726' : '#ef5350');
+        html += '<div class="personality-card advice-card" style="border-left-color: ' + adviceColor + ';">';
+        html += '  <div class="card-title" style="color: ' + adviceColor + ';">💡 相处建议 · ' + advice.relation + ' (' + advice.score + '/10)</div>';
+        html += '  <div class="card-body" style="white-space: pre-wrap; line-height: 1.9;">' + advice.advice + '</div>';
+        html += '</div>';
+
+        // 五行互补速览
+        html += '<div style="margin-top: 8px; padding: 10px 14px; background: rgba(255,255,255,0.03); border-radius: 12px; font-size: 0.88rem; color: #8899bb; line-height: 1.8; text-align: center;">';
+        html += '📊 ' + maleName + '(' + malePersonality.dayWuxing + ') 与 ' + femaleName + '(' + femalePersonality.dayWuxing + ') · ' + advice.relation;
+        html += ' · 建议关注「' + malePersonality.like + '」行与「' + femalePersonality.like + '」行的调和';
+        html += '</div>';
+
+        return html;
       }
 
       // ========== 输入验证 ==========
@@ -2011,7 +2412,7 @@
       }
 
       // ---------- 八步合婚核心 ----------
-      function eightSteps(maleBA, femaleBA, maleYear, femaleYear, maleName, femaleName, gender) {
+      function eightSteps(maleBA, femaleBA, maleYear, femaleYear, maleName, femaleName, maleGender, femaleGender) {
         var steps = [];
 
         // 1. 纳音五行 + 生克
@@ -2074,10 +2475,9 @@
           score: step3Score
         });
 
-        // 4. 神煞互参（修复：更稳健的判断）
+        // 4. 神煞互参
         var maleShen = getShenSha(maleBA.day[0], maleBA.day[1], maleBA.month[0], maleBA.year[0]);
         var femaleShen = getShenSha(femaleBA.day[0], femaleBA.day[1], femaleBA.month[0], femaleBA.year[0]);
-        // 更稳健地判断天乙贵人是否存在
         var maleHasTianYi = maleShen.indexOf('天乙贵人: 无') === -1 && maleShen.indexOf('天乙贵人: ') !== -1;
         var femaleHasTianYi = femaleShen.indexOf('天乙贵人: 无') === -1 && femaleShen.indexOf('天乙贵人: ') !== -1;
         var hasTianYi = maleHasTianYi && femaleHasTianYi;
@@ -2088,18 +2488,32 @@
           score: step4Score
         });
 
-        // 5. 配偶星
+        // 第五步 · 配偶星 - 动态计算分数
         var malePei = getPeiOuXing(maleBA.day[0], 'male');
         var femalePei = getPeiOuXing(femaleBA.day[0], 'female');
+        var malePeiWuxing = malePei.match(/正财\(妻星\): (\w+)/);
+        var femalePeiWuxing = femalePei.match(/正官\(夫星\): (\w+)/);
+        var step5Score = 5;
+        if (malePeiWuxing && femalePeiWuxing) {
+          var mW = malePeiWuxing[1];
+          var fW = femalePeiWuxing[1];
+          if (getWuXingShengKe(mW, fW).includes('生')) {
+            step5Score = 9;
+          } else if (mW === fW) {
+            step5Score = 7;
+          } else {
+            step5Score = 5;
+          }
+        }
         steps.push({
           title: '第五步 · 配偶星',
           content: '【男方配偶星】: ' + malePei + '\n【女方配偶星】: ' + femalePei + '\n【综合小结】: 财官得位，夫妻和谐。',
-          score: 7
+          score: step5Score
         });
 
-        // 6. 大运配合（修复：传入月柱地支）
-        var maleDaYun = getDaYun(maleBA.year[0], 'male', maleBA.solarDate.year, maleBA.solarDate.month, maleBA.solarDate.day, maleBA.month[1]);
-        var femaleDaYun = getDaYun(femaleBA.year[0], 'female', femaleBA.solarDate.year, femaleBA.solarDate.month, femaleBA.solarDate.day, femaleBA.month[1]);
+        // 6. 大运配合
+        var maleDaYun = getDaYun(maleBA.year[0], maleBA.month[0], maleBA.month[1], maleGender, maleBA.solarDate.year, maleBA.solarDate.month, maleBA.solarDate.day);
+        var femaleDaYun = getDaYun(femaleBA.year[0], femaleBA.month[0], femaleBA.month[1], femaleGender, femaleBA.solarDate.year, femaleBA.solarDate.month, femaleBA.solarDate.day);
         var daYunSync = Math.abs(maleDaYun.startAge - femaleDaYun.startAge) <= 2;
         var step6Score = daYunSync ? 8 : 5;
         steps.push({
@@ -2110,7 +2524,7 @@
           score: step6Score
         });
 
-        // 7. 五行互补 (动态评分)
+        // 7. 五行互补 (改进评分)
         var wuXingResult = getWuXingBuJi(maleBA, femaleBA);
         var wuXingMatch = wuXingResult.match(/木: (\d+), 火: (\d+), 土: (\d+), 金: (\d+), 水: (\d+)/);
         var step7Score = 6;
@@ -2122,16 +2536,30 @@
           var water = parseInt(wuXingMatch[5]);
           var values = [wood, fire, earth, metal, water];
           var totalCount = wood + fire + earth + metal + water;
-          var maxVal = Math.max.apply(null, values);
-          var minVal = Math.min.apply(null, values);
-          var range = maxVal - minVal;
-          if (range <= 1) step7Score = 9;
-          else if (range <= 3) step7Score = 8;
-          else if (range <= 5) step7Score = 7;
-          else if (range <= 8) step7Score = 6;
-          else if (range <= 12) step7Score = 5;
-          else step7Score = 4;
-          if (totalCount < 10) step7Score = Math.max(step7Score - 1, 3);
+          
+          var hasAll = wood > 0 && fire > 0 && earth > 0 && metal > 0 && water > 0;
+          var avg = totalCount / 5;
+          var variance = 0;
+          for (var i = 0; i < values.length; i++) {
+            variance += Math.pow(values[i] - avg, 2);
+          }
+          variance /= 5;
+          var stdDev = Math.sqrt(variance);
+          
+          if (hasAll && stdDev < 1.5) {
+            step7Score = 10;
+          } else if (hasAll && stdDev < 3) {
+            step7Score = 9;
+          } else if (hasAll) {
+            step7Score = 8;
+          } else if (stdDev < 2) {
+            step7Score = 7;
+          } else if (stdDev < 4) {
+            step7Score = 6;
+          } else {
+            step7Score = 4;
+          }
+          if (totalCount < 8) step7Score = Math.max(step7Score - 1, 3);
         }
         steps.push({
           title: '第七步 · 五行互补',
@@ -2139,7 +2567,7 @@
           score: step7Score
         });
 
-        // 8. 综合判吉 (加权评分)
+        // 8. 综合判吉
         var totalScore = steps.reduce(function(sum, s) { return sum + s.score; }, 0);
         var avgScore = totalScore / steps.length;
         var finalScore = Math.round(avgScore);
@@ -2184,6 +2612,14 @@
       }
 
       // ========== 更新多功能合婚面板 ==========
+      // 存储当前的八字数据，用于性格解析
+      var _currentMaleBazi = null;
+      var _currentFemaleBazi = null;
+      var _currentMaleName = '';
+      var _currentFemaleName = '';
+      var _currentMaleGender = 'male';
+      var _currentFemaleGender = 'female';
+
       function updateExtraPanel(tab, maleName, femaleName, maleMonth, maleDay, femaleMonth, femaleDay) {
         var content = '';
         if (tab === 'zodiac') {
@@ -2317,7 +2753,6 @@
           var femaleSX2 = getShengXiao(parseInt(femaleYearInput.value) || 1992);
           var dates = getWeddingDatesProfessional(year, maleSX2, femaleSX2);
 
-          // 按月份分组
           var monthGroups = {};
           var monthNames = ['正月', '二月', '三月', '四月', '五月', '六月', '七月', '八月', '九月', '十月', '冬月', '腊月'];
           for (var mi = 0; mi < monthNames.length; mi++) {
@@ -2329,7 +2764,6 @@
             }
           });
 
-          // 生成折叠HTML
           var html = '<div class="wedding-summary-line">💒 共筛选出 <strong style="color:#8ab4ff;">' + dates.length +
             '</strong> 个婚嫁吉日（得分 ≥ 4），按得分降序排列</div>';
 
@@ -2352,14 +2786,12 @@
             html += '  </div>';
             html += '  <div class="month-collapse-body">';
 
-            // 按得分降序排列
             items.sort(function(a, b) { return b.score - a.score; });
 
             for (var di = 0; di < items.length; di++) {
               var d = items[di];
               var flag = d.isChong ? '<span class="flag-bad">⚠️</span>' : '<span class="flag-good">✓</span>';
 
-              // 构建避忌信息
               var avoidStr = '';
               if (d.avoidList && d.avoidList.length > 0) {
                 var parts = [];
@@ -2387,7 +2819,6 @@
             html += '</div>';
           }
 
-          // 底部说明
           html +=
             '<div style="margin-top:12px;padding:10px 14px;background:rgba(255,255,255,0.03);border-radius:12px;font-size:0.85rem;color:#8899bb;line-height:1.9;">' +
             '💒 择日依据：天德合日、月德合日、天赦日、三合六合等吉神，排除四离四绝、杨公忌日。<br>' +
@@ -2397,6 +2828,18 @@
             '</div>';
 
           extraPanel.innerHTML = html;
+          return;
+        } else if (tab === 'personality') {
+          // 【新增】性格解析
+          if (_currentMaleBazi && _currentFemaleBazi) {
+            extraPanel.innerHTML = renderPersonalityPanel(
+              _currentMaleBazi, _currentFemaleBazi,
+              _currentMaleName, _currentFemaleName,
+              _currentMaleGender, _currentFemaleGender
+            );
+          } else {
+            extraPanel.innerHTML = '⚠️ 请先点击「合婚 · 八步演算」获取八字数据，然后查看性格解析。';
+          }
           return;
         }
         extraPanel.textContent = content;
@@ -2446,11 +2889,22 @@
             var fM = parseInt(femaleMonthInput.value) || 8;
             var fD = parseInt(femaleDayInput.value) || 20;
             var fH = parseInt(femaleHourInput.value) || 14;
-            // 【修复1】性别传入修正：固定男为male，女为female
-            var maleBazi = getBazi(mY, mM, mD, mH, 'male', maleCal);
-            var femaleBazi = getBazi(fY, fM, fD, fH, 'female', femaleCal);
+            
+            var maleGender = document.querySelector('input[name="maleGender"]:checked').value || 'male';
+            var femaleGender = document.querySelector('input[name="femaleGender"]:checked').value || 'female';
+            
+            var maleBazi = getBazi(mY, mM, mD, mH, maleGender, maleCal);
+            var femaleBazi = getBazi(fY, fM, fD, fH, femaleGender, femaleCal);
 
-            var result = eightSteps(maleBazi, femaleBazi, mY, fY, maleName, femaleName, 'male');
+            // 保存当前八字数据供性格解析使用
+            _currentMaleBazi = maleBazi;
+            _currentFemaleBazi = femaleBazi;
+            _currentMaleName = maleName;
+            _currentFemaleName = femaleName;
+            _currentMaleGender = maleGender;
+            _currentFemaleGender = femaleGender;
+
+            var result = eightSteps(maleBazi, femaleBazi, mY, fY, maleName, femaleName, maleGender, femaleGender);
             renderSteps(result.steps, maleName, femaleName, result.grade);
             updateSummary(result.grade, maleName, femaleName);
 
@@ -2498,7 +2952,8 @@
         femaleHourInput.value = 14;
         document.querySelector('input[name="maleCal"][value="solar"]').checked = true;
         document.querySelector('input[name="femaleCal"][value="solar"]').checked = true;
-        document.querySelector('input[name="gender"][value="male"]').checked = true;
+        document.querySelector('input[name="maleGender"][value="male"]').checked = true;
+        document.querySelector('input[name="femaleGender"][value="female"]').checked = true;
         document.getElementById('maleHourLabel').textContent = getShiChen(8);
         document.getElementById('femaleHourLabel').textContent = getShiChen(14);
         document.querySelectorAll('.input-error').forEach(function(el) { el.textContent = ''; });
