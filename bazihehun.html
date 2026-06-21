@@ -416,6 +416,39 @@
       min-height: auto;
       max-height: 600px;
       overflow-y: auto;
+      /* 自定义滚动条 - 与容器圆角一致 */
+      scrollbar-width: thin;
+      scrollbar-color: rgba(60, 120, 255, 0.3) transparent;
+    }
+    
+    /* Chrome/Safari/Edge 滚动条样式 */
+    .extra-marriage-section .extra-panel::-webkit-scrollbar {
+      width: 6px;
+    }
+    
+    /* 滚动条轨道 - 与容器相同的圆角 24px */
+    .extra-marriage-section .extra-panel::-webkit-scrollbar-track {
+      background: transparent;
+      border-radius: 24px;
+      margin: 4px 0;
+    }
+    
+    /* 滚动条滑块 - 圆角 12px 更柔和 */
+    .extra-marriage-section .extra-panel::-webkit-scrollbar-thumb {
+      background: rgba(60, 120, 255, 0.3);
+      border-radius: 12px;
+      transition: background 0.2s;
+      border: 2px solid transparent;
+      background-clip: padding-box;
+    }
+    
+    .extra-marriage-section .extra-panel::-webkit-scrollbar-thumb:hover {
+      background: rgba(60, 120, 255, 0.5);
+    }
+    
+    /* 滚动条按钮（上下箭头）- 隐藏 */
+    .extra-marriage-section .extra-panel::-webkit-scrollbar-button {
+      display: none;
     }
     .extra-marriage-section .extra-panel .label {
       font-weight: 600;  
@@ -551,55 +584,7 @@
       font-size: 1.1rem;
       letter-spacing: 3px;
     }
-    /* 性格解析卡片样式 */
-    .personality-card {
-      background: rgba(255, 255, 255, 0.04);
-      border-radius: 16px;
-      padding: 14px 18px;
-      margin-bottom: 12px;
-      border-left: 4px solid rgba(60, 120, 255, 0.4);
-    }
-    .personality-card .card-title {
-      font-size: 1.05rem;
-      font-weight: 600;
-      color: #8ab4ff;
-      margin-bottom: 4px;
-    }
-    .personality-card .card-subtitle {
-      font-size: 0.85rem;
-      color: #8899bb;
-      margin-bottom: 6px;
-    }
-    .personality-card .card-body {
-      font-size: 0.95rem;
-      line-height: 1.9;
-      color: #c8d0e0;
-    }
-    .personality-card .card-body .tag {
-      display: inline-block;
-      background: rgba(60, 120, 255, 0.15);
-      color: #8ab4ff;
-      padding: 0 12px;
-      border-radius: 20px;
-      font-size: 0.8rem;
-      margin: 2px 4px 2px 0;
-    }
-    .personality-card.male-card {
-      border-left-color: rgba(60, 180, 255, 0.6);
-    }
-    .personality-card.female-card {
-      border-left-color: rgba(255, 120, 200, 0.6);
-    }
-    .personality-card.advice-card {
-      border-left-color: rgba(255, 200, 80, 0.6);
-      background: rgba(255, 200, 80, 0.06);
-    }
-    .personality-traits {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 6px;
-      margin-top: 4px;
-    }
+
     /* 响应式 */
     @media (max-width: 820px) {
       .input-grid {
@@ -803,13 +788,12 @@
       </div>
     </div>
 
-    <!-- 多功能合婚栏 (星座、姓名五格、嫁娶择日、性格解析) -->
+    <!-- 多功能合婚栏 (星座、姓名五格、嫁娶择日) -->
     <div class="extra-marriage-section" id="extraMarriageSection">
       <div class="extra-tabs">
         <button class="btn-extra active" data-target="zodiac">♈ 星座合婚</button>
         <button class="btn-extra" data-target="wuge">📛 姓名五格</button>
         <button class="btn-extra" data-target="wedding">💒 嫁娶择日</button>
-        <button class="btn-extra" data-target="personality">🧠 性格解析</button>
       </div>
       <div class="extra-panel" id="extraPanel">
         <!-- 默认显示星座合婚内容 -->
@@ -2045,260 +2029,6 @@
         return result;
       }
 
-      // =================================================================
-      // ========== 【新增】性格解析模块 ==========
-      // =================================================================
-
-      // 根据日主五行和十神分析性格
-      function getPersonalityByBazi(bazi, name, gender) {
-        var dayGan = bazi.day[0];
-        var monthGan = bazi.month[0];
-        var yearGan = bazi.year[0];
-        var hourGan = bazi.hour[0];
-        
-        var wuxingMap = { '甲': '木', '乙': '木', '丙': '火', '丁': '火', '戊': '土', '己': '土', '庚': '金', '辛': '金', '壬': '水', '癸': '水' };
-        var dayWuxing = wuxingMap[dayGan] || '木';
-        
-        // 日主五行对应的性格特征
-        var wuxingTraits = {
-          '木': {
-            positive: ['仁慈宽厚', '正直善良', '生机勃勃', '积极向上', '有同情心'],
-            negative: ['固执己见', '容易急躁', '好高骛远', '情绪波动'],
-            description: '木主仁，其人仁慈宽厚，正直善良，有同情心。做事积极向上，有进取精神。但有时固执己见，容易急躁。'
-          },
-          '火': {
-            positive: ['热情开朗', '礼貌周到', '思维敏捷', '有领导力', '富有创造力'],
-            negative: ['急躁冲动', '好面子', '易怒', '缺乏耐心'],
-            description: '火主礼，其人热情开朗，礼貌周到，思维敏捷。有领导才能和创造力。但有时急躁冲动，缺乏耐心。'
-          },
-          '土': {
-            positive: ['诚信稳重', '宽厚包容', '脚踏实地', '有责任感', '吃苦耐劳'],
-            negative: ['固执保守', '过于谨慎', '缺乏变通', '优柔寡断'],
-            description: '土主信，其人诚信稳重，宽厚包容，有责任感。做事脚踏实地，吃苦耐劳。但有时固执保守，缺乏变通。'
-          },
-          '金': {
-            positive: ['义气豪爽', '果断坚毅', '有魄力', '讲信用', '执行力强'],
-            negative: ['刚愎自用', '好胜心强', '过于严厉', '缺乏柔情'],
-            description: '金主义，其人义气豪爽，果断坚毅，有魄力。执行力强，讲信用。但有时刚愎自用，过于严厉。'
-          },
-          '水': {
-            positive: ['智慧聪颖', '灵活变通', '深谋远虑', '有包容心', '善于交际'],
-            negative: ['多疑善变', '优柔寡断', '缺乏主见', '情绪化'],
-            description: '水主智，其人智慧聪颖，灵活变通，深谋远虑。有包容心，善于交际。但有时多疑善变，缺乏主见。'
-          }
-        };
-
-        var traits = wuxingTraits[dayWuxing] || wuxingTraits['木'];
-        
-        // 根据性别调整描述
-        var genderLabel = gender === 'male' ? '男' : '女';
-        var pronoun = gender === 'male' ? '他' : '她';
-        
-        // 分析十神组合（简化版）
-        var shiShen = '';
-        var ganWuxingMap = { '甲': '木', '乙': '木', '丙': '火', '丁': '火', '戊': '土', '己': '土', '庚': '金', '辛': '金', '壬': '水', '癸': '水' };
-        var dayWx = ganWuxingMap[dayGan] || '木';
-        
-        // 统计四柱天干的五行分布
-        var ganList = [yearGan, monthGan, dayGan, hourGan];
-        var wxCount = { '木': 0, '火': 0, '土': 0, '金': 0, '水': 0 };
-        for (var i = 0; i < ganList.length; i++) {
-          var wx = ganWuxingMap[ganList[i]];
-          if (wx) wxCount[wx]++;
-        }
-        
-        // 判断强弱：日主五行出现次数
-        var dayCount = wxCount[dayWx] || 0;
-        var isStrong = dayCount >= 2;
-        var strength = isStrong ? '偏强' : '偏弱';
-        
-        // 生成性格标签
-        var tags = traits.positive.slice(0, 4);
-        if (isStrong) {
-          tags.push('自信坚定');
-        } else {
-          tags.push('谦和包容');
-        }
-        tags.push(gender === 'male' ? '阳刚之气' : '阴柔之美');
-
-        // 生成详细描述
-        var desc = name + '，' + genderLabel + '性，日主为『' + dayGan + '』(' + dayWx + ')。' + 
-                   traits.description + '\n';
-        desc += '【性格特征】' + traits.positive.slice(0, 3).join('、') + '。';
-        if (isStrong) {
-          desc += ' 日主' + dayWx + '偏强，' + pronoun + '性格较为坚定独立，有主见。';
-        } else {
-          desc += ' 日主' + dayWx + '偏弱，' + pronoun + '性格较为随和包容，善于合作。';
-        }
-        desc += '\n【建议】' + (isStrong ? 
-          '宜培养耐心，多倾听他人意见，避免刚愎自用。' : 
-          '宜增强自信，培养决断力，勇于表达自己的想法。');
-        
-        // 计算五行喜忌（简单版）
-        var like = '';
-        var avoid = '';
-        var sheng = { '木': '水', '火': '木', '土': '火', '金': '土', '水': '金' };
-        var ke = { '木': '金', '火': '水', '土': '木', '金': '火', '水': '土' };
-        if (isStrong) {
-          // 偏强喜克泄
-          like = ke[dayWx] || '火';
-          avoid = sheng[dayWx] || '木';
-        } else {
-          // 偏弱喜生扶
-          like = sheng[dayWx] || '木';
-          avoid = ke[dayWx] || '金';
-        }
-
-        return {
-          name: name,
-          gender: genderLabel,
-          dayGan: dayGan,
-          dayWuxing: dayWx,
-          strength: strength,
-          tags: tags,
-          description: desc,
-          positive: traits.positive,
-          negative: traits.negative,
-          like: like,
-          avoid: avoid,
-          isStrong: isStrong
-        };
-      }
-
-      // 综合两人性格给出相处建议
-      function getCompatibilityAdvice(malePersonality, femalePersonality) {
-        var mWx = malePersonality.dayWuxing;
-        var fWx = femalePersonality.dayWuxing;
-        var mName = malePersonality.name;
-        var fName = femalePersonality.name;
-        
-        // 五行生克关系
-        var shengKe = getWuXingShengKe(mWx, fWx);
-        var relation = '';
-        var score = 5;
-        if (shengKe.includes('相生')) {
-          relation = '五行相生';
-          score = 9;
-        } else if (shengKe.includes('比和')) {
-          relation = '五行比和';
-          score = 7;
-        } else {
-          relation = '五行相克';
-          score = 4;
-        }
-
-        // 生成建议
-        var advice = '';
-        var mTraits = malePersonality.positive.slice(0, 2);
-        var fTraits = femalePersonality.positive.slice(0, 2);
-        
-        if (score >= 7) {
-          advice = '💞 恭喜！' + mName + '与' + fName + '的五行关系为「' + relation + '」，' +
-                   '这是非常理想的组合。' + mName + '的' + mTraits.join('、') + '与' + fName + '的' + fTraits.join('、') + 
-                   '能够形成良好的互补与促进。\n\n';
-          advice += '【相处建议】\n' +
-                    '• 保持坦诚沟通，分享彼此的喜怒哀乐\n' +
-                    '• 共同培养兴趣爱好，增进感情\n' +
-                    '• 在重大决策上相互商量，共同成长\n' +
-                    '• 尊重对方的独立性，给予适当空间';
-        } else if (score >= 5) {
-          advice = '🟢 ' + mName + '与' + fName + '的五行关系为「' + relation + '」，' +
-                   '属于中等偏上的组合。' + mName + '的' + mTraits[0] + '与' + fName + '的' + fTraits[0] + 
-                   '各有特色，需要相互理解和包容。\n\n';
-          advice += '【相处建议】\n' +
-                    '• 多站在对方角度思考问题\n' +
-                    '• 学会欣赏彼此的差异与独特之处\n' +
-                    '• 遇到分歧时冷静沟通，避免情绪化\n' +
-                    '• 定期安排二人独处时间，增进感情';
-        } else {
-          advice = '⚠️ ' + mName + '与' + fName + '的五行关系为「' + relation + '」，' +
-                   '这是需要更多磨合的组合。' + mName + '的' + mTraits[0] + '与' + fName + '的' + fTraits[0] + 
-                   '可能存在冲突，需要双方共同努力调和。\n\n';
-          advice += '【相处建议】\n' +
-                    '• 双方都需要学会妥协与让步\n' +
-                    '• 寻找共同的价值观和目标\n' +
-                    '• 避免在情绪激动时做重要决定\n' +
-                    '• 多关注对方的优点，培养包容心\n' +
-                    '• 必要时寻求第三方（朋友或长辈）的意见';
-        }
-
-        // 加入具体五行建议
-        advice += '\n\n【五行调和建议】\n';
-        if (mWx !== fWx) {
-          advice += '• ' + mName + '五行属' + mWx + '，' + fName + '五行属' + fWx + '，' +
-                    (shengKe.includes('生') ? '二者相生，可相互滋养。' : 
-                     shengKe.includes('比') ? '二者比和，可和谐共处。' : 
-                     '二者相克，需以' + (mWx === '木' || mWx === '火' ? '木火' : '金水') + '调和。');
-        } else {
-          advice += '• 双方同属' + mWx + '，可共同培养' + (mWx === '木' ? '水' : mWx === '火' ? '木' : mWx === '土' ? '火' : mWx === '金' ? '土' : '金') + '行能量以平衡。';
-        }
-        advice += '\n• 建议共同参与户外活动、艺术创作等有益身心之事。';
-
-        return {
-          relation: relation,
-          score: score,
-          advice: advice,
-          maleWx: mWx,
-          femaleWx: fWx
-        };
-      }
-
-      // 生成性格解析面板HTML
-      function renderPersonalityPanel(maleBazi, femaleBazi, maleName, femaleName, maleGender, femaleGender) {
-        if (!maleBazi || !femaleBazi) {
-          return '请先进行「八步演算」以获取八字数据。';
-        }
-
-        var malePersonality = getPersonalityByBazi(maleBazi, maleName, maleGender);
-        var femalePersonality = getPersonalityByBazi(femaleBazi, femaleName, femaleGender);
-        var advice = getCompatibilityAdvice(malePersonality, femalePersonality);
-
-        var html = '';
-
-        // 男方性格
-        html += '<div class="personality-card male-card">';
-        html += '  <div class="card-title">👤 ' + maleName + ' · 性格解析</div>';
-        html += '  <div class="card-subtitle">日主: ' + malePersonality.dayGan + '(' + malePersonality.dayWuxing + ') · 身' + malePersonality.strength + '</div>';
-        html += '  <div class="card-body">';
-        html += '    <div class="personality-traits">';
-        for (var i = 0; i < malePersonality.tags.length; i++) {
-          html += '      <span class="tag">' + malePersonality.tags[i] + '</span>';
-        }
-        html += '    </div>';
-        html += '    <div style="margin-top: 6px;">' + malePersonality.description + '</div>';
-        html += '  </div>';
-        html += '</div>';
-
-        // 女方性格
-        html += '<div class="personality-card female-card">';
-        html += '  <div class="card-title">👩 ' + femaleName + ' · 性格解析</div>';
-        html += '  <div class="card-subtitle">日主: ' + femalePersonality.dayGan + '(' + femalePersonality.dayWuxing + ') · 身' + femalePersonality.strength + '</div>';
-        html += '  <div class="card-body">';
-        html += '    <div class="personality-traits">';
-        for (var i = 0; i < femalePersonality.tags.length; i++) {
-          html += '      <span class="tag">' + femalePersonality.tags[i] + '</span>';
-        }
-        html += '    </div>';
-        html += '    <div style="margin-top: 6px;">' + femalePersonality.description + '</div>';
-        html += '  </div>';
-        html += '</div>';
-
-        // 相处建议
-        var adviceColor = advice.score >= 7 ? '#66bb6a' : (advice.score >= 5 ? '#ffa726' : '#ef5350');
-        html += '<div class="personality-card advice-card" style="border-left-color: ' + adviceColor + ';">';
-        html += '  <div class="card-title" style="color: ' + adviceColor + ';">💡 相处建议 · ' + advice.relation + ' (' + advice.score + '/10)</div>';
-        html += '  <div class="card-body" style="white-space: pre-wrap; line-height: 1.9;">' + advice.advice + '</div>';
-        html += '</div>';
-
-        // 五行互补速览
-        html += '<div style="margin-top: 8px; padding: 10px 14px; background: rgba(255,255,255,0.03); border-radius: 12px; font-size: 0.88rem; color: #8899bb; line-height: 1.8; text-align: center;">';
-        html += '📊 ' + maleName + '(' + malePersonality.dayWuxing + ') 与 ' + femaleName + '(' + femalePersonality.dayWuxing + ') · ' + advice.relation;
-        html += ' · 建议关注「' + malePersonality.like + '」行与「' + femalePersonality.like + '」行的调和';
-        html += '</div>';
-
-        return html;
-      }
-
       // ========== 输入验证 ==========
       function scrollToFirstError() {
         var firstError = document.querySelector('.input-group .error');
@@ -2829,19 +2559,7 @@
 
           extraPanel.innerHTML = html;
           return;
-        } else if (tab === 'personality') {
-          // 【新增】性格解析
-          if (_currentMaleBazi && _currentFemaleBazi) {
-            extraPanel.innerHTML = renderPersonalityPanel(
-              _currentMaleBazi, _currentFemaleBazi,
-              _currentMaleName, _currentFemaleName,
-              _currentMaleGender, _currentFemaleGender
-            );
-          } else {
-            extraPanel.innerHTML = '⚠️ 请先点击「合婚 · 八步演算」获取八字数据，然后查看性格解析。';
-          }
-          return;
-        }
+		}
         extraPanel.textContent = content;
         extraPanel.innerHTML = extraPanel.textContent.replace(/【([^】]+)】/g, '<span class="label">$1</span>');
       }
@@ -2895,14 +2613,6 @@
             
             var maleBazi = getBazi(mY, mM, mD, mH, maleGender, maleCal);
             var femaleBazi = getBazi(fY, fM, fD, fH, femaleGender, femaleCal);
-
-            // 保存当前八字数据供性格解析使用
-            _currentMaleBazi = maleBazi;
-            _currentFemaleBazi = femaleBazi;
-            _currentMaleName = maleName;
-            _currentFemaleName = femaleName;
-            _currentMaleGender = maleGender;
-            _currentFemaleGender = femaleGender;
 
             var result = eightSteps(maleBazi, femaleBazi, mY, fY, maleName, femaleName, maleGender, femaleGender);
             renderSteps(result.steps, maleName, femaleName, result.grade);
