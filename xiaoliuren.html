@@ -3,10 +3,10 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>小六壬 · 全场景演算</title>
+  <title>小六壬 · 全功能版</title>
   <style>
     /* ============================================================
-    第1块：全局重置 & 基础样式（沿用八字合婚的深空风格）
+    第1块：全局重置 & 基础样式
     ============================================================ */
     * {
       box-sizing: border-box;
@@ -22,9 +22,10 @@
       align-items: center;
       min-height: 100vh;
       color: #c8d0e0;
+      transition: background 0.5s ease;
     }
     .container {
-      max-width: 880px;
+      max-width: 920px;
       width: 100%;
       background: rgba(255, 255, 255, 0.06);
       backdrop-filter: blur(20px);
@@ -56,13 +57,44 @@
       margin-top: 6px;
       font-weight: 300;
     }
-    /* 输入模式切换 */
+    /* ===== 顶部工具栏 ===== */
+    .toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      justify-content: flex-end;
+      margin-bottom: 16px;
+    }
+    .toolbar .btn-sm {
+      padding: 4px 16px;
+      border-radius: 30px;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      background: rgba(255, 255, 255, 0.04);
+      color: #8899bb;
+      font-size: 0.78rem;
+      cursor: pointer;
+      transition: 0.2s;
+      font-family: inherit;
+      letter-spacing: 0.5px;
+    }
+    .toolbar .btn-sm:hover {
+      background: rgba(60, 120, 255, 0.15);
+      border-color: rgba(60, 120, 255, 0.3);
+      color: #8ab4ff;
+    }
+    .toolbar .btn-sm.active {
+      background: rgba(60, 120, 255, 0.2);
+      border-color: #8ab4ff;
+      color: #8ab4ff;
+    }
+    /* ===== 模式切换 ===== */
     .mode-toggle {
       display: flex;
       gap: 12px;
       align-items: center;
       justify-content: center;
       margin-bottom: 16px;
+      flex-wrap: wrap;
     }
     .mode-toggle label {
       display: flex;
@@ -71,7 +103,7 @@
       font-weight: 400;
       font-size: 0.92rem;
       cursor: pointer;
-      color: #aabbdd;
+      color: #8899bb;
       padding: 4px 16px;
       border-radius: 30px;
       border: 1px solid rgba(255, 255, 255, 0.08);
@@ -83,11 +115,9 @@
       background: rgba(60, 120, 255, 0.12);
       color: #8ab4ff;
     }
-    .mode-toggle input[type="radio"] {
-      display: none;
-    }
-    /* 暗数模式输入区 */
-    .dark-number-input {
+    .mode-toggle input[type="radio"] { display: none; }
+    /* ===== 输入区 ===== */
+    .input-grid, .dark-number-input, .zhiri-input {
       display: none;
       grid-template-columns: 1fr 1fr 1fr;
       gap: 16px;
@@ -97,117 +127,7 @@
       margin-bottom: 16px;
       border: 1px solid rgba(255, 255, 255, 0.06);
     }
-    .dark-number-input.active {
-      display: grid;
-    }
-    .dark-number-input .number-input-wrapper {
-      display: flex;
-      align-items: center;
-      gap: 0;
-      background: rgba(255, 255, 255, 0.05);
-      border-radius: 40px;
-      border: 1px solid rgba(255, 255, 255, 0.15);
-      overflow: hidden;
-      transition: 0.25s ease;
-      width: 100%;
-    }
-    .dark-number-input .number-input-wrapper:hover {
-      border-color: rgba(60, 120, 255, 0.45);
-      box-shadow: 0 0 20px rgba(60, 120, 255, 0.12);
-    }
-    .dark-number-input .number-input-wrapper:focus-within {
-      border-color: rgba(100, 180, 255, 0.4);
-      box-shadow: 0 0 25px rgba(60, 120, 255, 0.20), 0 0 50px rgba(60, 120, 255, 0.06);
-    }
-    .dark-number-input .number-input-wrapper input[type="number"] {
-      flex: 1;
-      border: none;
-      background: transparent;
-      text-align: center;
-      padding: 10px 4px;
-      color: #e8edf5;
-      font-size: 1rem;
-      font-family: inherit;
-      outline: none;
-      -moz-appearance: textfield;
-      min-width: 30px;
-      width: 100%;
-    }
-    .dark-number-input .number-input-wrapper input[type="number"]::-webkit-inner-spin-button,
-    .dark-number-input .number-input-wrapper input[type="number"]::-webkit-outer-spin-button {
-      -webkit-appearance: none;
-      margin: 0;
-    }
-    .dark-number-input .num-btn {
-      background: rgba(255, 255, 255, 0.06);
-      border: none;
-      color: #8ab4ff;
-      font-size: 1.1rem;
-      font-weight: 600;
-      width: 32px;
-      height: 40px;
-      cursor: pointer;
-      transition: 0.2s;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      user-select: none;
-      font-family: inherit;
-      line-height: 1;
-      flex-shrink: 0;
-    }
-    .dark-number-input .num-btn:hover {
-      background: rgba(60, 120, 255, 0.2);
-    }
-    .dark-number-input .num-btn:active {
-      background: rgba(60, 120, 255, 0.35);
-      transform: scale(0.92);
-    }
-    .dark-number-input .num-btn-minus {
-      border-radius: 40px 0 0 40px;
-      padding-left: 2px;
-    }
-    .dark-number-input .num-btn-plus {
-      border-radius: 0 40px 40px 0;
-      padding-right: 2px;
-    }
-    .dark-number-input .number-input-wrapper input.error {
-      color: #ff6b6b;
-    }
-    .dark-number-input .input-group {
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-      min-width: 0;
-    }
-    .dark-number-input .input-group label {
-      font-size: 0.95rem;
-      font-weight: 500;
-      color: #aabbdd;
-      letter-spacing: 1px;
-      margin-left: 6px;
-    }
-    .dark-number-input .input-error {
-      color: #ff6b6b;
-      font-size: 0.78rem;
-      margin-left: 10px;
-      margin-top: 2px;
-      min-height: 18px;
-    }
-    /* 输入区 – 三列一行，每列独立 */
-    .input-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr 1fr;
-      gap: 16px;
-      background: rgba(255, 255, 255, 0.04);
-      padding: 20px 18px;
-      border-radius: 28px;
-      margin-bottom: 16px;
-      border: 1px solid rgba(255, 255, 255, 0.06);
-    }
-    .input-grid.hidden {
-      display: none;
-    }
+    .input-grid.active, .dark-number-input.active, .zhiri-input.active { display: grid; }
     .input-group {
       display: flex;
       flex-direction: column;
@@ -217,11 +137,10 @@
     .input-group label {
       font-size: 0.95rem;
       font-weight: 500;
-      color: #aabbdd;
+      color: #8899bb;
       letter-spacing: 1px;
       margin-left: 6px;
     }
-    /* ---- 数字输入框包装器（带 +/- 按钮） ---- */
     .number-input-wrapper {
       display: flex;
       align-items: center;
@@ -278,25 +197,11 @@
       line-height: 1;
       flex-shrink: 0;
     }
-    .num-btn:hover {
-      background: rgba(60, 120, 255, 0.2);
-    }
-    .num-btn:active {
-      background: rgba(60, 120, 255, 0.35);
-      transform: scale(0.92);
-    }
-    .num-btn-minus {
-      border-radius: 40px 0 0 40px;
-      padding-left: 2px;
-    }
-    .num-btn-plus {
-      border-radius: 0 40px 40px 0;
-      padding-right: 2px;
-    }
-    .number-input-wrapper input.error {
-      color: #ff6b6b;
-    }
-    /* ---- 下拉框：默认与月/日一致，悬停/聚焦时发光 ---- */
+    .num-btn:hover { background: rgba(60, 120, 255, 0.2); }
+    .num-btn:active { background: rgba(60, 120, 255, 0.35); transform: scale(0.92); }
+    .num-btn-minus { border-radius: 40px 0 0 40px; padding-left: 2px; }
+    .num-btn-plus { border-radius: 0 40px 40px 0; padding-right: 2px; }
+    .number-input-wrapper input.error { color: #ff6b6b; }
     .input-group select {
       padding: 10px 38px 10px 14px;
       border: 1px solid rgba(255, 255, 255, 0.25) !important;
@@ -315,44 +220,13 @@
       background-position: right 14px center;
       cursor: pointer;
     }
-    .input-group select:hover {
-      border-color: rgba(60, 120, 255, 0.55) !important;
-      box-shadow: 0 0 20px rgba(60, 120, 255, 0.15);
-    }
-    .input-group select:focus {
-      border-color: rgba(100, 180, 255, 0.7) !important;
-      box-shadow: 0 0 25px rgba(60, 120, 255, 0.25), 0 0 50px rgba(60, 120, 255, 0.08);
-      background: rgba(255, 255, 255, 0.07);
-    }
-    .input-group select option {
-      background: #0d1b2a;
-      color: #c8d0e0;
-      padding: 8px 12px;
-      border: none;
-    }
-    .input-group select option:hover,
-    .input-group select option:checked {
-      background: rgba(60, 120, 255, 0.20);
-      color: #8ab4ff;
-    }
-    .input-group select.error {
-      border-color: rgba(255, 80, 80, 0.5);
-      box-shadow: 0 0 20px rgba(255, 80, 80, 0.15);
-    }
-    .input-error {
-      color: #ff6b6b;
-      font-size: 0.78rem;
-      margin-left: 10px;
-      margin-top: 2px;
-      min-height: 18px;
-    }
-    /* 列内辅助按钮 */
-    .inline-actions {
-      display: flex;
-      gap: 6px;
-      margin-top: 4px;
-      flex-wrap: wrap;
-    }
+    .input-group select:hover { border-color: rgba(60, 120, 255, 0.55) !important; box-shadow: 0 0 20px rgba(60, 120, 255, 0.15); }
+    .input-group select:focus { border-color: rgba(100, 180, 255, 0.7) !important; box-shadow: 0 0 25px rgba(60, 120, 255, 0.25), 0 0 50px rgba(60, 120, 255, 0.08); background: rgba(255, 255, 255, 0.07); }
+    .input-group select option { background: #0d1b2a; color: #c8d0e0; padding: 8px 12px; border: none; }
+    .input-group select option:hover, .input-group select option:checked { background: rgba(60, 120, 255, 0.20); color: #8ab4ff; }
+    .input-group select.error { border-color: rgba(255, 80, 80, 0.5) !important; box-shadow: 0 0 20px rgba(255, 80, 80, 0.15); }
+    .input-error { color: #ff6b6b; font-size: 0.78rem; margin-left: 10px; margin-top: 2px; min-height: 18px; }
+    .inline-actions { display: flex; gap: 6px; margin-top: 4px; flex-wrap: wrap; }
     .inline-actions .btn-inline {
       padding: 4px 12px;
       border-radius: 30px;
@@ -366,12 +240,39 @@
       letter-spacing: 0.3px;
       white-space: nowrap;
     }
-    .inline-actions .btn-inline:hover {
-      background: rgba(60, 120, 255, 0.15);
-      border-color: rgba(60, 120, 255, 0.25);
+    .inline-actions .btn-inline:hover { background: rgba(60, 120, 255, 0.15); border-color: rgba(60, 120, 255, 0.25); color: #c8d0e0; }
+    /* ===== 择日专用 ===== */
+    .zhiri-input .input-group select { padding: 10px 14px; background-image: none; }
+    .zhiri-result {
+      margin-top: 12px;
+      padding: 12px 16px;
+      background: rgba(255, 255, 255, 0.03);
+      border-radius: 20px;
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      font-size: 0.95rem;
+      line-height: 1.9;
       color: #c8d0e0;
     }
-    /* 场景选择器 */
+    .zhiri-result .good { color: #66bb6a; }
+    .zhiri-result .bad { color: #ff6b6b; }
+    .zhiri-result .highlight { color: #8ab4ff; font-weight: 600; }
+    .zhiri-result .day-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(90px, 1fr));
+      gap: 6px;
+      margin-top: 8px;
+    }
+    .zhiri-result .day-grid .day-card {
+      padding: 6px 8px;
+      border-radius: 12px;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      text-align: center;
+    }
+    .zhiri-result .day-grid .day-card .d-day { font-weight: 600; color: #e8edf5; }
+    .zhiri-result .day-grid .day-card .d-gong { font-size: 0.75rem; }
+    .zhiri-result .day-grid .day-card .d-score { font-size: 0.65rem; color: #8899bb; }
+    /* ===== 场景选择器 ===== */
     .scene-selector {
       display: flex;
       flex-wrap: wrap;
@@ -384,25 +285,16 @@
       border-radius: 40px;
       border: 1px solid rgba(255, 255, 255, 0.10);
       background: rgba(255, 255, 255, 0.04);
-      color: #aabbdd;
+      color: #8899bb;
       font-size: 0.9rem;
       cursor: pointer;
       transition: 0.2s;
       font-family: inherit;
       letter-spacing: 0.5px;
     }
-    .scene-selector .btn-scene:hover {
-      background: rgba(60, 120, 255, 0.15);
-      border-color: rgba(60, 120, 255, 0.3);
-      color: #e8edf5;
-    }
-    .scene-selector .btn-scene.active {
-      background: rgba(60, 120, 255, 0.20);
-      border-color: rgba(60, 120, 255, 0.4);
-      color: #8ab4ff;
-      box-shadow: 0 0 12px rgba(60, 120, 255, 0.08);
-    }
-    /* 主操作按钮 */
+    .scene-selector .btn-scene:hover { background: rgba(60, 120, 255, 0.15); border-color: rgba(60, 120, 255, 0.3); color: #8ab4ff; }
+    .scene-selector .btn-scene.active { background: rgba(60, 120, 255, 0.20); border-color: rgba(60, 120, 255, 0.4); color: #8ab4ff; box-shadow: 0 0 12px rgba(60, 120, 255, 0.08); }
+    /* ===== 主操作按钮 ===== */
     .action-bar {
       display: flex;
       flex-wrap: wrap;
@@ -434,30 +326,12 @@
       box-shadow: 0 4px 0 rgba(30, 80, 200, 0.3);
       border-color: rgba(60, 120, 255, 0.25);
     }
-    .btn-primary:hover {
-      background: rgba(60, 120, 255, 0.30);
-      transform: translateY(-2px);
-      box-shadow: 0 6px 0 rgba(30, 80, 200, 0.4);
-      border-color: rgba(60, 120, 255, 0.4);
-    }
-    .btn-primary:active {
-      transform: translateY(4px);
-      box-shadow: 0 1px 0 rgba(30, 80, 200, 0.3);
-    }
-    .btn-secondary {
-      background: rgba(255, 255, 255, 0.04);
-      box-shadow: 0 4px 0 rgba(0, 0, 0, 0.2);
-    }
-    .btn-secondary:hover {
-      background: rgba(255, 255, 255, 0.08);
-      transform: translateY(-2px);
-    }
-    .btn:disabled {
-      opacity: 0.5;
-      cursor: not-allowed;
-      transform: none !important;
-    }
-    /* 辅助按钮行 */
+    .btn-primary:hover { background: rgba(60, 120, 255, 0.30); transform: translateY(-2px); box-shadow: 0 6px 0 rgba(30, 80, 200, 0.4), 0 0 40px rgba(60, 120, 255, 0.10); border-color: rgba(60, 120, 255, 0.4); }
+    .btn-primary:active { transform: translateY(4px); box-shadow: 0 1px 0 rgba(30, 80, 200, 0.3); }
+    .btn-secondary { background: rgba(255, 255, 255, 0.04); box-shadow: 0 4px 0 rgba(0, 0, 0, 0.2); }
+    .btn-secondary:hover { background: rgba(255, 255, 255, 0.08); transform: translateY(-2px); }
+    .btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none !important; }
+    /* ===== 辅助按钮行 ===== */
     .action-row {
       display: flex;
       flex-wrap: wrap;
@@ -473,10 +347,8 @@
       max-width: none;
       white-space: nowrap;
     }
-    .action-row .btn.hidden {
-      display: none;
-    }
-    /* 结果展示 */
+    .action-row .btn.hidden { display: none; }
+    /* ===== 结果展示 ===== */
     .result-container {
       margin: 20px 0 12px;
       background: rgba(255, 255, 255, 0.03);
@@ -492,9 +364,7 @@
       border-left: 6px solid rgba(60, 120, 255, 0.3);
       transition: 0.15s;
     }
-    .result-item:last-child {
-      margin-bottom: 0;
-    }
+    .result-item:last-child { margin-bottom: 0; }
     .result-header {
       display: flex;
       align-items: baseline;
@@ -511,11 +381,7 @@
       line-height: 28px;
       letter-spacing: 1px;
     }
-    .result-title {
-      font-weight: 600;
-      font-size: 1.2rem;
-      color: #e8edf5;
-    }
+    .result-title { font-weight: 600; font-size: 1.2rem; color: #e8edf5; }
     .result-badge {
       font-size: 0.75rem;
       background: rgba(255, 255, 255, 0.06);
@@ -526,7 +392,7 @@
     }
     .result-content {
       margin-top: 10px;
-      font-size: 0.98rem;
+      font-size: 0.95rem;
       line-height: 1.8;
       color: #c8d0e0;
       background: rgba(255, 255, 255, 0.03);
@@ -535,12 +401,8 @@
       border: 1px solid rgba(255, 255, 255, 0.06);
       white-space: pre-wrap;
       word-break: break-word;
-      font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
     }
-    .result-content .label {
-      font-weight: 600;
-      color: #8ab4ff;
-    }
+    .result-content .label { font-weight: 600; color: #8ab4ff; }
     .result-content .scene-interp {
       color: #e8edf5;
       background: rgba(60, 120, 255, 0.08);
@@ -549,19 +411,33 @@
       display: inline-block;
       margin-top: 4px;
     }
-    /* 吉凶星级 */
-    .stars {
-      font-size: 1.4rem;
-      letter-spacing: 2px;
-      margin-top: 2px;
+    .result-content .zhiri-full-list {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+      gap: 4px;
+      margin-top: 8px;
     }
-    .stars .star-full {
-      color: #f7d44a;
+    .result-content .zhiri-full-list .zfl-item {
+      padding: 4px 8px;
+      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      text-align: center;
+      font-size: 0.82rem;
     }
-    .stars .star-empty {
-      color: #445566;
+    .result-content .zhiri-full-list .zfl-item .zfl-day { font-weight: 600; color: #e8edf5; }
+    .result-content .zhiri-full-list .zfl-item .zfl-gong { font-size: 0.7rem; }
+    .result-content .zhiri-full-list .zfl-item.zfl-good { border-color: rgba(100, 200, 100, 0.25); }
+    .result-content .zhiri-full-list .zfl-item.zfl-bad { border-color: rgba(255, 80, 80, 0.2); }
+    .result-content .zhiri-full-list .zfl-item.zfl-neutral { border-color: rgba(255, 200, 50, 0.15); }
+    .result-content .zhiri-summary {
+      margin-bottom: 8px;
+      font-size: 0.95rem;
+      color: #8899bb;
     }
-    /* 速断口诀 */
+    .stars { font-size: 1.4rem; letter-spacing: 2px; margin-top: 2px; }
+    .stars .star-full { color: #f7d44a; }
+    .stars .star-empty { color: #445566; }
     .koujue {
       background: rgba(60, 120, 255, 0.08);
       border-radius: 16px;
@@ -571,11 +447,87 @@
       color: #c8d0e0;
       border-left: 3px solid rgba(60, 120, 255, 0.3);
     }
-    .koujue .label {
-      color: #8ab4ff;
-      font-weight: 600;
+    .koujue .label { color: #8ab4ff; font-weight: 600; }
+    /* ===== 方位吉凶 ===== */
+    .fangwei-result {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 8px;
+      margin-top: 8px;
     }
-    /* 历史记录 */
+    .fangwei-item {
+      text-align: center;
+      padding: 8px 4px;
+      border-radius: 16px;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      font-size: 0.85rem;
+    }
+    .fangwei-item .fw-name { font-weight: 600; display: block; color: #e8edf5; }
+    .fangwei-item .fw-luck { font-size: 0.75rem; display: block; margin-top: 2px; }
+    .fangwei-item.fw-good { border-color: rgba(100, 200, 100, 0.3); }
+    .fangwei-item.fw-bad { border-color: rgba(255, 80, 80, 0.3); }
+    .fangwei-item.fw-neutral { border-color: rgba(255, 200, 50, 0.2); }
+    .fangwei-item.active { border-color: #8ab4ff !important; background: rgba(60, 120, 255, 0.15); }
+    /* ===== 详细断语 ===== */
+    .detail-section {
+      margin-top: 12px;
+      padding: 12px 16px;
+      background: rgba(255, 255, 255, 0.03);
+      border-radius: 20px;
+      border: 1px solid rgba(255, 255, 255, 0.06);
+    }
+    .detail-section .detail-title {
+      font-weight: 600;
+      color: #8ab4ff;
+      margin-bottom: 6px;
+      font-size: 0.95rem;
+    }
+    .detail-section .detail-item {
+      padding: 4px 0;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+      font-size: 0.92rem;
+      color: #c8d0e0;
+    }
+    .detail-section .detail-item:last-child { border-bottom: none; }
+    .detail-section .detail-item .d-label { color: #8899bb; font-size: 0.82rem; }
+    /* ===== 六宫详解 ===== */
+    .extra-detail {
+      margin-top: 18px;
+      background: rgba(255, 255, 255, 0.03);
+      border-radius: 28px;
+      padding: 16px 18px 18px;
+      border: 1px solid rgba(255, 255, 255, 0.06);
+    }
+    .extra-detail .extra-title {
+      text-align: center;
+      font-size: 1.1rem;
+      font-weight: 500;
+      color: #8ab4ff;
+      letter-spacing: 3px;
+      margin-bottom: 14px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+    }
+    .extra-detail .extra-panel {
+      background: rgba(255, 255, 255, 0.03);
+      border-radius: 24px;
+      padding: 2px 16px;
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      font-size: 0.98rem;
+      line-height: 1.8;
+      color: #c8d0e0;
+      max-height: 400px;
+      overflow-y: auto;
+      scrollbar-width: thin;
+      scrollbar-color: rgba(60, 120, 255, 0.3) transparent;
+    }
+    .extra-detail .extra-panel::-webkit-scrollbar { width: 6px; }
+    .extra-detail .extra-panel::-webkit-scrollbar-track { background: transparent; border-radius: 24px; }
+    .extra-detail .extra-panel::-webkit-scrollbar-thumb { background: rgba(60, 120, 255, 0.3); border-radius: 12px; border: 2px solid transparent; background-clip: padding-box; }
+    .extra-detail .extra-panel::-webkit-scrollbar-thumb:hover { background: rgba(60, 120, 255, 0.5); }
+    .extra-detail .extra-panel .label { font-weight: 600; color: #8ab4ff; }
+    /* ===== 历史记录 ===== */
     .history-section {
       margin-top: 18px;
       background: rgba(255, 255, 255, 0.03);
@@ -607,27 +559,11 @@
       transition: 0.2s;
       font-family: inherit;
     }
-    .history-section .history-title .clear-btn:hover {
-      background: rgba(255, 80, 80, 0.15);
-      border-color: rgba(255, 80, 80, 0.2);
-      color: #ff6b6b;
-    }
-    .history-list {
-      max-height: 200px;
-      overflow-y: auto;
-      scrollbar-width: thin;
-      scrollbar-color: rgba(60, 120, 255, 0.3) transparent;
-    }
-    .history-list::-webkit-scrollbar {
-      width: 4px;
-    }
-    .history-list::-webkit-scrollbar-track {
-      background: transparent;
-    }
-    .history-list::-webkit-scrollbar-thumb {
-      background: rgba(60, 120, 255, 0.3);
-      border-radius: 10px;
-    }
+    .history-section .history-title .clear-btn:hover { background: rgba(255, 80, 80, 0.15); border-color: rgba(255, 80, 80, 0.2); color: #ff6b6b; }
+    .history-list { max-height: 200px; overflow-y: auto; scrollbar-width: thin; scrollbar-color: rgba(60, 120, 255, 0.3) transparent; }
+    .history-list::-webkit-scrollbar { width: 4px; }
+    .history-list::-webkit-scrollbar-track { background: transparent; }
+    .history-list::-webkit-scrollbar-thumb { background: rgba(60, 120, 255, 0.3); border-radius: 10px; }
     .history-item {
       display: flex;
       justify-content: space-between;
@@ -637,95 +573,15 @@
       font-size: 0.88rem;
       color: #c8d0e0;
     }
-    .history-item:last-child {
-      border-bottom: none;
-    }
-    .history-item .h-left {
-      display: flex;
-      gap: 12px;
-      align-items: center;
-    }
-    .history-item .h-left .h-gong {
-      color: #8ab4ff;
-      font-weight: 600;
-    }
-    .history-item .h-left .h-input {
-      color: #8899bb;
-      font-size: 0.8rem;
-    }
-    .history-item .h-luck {
-      font-size: 0.8rem;
-      padding: 2px 12px;
-      border-radius: 20px;
-    }
-    .history-item .h-luck.luck-吉 {
-      background: rgba(100, 200, 100, 0.15);
-      color: #66bb6a;
-    }
-    .history-item .h-luck.luck-凶 {
-      background: rgba(255, 80, 80, 0.15);
-      color: #ff6b6b;
-    }
-    .history-empty {
-      text-align: center;
-      color: #556688;
-      font-size: 0.9rem;
-      padding: 20px 0;
-    }
-    /* 六宫详解 */
-    .extra-detail {
-      margin-top: 18px;
-      background: rgba(255, 255, 255, 0.03);
-      border-radius: 28px;
-      padding: 16px 18px 18px;
-      border: 1px solid rgba(255, 255, 255, 0.06);
-    }
-    .extra-detail .extra-title {
-      text-align: center;
-      font-size: 1.1rem;
-      font-weight: 500;
-      color: #8ab4ff;
-      letter-spacing: 3px;
-      margin-bottom: 14px;
-      padding-bottom: 10px;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.06);
-    }
-    .extra-detail .extra-panel {
-      background: rgba(255, 255, 255, 0.03);
-      border-radius: 24px;
-      padding: 2px 16px;
-      border: 1px solid rgba(255, 255, 255, 0.06);
-      font-size: 0.98rem;
-      line-height: 1.8;
-      color: #c8d0e0;
-      white-space: pre-wrap;
-      word-break: break-word;
-      font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
-      max-height: 400px;
-      overflow-y: auto;
-      scrollbar-width: thin;
-      scrollbar-color: rgba(60, 120, 255, 0.3) transparent;
-    }
-    .extra-detail .extra-panel::-webkit-scrollbar {
-      width: 6px;
-    }
-    .extra-detail .extra-panel::-webkit-scrollbar-track {
-      background: transparent;
-      border-radius: 24px;
-    }
-    .extra-detail .extra-panel::-webkit-scrollbar-thumb {
-      background: rgba(60, 120, 255, 0.3);
-      border-radius: 12px;
-      border: 2px solid transparent;
-      background-clip: padding-box;
-    }
-    .extra-detail .extra-panel::-webkit-scrollbar-thumb:hover {
-      background: rgba(60, 120, 255, 0.5);
-    }
-    .extra-detail .extra-panel .label {
-      font-weight: 600;
-      color: #8ab4ff;
-    }
+    .history-item:last-child { border-bottom: none; }
+    .history-item .h-left { display: flex; gap: 12px; align-items: center; }
+    .history-item .h-left .h-gong { color: #8ab4ff; font-weight: 600; }
+    .history-item .h-left .h-input { color: #8899bb; font-size: 0.8rem; }
+    .history-item .h-luck { font-size: 0.8rem; padding: 2px 12px; border-radius: 20px; }
+    .history-item .h-luck.luck-吉 { background: rgba(100, 200, 100, 0.15); color: #66bb6a; }
+    .history-item .h-luck.luck-凶 { background: rgba(255, 80, 80, 0.15); color: #ff6b6b; }
+    .history-empty { text-align: center; color: #8899bb; font-size: 0.9rem; padding: 20px 0; }
+    /* ===== 摘要 ===== */
     .summary-line {
       margin-top: 22px;
       padding: 14px 22px;
@@ -747,8 +603,7 @@
       padding-top: 16px;
       flex-shrink: 0;
     }
-
-    /* 六宫掌诀图 */
+    /* ===== 六宫掌诀图 ===== */
     .zhangjue-section {
       margin-top: 18px;
       background: rgba(255, 255, 255, 0.03);
@@ -781,288 +636,374 @@
       border: 1px solid rgba(255, 255, 255, 0.06);
       transition: 0.2s;
       font-size: 0.85rem;
+      cursor: default;
     }
-    .zhangjue-item .zj-name {
-      font-weight: 600;
-      font-size: 1rem;
-      display: block;
-    }
-    .zhangjue-item .zj-luck {
-      font-size: 0.7rem;
-      display: block;
-      margin-top: 2px;
-    }
+    .zhangjue-item .zj-name { font-weight: 600; font-size: 1rem; display: block; color: #e8edf5; }
+    .zhangjue-item .zj-luck { font-size: 0.7rem; display: block; margin-top: 2px; }
     .zhangjue-item.zj-da-an { border-color: rgba(100, 200, 100, 0.3); }
     .zhangjue-item.zj-liu-lian { border-color: rgba(255, 200, 50, 0.3); }
     .zhangjue-item.zj-su-xi { border-color: rgba(255, 100, 100, 0.3); }
     .zhangjue-item.zj-chi-kou { border-color: rgba(255, 80, 80, 0.4); }
     .zhangjue-item.zj-xiao-ji { border-color: rgba(100, 200, 200, 0.3); }
     .zhangjue-item.zj-kong-wang { border-color: rgba(150, 100, 200, 0.3); }
+    .zhangjue-item.active {
+      transform: scale(1.08);
+      box-shadow: 0 0 30px rgba(60, 120, 255, 0.15);
+      border-color: #8ab4ff !important;
+      background: rgba(60, 120, 255, 0.12);
+    }
     .zhangjue-order {
       text-align: center;
-      color: #556688;
+      color: #8899bb;
       font-size: 0.7rem;
       margin-top: 10px;
       letter-spacing: 1px;
     }
 
-    /* 响应式 */
+    /* ===== 弹窗 ===== */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0, 0, 0, 0.7);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      z-index: 9999;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+    }
+    .modal-overlay.active { display: flex; }
+    .modal {
+      max-width: 560px;
+      width: 100%;
+      max-height: 80vh;
+      overflow-y: auto;
+      background: rgba(255, 255, 255, 0.06);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border-radius: 32px;
+      padding: 32px 28px;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6);
+      scrollbar-width: thin;
+      scrollbar-color: rgba(60, 120, 255, 0.3) transparent;
+    }
+    .modal::-webkit-scrollbar { width: 4px; }
+    .modal::-webkit-scrollbar-track { background: transparent; }
+    .modal::-webkit-scrollbar-thumb { background: rgba(60, 120, 255, 0.3); border-radius: 10px; }
+    .modal .modal-title {
+      font-size: 1.5rem;
+      font-weight: 500;
+      color: #e8edf5;
+      text-align: center;
+      margin-bottom: 16px;
+      letter-spacing: 2px;
+    }
+    .modal .modal-close {
+      display: block;
+      margin: 16px auto 0;
+      padding: 8px 32px;
+      border-radius: 40px;
+      border: 1px solid rgba(255, 255, 255, 0.10);
+      background: rgba(255, 255, 255, 0.06);
+      color: #8899bb;
+      font-size: 0.9rem;
+      cursor: pointer;
+      transition: 0.2s;
+      font-family: inherit;
+    }
+    .modal .modal-close:hover { background: rgba(60, 120, 255, 0.15); color: #8ab4ff; }
+    .modal .modal-content {
+      color: #c8d0e0;
+      line-height: 2;
+      font-size: 0.98rem;
+    }
+    .modal .modal-content .highlight { color: #8ab4ff; font-weight: 600; }
+    .modal .modal-content .code-block {
+      background: rgba(0, 0, 0, 0.3);
+      padding: 12px 16px;
+      border-radius: 16px;
+      font-family: 'Consolas', monospace;
+      font-size: 0.9rem;
+      margin: 8px 0;
+      color: #c8d0e0;
+      border: 1px solid rgba(255, 255, 255, 0.06);
+    }
+    /* ===== 模式容器：用于隐藏非当前模式的内容 ===== */
+    .mode-content {
+      display: block;
+    }
+    .mode-content.hidden {
+      display: none !important;
+    }
+    /* ===== 每个模式的结果容器独立缓存 ===== */
+    .mode-result {
+      display: none;
+    }
+    .mode-result.active {
+      display: block;
+    }
+
+    /* ===== 响应式 ===== */
     @media (max-width: 820px) {
-      .input-grid, .dark-number-input {
-        grid-template-columns: 1fr 1fr 1fr;
-        gap: 12px;
-        padding: 16px 14px;
-      }
-      .container {
-        padding: 20px 16px;
-      }
-      .btn {
-        min-width: 120px;
-        max-width: 100%;
-        flex: 1 1 100%;
-        white-space: normal;
-        padding: 10px 20px;
-        font-size: 1rem;
-      }
-      .inline-actions .btn-inline {
-        font-size: 0.7rem;
-        padding: 3px 10px;
-      }
-      .num-btn {
-        width: 28px;
-        height: 36px;
-        font-size: 1rem;
-      }
-      .number-input-wrapper input[type="number"] {
-        padding: 8px 4px;
-        font-size: 0.9rem;
-      }
-      .zhangjue-grid {
-        max-width: 300px;
-      }
-      .zhangjue-item {
-        padding: 8px 4px;
-        font-size: 0.75rem;
-      }
-      .zhangjue-item .zj-name {
-        font-size: 0.85rem;
-      }
-      .action-row .btn {
-        font-size: 0.82rem;
-        padding: 5px 16px;
-      }
+      .input-grid, .dark-number-input, .zhiri-input { grid-template-columns: 1fr 1fr 1fr; gap: 12px; padding: 16px 14px; }
+      .container { padding: 20px 16px; }
+      .btn { min-width: 120px; max-width: 100%; flex: 1 1 100%; white-space: normal; padding: 10px 20px; font-size: 1rem; }
+      .num-btn { width: 28px; height: 36px; font-size: 1rem; }
+      .number-input-wrapper input[type="number"] { padding: 8px 4px; font-size: 0.9rem; }
+      .fangwei-result { grid-template-columns: repeat(2, 1fr); }
+      .zhiri-result .day-grid { grid-template-columns: repeat(auto-fill, minmax(80px, 1fr)); }
+      .result-content .zhiri-full-list { grid-template-columns: repeat(auto-fill, minmax(80px, 1fr)); }
     }
     @media (max-width: 640px) {
-      .input-grid, .dark-number-input {
-        grid-template-columns: 1fr;
-        gap: 10px;
-        padding: 14px 12px;
-      }
-      .container {
-        padding: 16px 12px;
-      }
-      .result-item {
-        padding: 14px 14px;
-      }
-      .inline-actions {
-        justify-content: flex-start;
-      }
-      .scene-selector .btn-scene {
-        padding: 4px 12px;
-        font-size: 0.8rem;
-      }
-      .num-btn {
-        width: 26px;
-        height: 34px;
-        font-size: 0.9rem;
-      }
-      .number-input-wrapper input[type="number"] {
-        padding: 6px 4px;
-        font-size: 0.85rem;
-      }
-      .zhangjue-grid {
-        max-width: 260px;
-        gap: 6px;
-      }
-      .zhangjue-item {
-        padding: 6px 3px;
-        font-size: 0.7rem;
-      }
-      .zhangjue-item .zj-name {
-        font-size: 0.8rem;
-      }
-      .mode-toggle label {
-        font-size: 0.8rem;
-        padding: 3px 12px;
-      }
-      .action-row {
-        gap: 8px;
-      }
-      .action-row .btn {
-        font-size: 0.78rem;
-        padding: 4px 14px;
-      }
+      .input-grid, .dark-number-input, .zhiri-input { grid-template-columns: 1fr; gap: 10px; padding: 14px 12px; }
+      .container { padding: 16px 12px; }
+      .result-item { padding: 14px 14px; }
+      .num-btn { width: 26px; height: 34px; font-size: 0.9rem; }
+      .number-input-wrapper input[type="number"] { padding: 6px 4px; font-size: 0.85rem; }
+      .mode-toggle label { font-size: 0.8rem; padding: 3px 12px; }
+      .scene-selector .btn-scene { padding: 4px 12px; font-size: 0.8rem; }
+      .fangwei-result { grid-template-columns: repeat(2, 1fr); }
+      .zhangjue-grid { max-width: 260px; gap: 6px; }
+      .zhangjue-item { padding: 6px 3px; font-size: 0.7rem; }
+      .zhangjue-item .zj-name { font-size: 0.8rem; }
+      .toolbar .btn-sm { font-size: 0.7rem; padding: 3px 12px; }
+      .modal { padding: 24px 16px; }
+      .zhiri-result .day-grid { grid-template-columns: repeat(auto-fill, minmax(70px, 1fr)); }
+      .result-content .zhiri-full-list { grid-template-columns: repeat(auto-fill, minmax(70px, 1fr)); }
     }
   </style>
 </head>
 <body>
   <div class="container" id="app">
-    <h1>🌀 小六壬 · 全场景演算 <small>六宫断事 · 吉凶分明</small></h1>
+    <h1>🌀 小六壬 · 全功能版 <small>六宫断事 · 吉凶分明 · 万象皆备</small></h1>
 
-    <!-- 模式切换 -->
+    <!-- ===== 工具栏 ===== -->
+    <div class="toolbar">
+      <button class="btn-sm" id="aboutToggle">📜 小六壬源流</button>
+    </div>
+
+    <!-- ===== 模式切换 ===== -->
     <div class="mode-toggle" id="modeToggle">
-      <label class="active" data-mode="datetime">
-        <input type="radio" name="inputMode" value="datetime" checked> 📅 月日时
-      </label>
-      <label data-mode="darknum">
-        <input type="radio" name="inputMode" value="darknum"> 🔢 暗数（数字起卦）
-      </label>
+      <label class="active" data-mode="datetime"><input type="radio" name="inputMode" value="datetime" checked> 📅 月日时</label>
+      <label data-mode="darknum"><input type="radio" name="inputMode" value="darknum"> 🔢 暗数起卦</label>
+      <label data-mode="zhiri"><input type="radio" name="inputMode" value="zhiri"> 📆 择日</label>
     </div>
 
-    <!-- 月日时输入区 -->
-    <div class="input-grid" id="datetimeInput">
-      <div class="input-group">
-        <label>📅 月</label>
-        <div class="number-input-wrapper">
-          <button class="num-btn num-btn-minus" type="button">−</button>
-          <input type="number" id="monthInput" value="6" min="1" max="12">
-          <button class="num-btn num-btn-plus" type="button">+</button>
+    <!-- ===== 月日时输入区 ===== -->
+    <div class="mode-content active" id="datetimeMode">
+      <div class="input-grid active" id="datetimeInput">
+        <div class="input-group"><label>📅 月</label>
+          <div class="number-input-wrapper">
+            <button class="num-btn num-btn-minus" type="button">−</button>
+            <input type="number" id="monthInput" value="6" min="1" max="12">
+            <button class="num-btn num-btn-plus" type="button">+</button>
+          </div>
+          <div class="input-error" id="monthError"></div>
+          <div class="inline-actions"><button class="btn-inline" id="randomMonthBtn">🎲 随机月</button></div>
         </div>
-        <div class="input-error" id="monthError"></div>
-        <div class="inline-actions">
-          <button class="btn-inline" id="randomMonthBtn">🎲 随机月</button>
+        <div class="input-group"><label>📆 日</label>
+          <div class="number-input-wrapper">
+            <button class="num-btn num-btn-minus" type="button">−</button>
+            <input type="number" id="dayInput" value="23" min="1" max="31">
+            <button class="num-btn num-btn-plus" type="button">+</button>
+          </div>
+          <div class="input-error" id="dayError"></div>
+          <div class="inline-actions"><button class="btn-inline" id="randomDayBtn">🎲 随机日</button></div>
         </div>
-      </div>
-      <div class="input-group">
-        <label>📆 日</label>
-        <div class="number-input-wrapper">
-          <button class="num-btn num-btn-minus" type="button">−</button>
-          <input type="number" id="dayInput" value="23" min="1" max="31">
-          <button class="num-btn num-btn-plus" type="button">+</button>
-        </div>
-        <div class="input-error" id="dayError"></div>
-        <div class="inline-actions">
-          <button class="btn-inline" id="randomDayBtn">🎲 随机日</button>
-        </div>
-      </div>
-      <div class="input-group">
-        <label>🕒 时</label>
-        <select id="hourSelect">
-          <option value="子">子时 (23-01)</option>
-          <option value="丑">丑时 (01-03)</option>
-          <option value="寅" selected>寅时 (03-05)</option>
-          <option value="卯">卯时 (05-07)</option>
-          <option value="辰">辰时 (07-09)</option>
-          <option value="巳">巳时 (09-11)</option>
-          <option value="午">午时 (11-13)</option>
-          <option value="未">未时 (13-15)</option>
-          <option value="申">申时 (15-17)</option>
-          <option value="酉">酉时 (17-19)</option>
-          <option value="戌">戌时 (19-21)</option>
-          <option value="亥">亥时 (21-23)</option>
-        </select>
-        <div class="input-error" id="hourError"></div>
-        <div class="inline-actions">
-          <button class="btn-inline" id="randomHourBtn">🎲 随机时</button>
+        <div class="input-group"><label>🕒 时</label>
+          <select id="hourSelect">
+            <option value="子">子时 (23-01)</option><option value="丑">丑时 (01-03)</option>
+            <option value="寅" selected>寅时 (03-05)</option><option value="卯">卯时 (05-07)</option>
+            <option value="辰">辰时 (07-09)</option><option value="巳">巳时 (09-11)</option>
+            <option value="午">午时 (11-13)</option><option value="未">未时 (13-15)</option>
+            <option value="申">申时 (15-17)</option><option value="酉">酉时 (17-19)</option>
+            <option value="戌">戌时 (19-21)</option><option value="亥">亥时 (21-23)</option>
+          </select>
+          <div class="input-error" id="hourError"></div>
+          <div class="inline-actions"><button class="btn-inline" id="randomHourBtn">🎲 随机时</button></div>
         </div>
       </div>
-    </div>
-
-    <!-- 暗数输入区 -->
-    <div class="dark-number-input" id="darknumInput">
-      <div class="input-group">
-        <label>🔢 第一数</label>
-        <div class="number-input-wrapper">
-          <button class="num-btn num-btn-minus" type="button">−</button>
-          <input type="number" id="num1Input" value="3" min="1" max="999" maxlength="3">
-          <button class="num-btn num-btn-plus" type="button">+</button>
-        </div>
-        <div class="input-error" id="num1Error"></div>
+      <!-- 月日时模式下的辅助按钮 -->
+      <div class="action-row">
+        <button class="btn btn-secondary" id="randomAllBtn">🎲 随机全部</button>
+        <button class="btn btn-secondary" id="currentTimeBtn">🕒 当前月日时</button>
       </div>
-      <div class="input-group">
-        <label>🔢 第二数</label>
-        <div class="number-input-wrapper">
-          <button class="num-btn num-btn-minus" type="button">−</button>
-          <input type="number" id="num2Input" value="6" min="1" max="999" maxlength="3">
-          <button class="num-btn num-btn-plus" type="button">+</button>
-        </div>
-        <div class="input-error" id="num2Error"></div>
-      </div>
-      <div class="input-group">
-        <label>🔢 第三数</label>
-        <div class="number-input-wrapper">
-          <button class="num-btn num-btn-minus" type="button">−</button>
-          <input type="number" id="num3Input" value="9" min="1" max="999" maxlength="3">
-          <button class="num-btn num-btn-plus" type="button">+</button>
-        </div>
-        <div class="input-error" id="num3Error"></div>
+      <!-- 月日时模式下的场景选择器 -->
+      <div class="scene-selector" id="sceneSelector">
+        <button class="btn-scene active" data-scene="general">🔮 通用</button>
+        <button class="btn-scene" data-scene="wealth">💰 求财</button>
+        <button class="btn-scene" data-scene="lost">🔍 寻物</button>
+        <button class="btn-scene" data-scene="ask">❓ 问事</button>
+        <button class="btn-scene" data-scene="exam">📝 考试</button>
+        <button class="btn-scene" data-scene="travel">🚗 出行</button>
       </div>
     </div>
 
-    <!-- 全局辅助按钮 -->
-    <div class="action-row">
-      <button class="btn btn-secondary" id="randomAllBtn">🎲 随机全部</button>
-      <button class="btn btn-secondary" id="currentTimeBtn">🕒 当前月日时</button>
+    <!-- ===== 暗数输入区 ===== -->
+    <div class="mode-content hidden" id="darknumMode">
+      <div class="dark-number-input active" id="darknumInput">
+        <div class="input-group"><label>🔢 第一数</label>
+          <div class="number-input-wrapper">
+            <button class="num-btn num-btn-minus" type="button">−</button>
+            <input type="number" id="num1Input" value="3" min="1" max="999" maxlength="3">
+            <button class="num-btn num-btn-plus" type="button">+</button>
+          </div>
+          <div class="input-error" id="num1Error"></div>
+        </div>
+        <div class="input-group"><label>🔢 第二数</label>
+          <div class="number-input-wrapper">
+            <button class="num-btn num-btn-minus" type="button">−</button>
+            <input type="number" id="num2Input" value="6" min="1" max="999" maxlength="3">
+            <button class="num-btn num-btn-plus" type="button">+</button>
+          </div>
+          <div class="input-error" id="num2Error"></div>
+        </div>
+        <div class="input-group"><label>🔢 第三数</label>
+          <div class="number-input-wrapper">
+            <button class="num-btn num-btn-minus" type="button">−</button>
+            <input type="number" id="num3Input" value="9" min="1" max="999" maxlength="3">
+            <button class="num-btn num-btn-plus" type="button">+</button>
+          </div>
+          <div class="input-error" id="num3Error"></div>
+        </div>
+      </div>
+      <!-- 暗数模式下的辅助按钮 -->
+      <div class="action-row">
+        <button class="btn btn-secondary" id="randomAllBtnDark">🎲 随机全部</button>
+        <button class="btn btn-secondary hidden" id="currentTimeBtnDark">🕒 当前月日时</button>
+      </div>
+      <!-- 暗数模式下的场景选择器 -->
+      <div class="scene-selector" id="sceneSelectorDark">
+        <button class="btn-scene active" data-scene="general">🔮 通用</button>
+        <button class="btn-scene" data-scene="wealth">💰 求财</button>
+        <button class="btn-scene" data-scene="lost">🔍 寻物</button>
+        <button class="btn-scene" data-scene="ask">❓ 问事</button>
+        <button class="btn-scene" data-scene="exam">📝 考试</button>
+        <button class="btn-scene" data-scene="travel">🚗 出行</button>
+      </div>
     </div>
 
-    <!-- 场景选择器 -->
-    <div class="scene-selector" id="sceneSelector">
-      <button class="btn-scene active" data-scene="general">🔮 通用</button>
-      <button class="btn-scene" data-scene="wealth">💰 求财</button>
-      <button class="btn-scene" data-scene="lost">🔍 寻物</button>
-      <button class="btn-scene" data-scene="ask">❓ 问事</button>
-      <button class="btn-scene" data-scene="exam">📝 考试</button>
-      <button class="btn-scene" data-scene="travel">🚗 出行</button>
+    <!-- ===== 择日输入区 ===== -->
+    <div class="mode-content hidden" id="zhiriMode">
+      <div class="zhiri-input active" id="zhiriInput">
+        <div class="input-group"><label>📅 年份</label>
+          <div class="number-input-wrapper">
+            <button class="num-btn num-btn-minus" type="button">−</button>
+            <input type="number" id="zhiriYear" value="2026" min="2020" max="2050">
+            <button class="num-btn num-btn-plus" type="button">+</button>
+          </div>
+        </div>
+        <div class="input-group"><label>📆 月份</label>
+          <div class="number-input-wrapper">
+            <button class="num-btn num-btn-minus" type="button">−</button>
+            <input type="number" id="zhiriMonth" value="6" min="1" max="12">
+            <button class="num-btn num-btn-plus" type="button">+</button>
+          </div>
+        </div>
+        <div class="input-group"><label>📌 事项</label>
+          <select id="zhiriEvent">
+            <option value="出行">🚗 出行</option>
+            <option value="签约">📄 签约</option>
+            <option value="开业">🏪 开业</option>
+            <option value="搬家">📦 搬家</option>
+            <option value="求财">💰 求财</option>
+            <option value="探病">🏥 探病</option>
+          </select>
+        </div>
+        <div class="input-group" style="grid-column: span 3;">
+          <div class="zhiri-result" id="zhiriResult">选择年月和事项，点击「择日推演」查看吉日建议</div>
+        </div>
+      </div>
+      <!-- 择日模式下无随机按钮 -->
     </div>
 
-    <!-- 主操作按钮 -->
+    <!-- ===== 主操作按钮 ===== -->
     <div class="action-bar">
       <button class="btn btn-primary" id="calcBtn">🔮 三宫演算 (0)</button>
       <button class="btn btn-secondary" id="resetBtn">↺ 重置示例</button>
     </div>
 
-    <!-- 结果展示 -->
+    <!-- ===== 结果展示（三个模式共用一套DOM，但通过JS控制显示内容） ===== -->
     <div class="result-container" id="resultContainer">
-      <div id="resultList">
-        <!-- 动态生成三宫结果 -->
+      <!-- 月日时结果 -->
+      <div id="datetimeResult" class="mode-result active"></div>
+      <!-- 暗数结果 -->
+      <div id="darknumResult" class="mode-result"></div>
+      <!-- 择日结果 -->
+      <div id="zhiriResultContainer" class="mode-result"></div>
+    </div>
+
+    <!-- ===== 方位吉凶 ===== -->
+    <div id="fangweiContainer" style="margin-top: 12px; display: none;">
+      <div style="background:rgba(255,255,255,0.03);border-radius:28px;padding:16px 18px 18px;border:1px solid rgba(255,255,255,0.06);">
+        <div style="text-align:center;font-size:1.1rem;font-weight:500;color:#8ab4ff;letter-spacing:3px;margin-bottom:14px;padding-bottom:10px;border-bottom:1px solid rgba(255,255,255,0.06);">🧭 方位吉凶</div>
+        <div class="fangwei-result" id="fangweiResult"></div>
       </div>
     </div>
 
-    <!-- 六宫掌诀图 -->
+    <!-- ===== 详细断语 ===== -->
+    <div id="detailContainer" style="margin-top: 12px; display: none;">
+      <div style="background:rgba(255,255,255,0.03);border-radius:28px;padding:16px 18px 18px;border:1px solid rgba(255,255,255,0.06);">
+        <div style="text-align:center;font-size:1.1rem;font-weight:500;color:#8ab4ff;letter-spacing:3px;margin-bottom:14px;padding-bottom:10px;border-bottom:1px solid rgba(255,255,255,0.06);">📝 详细断语</div>
+        <div class="detail-section" id="detailResult"></div>
+      </div>
+    </div>
+
+    <!-- ===== 六宫掌诀图 ===== -->
     <div class="zhangjue-section" id="zhangjueSection">
       <div class="zhangjue-title">🖐️ 六宫掌诀图</div>
-      <div class="zhangjue-grid">
-        <div class="zhangjue-item zj-da-an"><span class="zj-name">大安</span><span class="zj-luck" style="color:#66bb6a;">大吉</span></div>
-        <div class="zhangjue-item zj-liu-lian"><span class="zj-name">留连</span><span class="zj-luck" style="color:#f7d44a;">中凶</span></div>
-        <div class="zhangjue-item zj-su-xi"><span class="zj-name">速喜</span><span class="zj-luck" style="color:#ff6b6b;">大吉</span></div>
-        <div class="zhangjue-item zj-chi-kou"><span class="zj-name">赤口</span><span class="zj-luck" style="color:#ff4444;">大凶</span></div>
-        <div class="zhangjue-item zj-xiao-ji"><span class="zj-name">小吉</span><span class="zj-luck" style="color:#4dd0e1;">上吉</span></div>
-        <div class="zhangjue-item zj-kong-wang"><span class="zj-name">空亡</span><span class="zj-luck" style="color:#b39ddb;">大凶</span></div>
+      <div class="zhangjue-grid" id="zhangjueGrid">
+        <div class="zhangjue-item zj-da-an" data-gong="大安"><span class="zj-name">大安</span><span class="zj-luck" style="color:#66bb6a;">大吉</span></div>
+        <div class="zhangjue-item zj-liu-lian" data-gong="留连"><span class="zj-name">留连</span><span class="zj-luck" style="color:#f7d44a;">中凶</span></div>
+        <div class="zhangjue-item zj-su-xi" data-gong="速喜"><span class="zj-name">速喜</span><span class="zj-luck" style="color:#ff6b6b;">大吉</span></div>
+        <div class="zhangjue-item zj-chi-kou" data-gong="赤口"><span class="zj-name">赤口</span><span class="zj-luck" style="color:#ff4444;">大凶</span></div>
+        <div class="zhangjue-item zj-xiao-ji" data-gong="小吉"><span class="zj-name">小吉</span><span class="zj-luck" style="color:#4dd0e1;">上吉</span></div>
+        <div class="zhangjue-item zj-kong-wang" data-gong="空亡"><span class="zj-name">空亡</span><span class="zj-luck" style="color:#b39ddb;">大凶</span></div>
       </div>
       <div class="zhangjue-order">大安 → 留连 → 速喜 → 赤口 → 小吉 → 空亡</div>
     </div>
 
-    <!-- 历史记录 -->
+    <!-- ===== 历史记录 ===== -->
     <div class="history-section" id="historySection">
-      <div class="history-title">
-        <span>📜 演算历史</span>
-        <button class="clear-btn" id="clearHistoryBtn">清空记录</button>
-      </div>
-      <div class="history-list" id="historyList">
-        <div class="history-empty">暂无记录，开始您的第一次演算吧</div>
-      </div>
+      <div class="history-title"><span>📜 演算历史</span><button class="clear-btn" id="clearHistoryBtn">清空记录</button></div>
+      <div class="history-list" id="historyList"><div class="history-empty">暂无记录，开始您的第一次演算吧</div></div>
     </div>
 
-    <!-- 六宫详解 -->
+    <!-- ===== 六宫详解 ===== -->
     <div class="extra-detail" id="extraDetail">
       <div class="extra-title">📖 六宫吉凶详解 · 全场景释义</div>
-      <div class="extra-panel" id="extraPanel">
-        <!-- 默认显示六宫释义 -->
+      <div class="extra-panel" id="extraPanel"></div>
+    </div>
+
+    <!-- ===== 摘要 ===== -->
+    <div id="resultSummary" class="summary-line">🌀 等待演算 ...</div>
+    <div class="footnote">✧ 小六壬 · 全功能版 ✧ 基于传统六宫，融合择日、方位、断语等实用功能</div>
+
+    <!-- ===== 弹窗：小六壬源流 ===== -->
+    <div class="modal-overlay" id="aboutModal">
+      <div class="modal">
+        <div class="modal-title">📜 小六壬源流</div>
+        <div class="modal-content">
+          <p><span class="highlight">小六壬</span>，又称"诸葛马前课"，是传统占卜术数之一，相传为三国时期诸葛亮所创。</p>
+          <p>其法以<span class="highlight">大安、留连、速喜、赤口、小吉、空亡</span>六宫为断，以月、日、时为数，取余定宫，断吉凶。</p>
+          <p style="margin-top:8px;"><span class="highlight">六宫释义：</span></p>
+          <div class="code-block">
+            🌿 大安 — 身不动时，万事安定<br>
+            🌊 留连 — 事未归时，迟缓纠缠<br>
+            🔥 速喜 — 人即至时，喜事速来<br>
+            ⚔️ 赤口 — 官事凶时，口舌是非<br>
+            💧 小吉 — 人来喜时，和合如意<br>
+            🏜️ 空亡 — 音信稀时，落空无成
+          </div>
+          <p style="margin-top:8px;">小六壬法简效宏，无需复杂排盘，随手拈来，应机而断。历代民间术士常用以决疑事、定吉凶。</p>
+          <p style="margin-top:8px;color:#8899bb;font-size:0.85rem;">📌 本工具仅供文化参考，以平和之心观世事变迁。</p>
+        </div>
+        <button class="modal-close" onclick="document.getElementById('aboutModal').classList.remove('active')">关闭</button>
       </div>
     </div>
 
-    <div id="resultSummary" class="summary-line">🌀 等待演算 ...</div>
-    <div class="footnote">✧ 小六壬 · 全场景演算 ✧ 基于传统六宫，结合求财、寻物、问事等场景解读</div>
   </div>
 
   <script>
@@ -1078,6 +1019,7 @@
       const GONG_DIRECTION = { '大安': '东方', '留连': '北方', '速喜': '南方', '赤口': '西方', '小吉': '东北', '空亡': '中央' };
       const GONG_LUCK = { '大安': '大吉', '留连': '中凶', '速喜': '大吉', '赤口': '大凶', '小吉': '上吉', '空亡': '大凶' };
       const GONG_LUCK_LEVEL = { '大安': 5, '留连': 2, '速喜': 5, '赤口': 0, '小吉': 4, '空亡': 1 };
+      const GONG_LUCK_SCORE = { '大安': 10, '留连': 4, '速喜': 9, '赤口': 1, '小吉': 8, '空亡': 0 };
 
       const KOUJUE = {
         '大安': '身不动时，五行属木，失物去不远，宅舍保安康。',
@@ -1086,6 +1028,68 @@
         '赤口': '官事凶时，五行属金，失物急去寻，行人有惊慌。',
         '小吉': '人来喜时，五行属水，失物在坤方，行人立便至。',
         '空亡': '音信稀时，五行属土，失物不可寻，行人正彷徨。'
+      };
+
+      // ===== 详细断语库 =====
+      const DETAIL_LIB = {
+        '大安': {
+          '感情': '感情稳定，和合美满，宜珍惜眼前人。',
+          '事业': '事业顺遂，宜守不宜进，稳中求成。',
+          '健康': '身心安康，小恙无忧，宜静养。',
+          '财运': '财源稳定，宜守旧业，不宜冒进。',
+          '人际': '人缘和合，贵人相助，广结善缘。',
+          '出行': '出行平安，路顺人和，诸事吉祥。'
+        },
+        '留连': {
+          '感情': '感情纠缠，反复无常，宜冷静沟通。',
+          '事业': '事业阻滞，进展缓慢，宜耐心等待。',
+          '健康': '小恙缠绵，宜及时调理，不可大意。',
+          '财运': '财运拖延，不宜投资，守财为上。',
+          '人际': '人际反复，易生误会，宜坦诚相待。',
+          '出行': '出行迟滞，或有阻碍，宜改期。'
+        },
+        '速喜': {
+          '感情': '喜事临门，桃花旺盛，宜把握良机。',
+          '事业': '事业速成，机遇涌现，宜果断行动。',
+          '健康': '身心康健，病去如风，精力充沛。',
+          '财运': '意外之财，偏财运旺，宜见好就收。',
+          '人际': '人缘旺盛，贵人相助，喜事不断。',
+          '出行': '旅途顺利，一路顺风，遇贵人。'
+        },
+        '赤口': {
+          '感情': '口舌是非，争执不断，宜忍让为先。',
+          '事业': '事业受阻，官非缠身，宜谨慎行事。',
+          '健康': '病痛缠身，宜及时就医，不可拖延。',
+          '财运': '破财之象，投资需慎，忌冲动。',
+          '人际': '人际紧张，易生争执，宜以和为贵。',
+          '出行': '出行不利，防意外，宜谨慎。'
+        },
+        '小吉': {
+          '感情': '和合如意，良缘可成，宜积极追求。',
+          '事业': '事业有成，贵人扶持，宜进取。',
+          '健康': '身心康泰，百病不侵，精力旺盛。',
+          '财运': '正财稳定，小有进账，和气生财。',
+          '人际': '人缘和谐，朋友相助，喜事连连。',
+          '出行': '一路顺风，旅途愉快，平安归来。'
+        },
+        '空亡': {
+          '感情': '感情落空，缘分未至，宜静待时机。',
+          '事业': '事多落空，不宜强求，退守为佳。',
+          '健康': '身心疲惫，宜修养调理，不可劳累。',
+          '财运': '财运不济，不宜投资，守成为主。',
+          '人际': '人缘疏离，易生误解，宜淡然处之。',
+          '出行': '出行不宜，防不测，宜改期。'
+        }
+      };
+
+      // ===== 方位吉凶映射 =====
+      const FANGWEI_MAP = {
+        '大安': { fang: '东', luck: '吉' },
+        '留连': { fang: '北', luck: '凶' },
+        '速喜': { fang: '南', luck: '吉' },
+        '赤口': { fang: '西', luck: '凶' },
+        '小吉': { fang: '东北', luck: '吉' },
+        '空亡': { fang: '中', luck: '凶' }
       };
 
       // ================================================================
@@ -1144,12 +1148,8 @@
       };
 
       const SCENE_LABEL = {
-        general: '通用',
-        wealth: '求财',
-        lost: '寻物',
-        ask: '问事',
-        exam: '考试',
-        travel: '出行'
+        general: '通用', wealth: '求财', lost: '寻物',
+        ask: '问事', exam: '考试', travel: '出行'
       };
 
       // ================================================================
@@ -1170,13 +1170,12 @@
           gong2: GONG_NAMES[dayIdx],
           gong3: GONG_NAMES[finalIdx],
           finalGong: GONG_NAMES[finalIdx],
-          index: finalIdx
+          index: finalIdx,
+          steps: [GONG_NAMES[monthIdx], GONG_NAMES[dayIdx], GONG_NAMES[finalIdx]]
         };
       }
 
-      // 暗数起卦（支持1-999）
       function xiaoLiuRenByNumbers(num1, num2, num3) {
-        // 取模运算，适配任意正整数
         var startIdx = 0;
         var idx1 = (startIdx + (num1 - 1)) % 6;
         var idx2 = (idx1 + (num2 - 1)) % 6;
@@ -1186,8 +1185,29 @@
           gong2: GONG_NAMES[idx2],
           gong3: GONG_NAMES[idx3],
           finalGong: GONG_NAMES[idx3],
-          index: idx3
+          index: idx3,
+          steps: [GONG_NAMES[idx1], GONG_NAMES[idx2], GONG_NAMES[idx3]]
         };
+      }
+
+      // ===== 择日 =====
+      function getZhiRi(year, month, event) {
+        var baseScore = { '大安': 10, '留连': 4, '速喜': 9, '赤口': 1, '小吉': 8, '空亡': 0 };
+        var eventMod = { '出行': 0, '签约': 1, '开业': 3, '搬家': 4, '求财': 6, '探病': 7 };
+        var mod = eventMod[event] || 0;
+        var days = [];
+        var maxDay = new Date(year, month, 0).getDate();
+        for (var d = 1; d <= maxDay; d++) {
+          var startIdx = 0;
+          var idx1 = (startIdx + (month - 1)) % 6;
+          var idx2 = (idx1 + (d - 1)) % 6;
+          var idx3 = (idx2 + mod) % 6;
+          var gong = GONG_NAMES[idx3];
+          var score = baseScore[gong] || 0;
+          days.push({ day: d, gong: gong, score: score, luck: GONG_LUCK[gong] });
+        }
+        days.sort(function(a, b) { return a.day - b.day; });
+        return days;
       }
 
       function getGongInfo(gongName) {
@@ -1196,7 +1216,8 @@
           wuxing: GONG_WUXING[gongName] || '未知',
           direction: GONG_DIRECTION[gongName] || '未知',
           luck: GONG_LUCK[gongName] || '未知',
-          level: GONG_LUCK_LEVEL[gongName] || 2
+          level: GONG_LUCK_LEVEL[gongName] || 2,
+          score: GONG_LUCK_SCORE[gongName] || 0
         };
       }
 
@@ -1231,27 +1252,39 @@
         return full + empty;
       }
 
+      function getDetail(gongName) {
+        return DETAIL_LIB[gongName] || DETAIL_LIB['大安'];
+      }
+
+      function getFangwei(gongName) {
+        return FANGWEI_MAP[gongName] || { fang: '中', luck: '凶' };
+      }
+
       // ================================================================
       // 第4块：历史记录
       // ================================================================
 
       var historyData = [];
+      var zhiriCount = 0;
 
       function saveHistory() {
-        try {
-          localStorage.setItem('xiaoliuren_history', JSON.stringify(historyData));
-        } catch (e) {
-          // ignore
-        }
+        try { localStorage.setItem('xiaoliuren_history', JSON.stringify(historyData)); } catch (e) {}
       }
 
-      function addHistory(inputStr, resultStr, gongName, luck) {
+      function addHistory(inputStr, resultStr, gongName, luck, isZhiri, eventLabel) {
+        var displayName;
+        if (isZhiri) {
+          displayName = '择日推演' + (++zhiriCount) + '：' + (eventLabel || '');
+        } else {
+          displayName = inputStr;
+        }
         historyData.unshift({
           time: new Date().toLocaleString(),
-          input: inputStr,
+          input: displayName,
           result: resultStr,
-          gong: gongName,
-          luck: luck
+          gong: gongName || '择日',
+          luck: luck || '吉凶参半',
+          mode: isZhiri ? 'zhiri' : (inputStr.includes('月') ? 'datetime' : 'darknum')
         });
         if (historyData.length > 50) historyData.pop();
         saveHistory();
@@ -1267,19 +1300,36 @@
         var html = '';
         historyData.forEach(function(item) {
           var luckClass = item.luck.includes('吉') ? 'luck-吉' : (item.luck.includes('凶') ? 'luck-凶' : '');
-          html += '<div class="history-item">' +
-            '<div class="h-left">' +
-            '<span class="h-gong">' + item.gong + '</span>' +
-            '<span class="h-input">' + item.input + '</span>' +
-            '</div>' +
-            '<span class="h-luck ' + luckClass + '">' + item.luck + '</span>' +
-            '</div>';
+          html += '<div class="history-item"><div class="h-left"><span class="h-gong">' + item.gong +
+            '</span><span class="h-input">' + item.input + '</span></div><span class="h-luck ' + luckClass + '">' +
+            item.luck + '</span></div>';
         });
         list.innerHTML = html;
       }
 
       function clearHistory() {
         historyData = [];
+        zhiriCount = 0;
+        saveHistory();
+        renderHistory();
+      }
+
+      function clearHistoryByMode(mode) {
+        var newData = [];
+        for (var i = 0; i < historyData.length; i++) {
+          if (historyData[i].mode !== mode) {
+            newData.push(historyData[i]);
+          }
+        }
+        if (mode === 'zhiri') {
+          zhiriCount = 0;
+          for (var j = 0; j < newData.length; j++) {
+            if (newData[j].mode === 'zhiri') {
+              zhiriCount++;
+            }
+          }
+        }
+        historyData = newData;
         saveHistory();
         renderHistory();
       }
@@ -1300,25 +1350,57 @@
       var num1Error = document.getElementById('num1Error');
       var num2Error = document.getElementById('num2Error');
       var num3Error = document.getElementById('num3Error');
+      var zhiriYear = document.getElementById('zhiriYear');
+      var zhiriMonth = document.getElementById('zhiriMonth');
+      var zhiriEvent = document.getElementById('zhiriEvent');
+      var zhiriResult = document.getElementById('zhiriResult');
       var calcBtn = document.getElementById('calcBtn');
       var resetBtn = document.getElementById('resetBtn');
-      var resultList = document.getElementById('resultList');
       var extraPanel = document.getElementById('extraPanel');
       var resultSummary = document.getElementById('resultSummary');
+      var fangweiResult = document.getElementById('fangweiResult');
+      var fangweiContainer = document.getElementById('fangweiContainer');
+      var detailResult = document.getElementById('detailResult');
+      var detailContainer = document.getElementById('detailContainer');
+
+      // 各模式的结果容器
+      var datetimeResult = document.getElementById('datetimeResult');
+      var darknumResult = document.getElementById('darknumResult');
+      var zhiriResultContainer = document.getElementById('zhiriResultContainer');
 
       var randomMonthBtn = document.getElementById('randomMonthBtn');
       var randomDayBtn = document.getElementById('randomDayBtn');
       var randomHourBtn = document.getElementById('randomHourBtn');
       var randomAllBtn = document.getElementById('randomAllBtn');
+      var randomAllBtnDark = document.getElementById('randomAllBtnDark');
       var currentTimeBtn = document.getElementById('currentTimeBtn');
       var clearHistoryBtn = document.getElementById('clearHistoryBtn');
+      var aboutToggle = document.getElementById('aboutToggle');
+
+      // 缓存各模式的最近一次结果HTML
+      var cachedResults = {
+        datetime: '',
+        darknum: '',
+        zhiri: '',
+        zhiriSummary: ''
+      };
+      var cachedSummary = {
+        datetime: '',
+        darknum: '',
+        zhiri: ''
+      };
 
       var currentScene = 'general';
-      var calcCount = 0;
       var currentMode = 'datetime';
+      // 各模式的演算次数
+      var modeCalcCount = {
+        datetime: 0,
+        darknum: 0,
+        zhiri: 0
+      };
 
       // ================================================================
-      // 数字输入框 +/- 按钮初始化（通用）
+      // 数字输入框初始化
       // ================================================================
 
       function initNumberInputs() {
@@ -1327,7 +1409,6 @@
           var minusBtn = wrapper.querySelector('.num-btn-minus');
           var plusBtn = wrapper.querySelector('.num-btn-plus');
           if (!input || !minusBtn || !plusBtn) return;
-
           var step = parseFloat(input.step) || 1;
           var min = parseFloat(input.min) !== undefined && !isNaN(parseFloat(input.min)) ? parseFloat(input.min) : -
             Infinity;
@@ -1344,12 +1425,10 @@
             input.dispatchEvent(new Event('change', { bubbles: true }));
             if (input.id === 'dayInput') updateDayMax();
           }
-
           minusBtn.addEventListener('click', function(e) { e.preventDefault();
             updateValue(-1); });
           plusBtn.addEventListener('click', function(e) { e.preventDefault();
             updateValue(1); });
-
           input.addEventListener('keydown', function(e) {
             if (e.key === 'ArrowUp') { e.preventDefault();
               updateValue(1); } else if (e.key === 'ArrowDown') { e.preventDefault();
@@ -1359,7 +1438,7 @@
       }
 
       // ================================================================
-      // 月份天数联动（月日时模式）
+      // 月份天数联动
       // ================================================================
 
       function getMaxDays(month) {
@@ -1373,61 +1452,170 @@
         var maxDays = getMaxDays(month);
         dayInput.max = maxDays;
         var currentDay = parseInt(dayInput.value);
-        if (!isNaN(currentDay) && currentDay > maxDays) {
-          dayInput.value = maxDays;
-        }
-        if (!isNaN(currentDay) && currentDay < 1) {
-          dayInput.value = 1;
+        if (!isNaN(currentDay) && currentDay > maxDays) dayInput.value = maxDays;
+        if (!isNaN(currentDay) && currentDay < 1) dayInput.value = 1;
+      }
+
+      // ================================================================
+      // 更新按钮文字（包含择日次数）
+      // ================================================================
+
+      function updateCalcBtnText() {
+        if (currentMode === 'zhiri') {
+          calcBtn.textContent = '📆 择日推演 (' + modeCalcCount.zhiri + ')';
+        } else if (currentMode === 'datetime') {
+          calcBtn.textContent = '🔮 三宫演算 (' + modeCalcCount.datetime + ')';
+        } else {
+          calcBtn.textContent = '🔮 三宫演算 (' + modeCalcCount.darknum + ')';
         }
       }
 
       // ================================================================
-      // 模式切换
+      // 模式切换（保留缓存）
       // ================================================================
 
-      document.querySelectorAll('#modeToggle label').forEach(function(label) {
-        label.addEventListener('click', function() {
-          document.querySelectorAll('#modeToggle label').forEach(function(l) { l.classList.remove('active'); });
-          this.classList.add('active');
-          currentMode = this.dataset.mode;
+      function switchMode(mode) {
+        // 先保存当前模式的结果到缓存
+        if (currentMode === 'datetime') {
+          cachedResults.datetime = datetimeResult.innerHTML;
+          cachedSummary.datetime = resultSummary.innerHTML;
+        } else if (currentMode === 'darknum') {
+          cachedResults.darknum = darknumResult.innerHTML;
+          cachedSummary.darknum = resultSummary.innerHTML;
+        } else if (currentMode === 'zhiri') {
+          cachedResults.zhiri = zhiriResultContainer.innerHTML;
+          cachedResults.zhiriSummary = zhiriResult.innerHTML;
+          cachedSummary.zhiri = resultSummary.innerHTML;
+        }
 
-          if (currentMode === 'datetime') {
-            document.getElementById('datetimeInput').classList.remove('hidden');
-            document.getElementById('darknumInput').classList.remove('active');
-            currentTimeBtn.classList.remove('hidden');
-          } else {
-            document.getElementById('datetimeInput').classList.add('hidden');
-            document.getElementById('darknumInput').classList.add('active');
-            currentTimeBtn.classList.add('hidden');
-          }
-          clearErrors();
+        currentMode = mode;
+
+        // 更新标签高亮
+        document.querySelectorAll('#modeToggle label').forEach(function(l) {
+          l.classList.toggle('active', l.dataset.mode === mode);
         });
-      });
+
+        // 隐藏所有模式内容（输入区）
+        document.querySelectorAll('.mode-content').forEach(function(el) {
+          el.classList.add('hidden');
+        });
+
+        // 更新主按钮显示当前模式的演算次数
+        updateCalcBtnText();
+
+        // 显示当前模式输入区
+        if (mode === 'datetime') {
+          document.getElementById('datetimeMode').classList.remove('hidden');
+          datetimeResult.classList.add('active');
+          darknumResult.classList.remove('active');
+          zhiriResultContainer.classList.remove('active');
+          if (cachedResults.datetime) {
+            datetimeResult.innerHTML = cachedResults.datetime;
+            resultSummary.innerHTML = cachedSummary.datetime;
+          } else {
+            datetimeResult.innerHTML = '';
+            resultSummary.innerHTML = '🌀 等待演算 ...';
+          }
+          document.getElementById('zhiriResult').innerHTML = '选择年月和事项，点击「择日推演」查看吉日建议';
+          document.getElementById('darknumInput').querySelectorAll('.input-error').forEach(function(el) { el.textContent = ''; });
+          document.getElementById('datetimeInput').querySelectorAll('.input-error').forEach(function(el) { el.textContent = ''; });
+          if (cachedResults.datetime && cachedResults.datetime.includes('月宫')) {
+            fangweiContainer.style.display = 'block';
+            detailContainer.style.display = 'block';
+            var match = datetimeResult.innerHTML.match(/得【([^】]+)】/);
+            if (match) {
+              var gong = match[1];
+              document.querySelectorAll('.zhangjue-item').forEach(function(el) {
+                el.classList.toggle('active', el.dataset.gong === gong);
+              });
+            }
+          } else {
+            fangweiContainer.style.display = 'none';
+            detailContainer.style.display = 'none';
+            document.querySelectorAll('.zhangjue-item').forEach(function(el) { el.classList.remove('active'); });
+          }
+        } else if (mode === 'darknum') {
+          document.getElementById('darknumMode').classList.remove('hidden');
+          darknumResult.classList.add('active');
+          datetimeResult.classList.remove('active');
+          zhiriResultContainer.classList.remove('active');
+          if (cachedResults.darknum) {
+            darknumResult.innerHTML = cachedResults.darknum;
+            resultSummary.innerHTML = cachedSummary.darknum;
+          } else {
+            darknumResult.innerHTML = '';
+            resultSummary.innerHTML = '🌀 等待演算 ...';
+          }
+          document.getElementById('zhiriResult').innerHTML = '选择年月和事项，点击「择日推演」查看吉日建议';
+          document.getElementById('datetimeInput').querySelectorAll('.input-error').forEach(function(el) { el.textContent = ''; });
+          document.getElementById('darknumInput').querySelectorAll('.input-error').forEach(function(el) { el.textContent = ''; });
+          if (cachedResults.darknum && cachedResults.darknum.includes('月宫')) {
+            fangweiContainer.style.display = 'block';
+            detailContainer.style.display = 'block';
+            var match = darknumResult.innerHTML.match(/得【([^】]+)】/);
+            if (match) {
+              var gong = match[1];
+              document.querySelectorAll('.zhangjue-item').forEach(function(el) {
+                el.classList.toggle('active', el.dataset.gong === gong);
+              });
+            }
+          } else {
+            fangweiContainer.style.display = 'none';
+            detailContainer.style.display = 'none';
+            document.querySelectorAll('.zhangjue-item').forEach(function(el) { el.classList.remove('active'); });
+          }
+        } else if (mode === 'zhiri') {
+          document.getElementById('zhiriMode').classList.remove('hidden');
+          zhiriResultContainer.classList.add('active');
+          datetimeResult.classList.remove('active');
+          darknumResult.classList.remove('active');
+          if (cachedResults.zhiri) {
+            zhiriResultContainer.innerHTML = cachedResults.zhiri;
+            zhiriResult.innerHTML = cachedResults.zhiriSummary || '选择年月和事项，点击「择日推演」查看吉日建议';
+            resultSummary.innerHTML = cachedSummary.zhiri;
+          } else {
+            zhiriResultContainer.innerHTML = '';
+            zhiriResult.innerHTML = '选择年月和事项，点击「择日推演」查看吉日建议';
+            resultSummary.innerHTML = '📆 请选择年月和事项，点击「择日推演」';
+          }
+          document.getElementById('datetimeInput').querySelectorAll('.input-error').forEach(function(el) { el.textContent = ''; });
+          document.getElementById('darknumInput').querySelectorAll('.input-error').forEach(function(el) { el.textContent = ''; });
+          fangweiContainer.style.display = 'none';
+          detailContainer.style.display = 'none';
+          document.querySelectorAll('.zhangjue-item').forEach(function(el) { el.classList.remove('active'); });
+        }
+
+        clearErrors();
+      }
 
       // ================================================================
       // 场景切换
       // ================================================================
 
-      document.querySelectorAll('.btn-scene').forEach(function(btn) {
-        btn.addEventListener('click', function() {
-          document.querySelectorAll('.btn-scene').forEach(function(b) { b.classList.remove('active'); });
-          this.classList.add('active');
-          currentScene = this.dataset.scene;
-          if (resultList.children.length > 0) {
-            renderResult(false);
-          } else {
-            updateExtraPanel(currentScene);
-          }
+      function initSceneButtons() {
+        document.querySelectorAll('.scene-selector .btn-scene').forEach(function(btn) {
+          btn.addEventListener('click', function() {
+            var parent = this.closest('.scene-selector');
+            parent.querySelectorAll('.btn-scene').forEach(function(b) { b.classList.remove('active'); });
+            this.classList.add('active');
+            currentScene = this.dataset.scene;
+            if (currentMode !== 'zhiri') {
+              var resultContainer = currentMode === 'datetime' ? datetimeResult : darknumResult;
+              if (resultContainer.innerHTML) {
+                renderResult(false);
+              } else {
+                updateExtraPanel(currentScene);
+              }
+            } else {
+              updateExtraPanel(currentScene);
+            }
+          });
         });
-      });
+      }
 
       // ================================================================
       // 验证和渲染
       // ================================================================
-
-      function updateCalcBtnText() {
-        calcBtn.textContent = '🔮 三宫演算 (' + calcCount + ')';
-      }
 
       function validateInputs() {
         var isValid = true;
@@ -1460,8 +1648,7 @@
             hourSelect.classList.add('error');
             isValid = false;
           }
-        } else {
-          // 暗数模式：支持1-999
+        } else if (currentMode === 'darknum') {
           num1Error.textContent = '';
           num2Error.textContent = '';
           num3Error.textContent = '';
@@ -1488,6 +1675,17 @@
             num3Input.classList.add('error');
             isValid = false;
           }
+        } else if (currentMode === 'zhiri') {
+          var y = parseInt(zhiriYear.value);
+          var m = parseInt(zhiriMonth.value);
+          if (isNaN(y) || y < 2020 || y > 2050) {
+            zhiriResult.innerHTML = '<span style="color:#ff6b6b;">⚠️ 年份范围 2020-2050</span>';
+            isValid = false;
+          }
+          if (isNaN(m) || m < 1 || m > 12) {
+            zhiriResult.innerHTML = '<span style="color:#ff6b6b;">⚠️ 月份范围 1-12</span>';
+            isValid = false;
+          }
         }
 
         if (!isValid) {
@@ -1500,9 +1698,87 @@
         return isValid;
       }
 
-      // 纯渲染函数：只更新界面，不记录历史
+      // ===== 渲染方位 =====
+      function renderFangwei(gongName) {
+        var fw = getFangwei(gongName);
+        var allFangwei = [
+          { name: '东', gong: '大安', luck: '吉' },
+          { name: '南', gong: '速喜', luck: '吉' },
+          { name: '西', gong: '赤口', luck: '凶' },
+          { name: '北', gong: '留连', luck: '凶' },
+          { name: '东北', gong: '小吉', luck: '吉' },
+          { name: '中央', gong: '空亡', luck: '凶' }
+        ];
+        var html = '';
+        allFangwei.forEach(function(f) {
+          var isActive = (f.gong === gongName);
+          var cls = f.luck === '吉' ? 'fw-good' : (f.luck === '凶' ? 'fw-bad' : 'fw-neutral');
+          if (isActive) cls += ' active';
+          html += '<div class="fangwei-item ' + cls + '" style="' + (isActive ? 'border-color:#8ab4ff;background:rgba(60,120,255,0.15);' : '') + '">' +
+            '<span class="fw-name">' + f.name + '</span>' +
+            '<span class="fw-luck" style="color:' + (f.luck === '吉' ? '#66bb6a' : (f.luck === '凶' ? '#ff6b6b' : '#f7d44a')) + ';">' +
+            (isActive ? '◀ ' : '') + f.luck + '</span>' +
+            '</div>';
+        });
+        fangweiResult.innerHTML = html;
+        fangweiContainer.style.display = 'block';
+      }
+
+      // ===== 渲染详细断语 =====
+      function renderDetail(gongName) {
+        var detail = getDetail(gongName);
+        var html = '<div class="detail-title">📋 ' + gongName + ' · 六事断语</div>';
+        var labels = { '感情': '❤️', '事业': '💼', '健康': '🏥', '财运': '💰', '人际': '🤝', '出行': '🚗' };
+        for (var key in detail) {
+          html += '<div class="detail-item"><span class="d-label">' + (labels[key] || '') + ' ' + key + '</span>：' +
+            detail[key] + '</div>';
+        }
+        detailResult.innerHTML = html;
+        detailContainer.style.display = 'block';
+      }
+
+      // ===== 通用渲染函数 =====
+      function renderToContainer(resultHTML, summaryText, finalGong, isZhiri) {
+        var container;
+        if (isZhiri) {
+          container = zhiriResultContainer;
+        } else if (currentMode === 'datetime') {
+          container = datetimeResult;
+        } else {
+          container = darknumResult;
+        }
+        container.innerHTML = resultHTML;
+        resultSummary.innerHTML = summaryText;
+
+        var modeKey = isZhiri ? 'zhiri' : currentMode;
+        cachedResults[modeKey] = resultHTML;
+        cachedSummary[modeKey] = summaryText;
+        if (isZhiri) {
+          cachedResults.zhiriSummary = zhiriResult.innerHTML;
+        }
+
+        if (!isZhiri && finalGong) {
+          renderFangwei(finalGong);
+          renderDetail(finalGong);
+          document.querySelectorAll('.zhangjue-item').forEach(function(el) {
+            el.classList.toggle('active', el.dataset.gong === finalGong);
+          });
+          fangweiContainer.style.display = 'block';
+          detailContainer.style.display = 'block';
+        } else if (isZhiri) {
+          fangweiContainer.style.display = 'none';
+          detailContainer.style.display = 'none';
+          document.querySelectorAll('.zhangjue-item').forEach(function(el) { el.classList.remove('active'); });
+        }
+      }
+
+      // ===== 纯渲染（不记录历史） =====
       function renderResultOnly() {
         if (!validateInputs()) return;
+        if (currentMode === 'zhiri') {
+          renderZhiri();
+          return;
+        }
 
         try {
           var result, inputStr;
@@ -1574,30 +1850,104 @@
           html += '  </div>';
           html += '</div>';
 
-          resultList.innerHTML = html;
-          resultSummary.innerHTML = '🌀 ' + inputStr + ' · ' + sceneLabel + ' · 得【' +
+          var summaryText = '🌀 ' + inputStr + ' · ' + sceneLabel + ' · 得【' +
             finalGong + '】' + GONG_LUCK[finalGong] + ' ' + stars;
 
+          renderToContainer(html, summaryText, finalGong, false);
           updateExtraPanel(currentScene, finalGong);
 
-          if (navigator.vibrate) {
-            navigator.vibrate(20);
-          }
+          if (navigator.vibrate) navigator.vibrate(20);
 
         } catch (e) {
           console.error(e);
-          resultList.innerHTML =
+          var errorHtml =
             '<div class="result-item"><div class="result-content" style="color: #ff6b6b;">⚠️ 演算错误：' + (e.message ||
               '请检查输入') + '</div></div>';
+          renderToContainer(errorHtml, '⚠️ 演算错误', null, false);
         }
       }
 
-      // 完整渲染：更新界面 + 记录历史
+      // ===== 择日推演 =====
+      function renderZhiri() {
+        var year = parseInt(zhiriYear.value);
+        var month = parseInt(zhiriMonth.value);
+        var event = zhiriEvent.value;
+        if (isNaN(year) || year < 2020 || year > 2050) {
+          zhiriResult.innerHTML = '<span style="color:#ff6b6b;">⚠️ 年份范围 2020-2050</span>';
+          return;
+        }
+        if (isNaN(month) || month < 1 || month > 12) {
+          zhiriResult.innerHTML = '<span style="color:#ff6b6b;">⚠️ 月份范围 1-12</span>';
+          return;
+        }
+
+        var days = getZhiRi(year, month, event);
+        var eventLabel = { '出行': '🚗 出行', '签约': '📄 签约', '开业': '🏪 开业',
+          '搬家': '📦 搬家', '求财': '💰 求财', '探病': '🏥 探病'
+        } [event] || event;
+
+        // 筛选吉日（得分 >= 5）
+        var goodDays = days.filter(function(d) { return d.score >= 5; });
+
+        // 构建吉日网格HTML（保留在zhiriResult中）
+        var html = '<div style="margin-bottom:8px;">📅 <span class="highlight">' + year + '年' + month + '月</span>  ·  ' +
+          eventLabel + '  ·  共筛选出 <span class="highlight">' + goodDays.length + '</span> 个吉日</div>';
+
+        if (goodDays.length > 0) {
+          html += '<div class="day-grid">';
+          goodDays.forEach(function(d) {
+            var color = d.luck.includes('吉') ? '#66bb6a' : '#f7d44a';
+            html += '<div class="day-card">' +
+              '<div class="d-day">' + d.day + '日</div>' +
+              '<div class="d-gong" style="color:' + color + ';">' + d.gong + ' ' + d.luck + '</div>' +
+              '<div class="d-score">⭐' + d.score + '分</div>' +
+              '</div>';
+          });
+          html += '</div>';
+        } else {
+          html += '<div style="margin-top:8px;color:#8899bb;">📌 本月暂无吉日，请尝试其他月份</div>';
+        }
+
+        zhiriResult.innerHTML = html;
+
+        // ----- 在结果栏显示当月全部日子的吉凶情况（列表形式） -----
+        var fullListHtml = '<div class="zhiri-summary">📋 <span class="highlight">' + year + '年' + month +
+          '月</span> 全部 ' + days.length + ' 日吉凶一览（按日期排序）</div>';
+        fullListHtml += '<div class="zhiri-full-list">';
+        days.forEach(function(d) {
+          var cls = d.score >= 5 ? 'zfl-good' : (d.score >= 3 ? 'zfl-neutral' : 'zfl-bad');
+          var color = d.score >= 5 ? '#66bb6a' : (d.score >= 3 ? '#f7d44a' : '#ff6b6b');
+          fullListHtml += '<div class="zfl-item ' + cls + '">' +
+            '<div class="zfl-day">' + d.day + '日</div>' +
+            '<div class="zfl-gong" style="color:' + color + ';">' + d.gong + '</div>' +
+            '</div>';
+        });
+        fullListHtml += '</div>';
+
+        var resultHtml = '<div class="result-item"><div class="result-content">' + fullListHtml + '</div></div>';
+        var summaryText = '📆 ' + year + '年' + month + '月 · ' + eventLabel + ' · 共' + goodDays.length + '个吉日';
+
+        renderToContainer(resultHtml, summaryText, null, true);
+
+        // 添加历史记录
+        addHistory('', eventLabel, '择日', goodDays.length > 0 ? '吉' : '凶', true, event);
+
+        // 隐藏方位和详细断语
+        fangweiContainer.style.display = 'none';
+        detailContainer.style.display = 'none';
+        document.querySelectorAll('.zhangjue-item').forEach(function(el) { el.classList.remove('active'); });
+      }
+
+      // ===== 完整渲染（记录历史） =====
       function renderResultWithHistory(countUp) {
         if (!validateInputs()) return;
+        if (currentMode === 'zhiri') {
+          renderZhiri();
+          return;
+        }
 
         if (countUp !== false) {
-          calcCount++;
+          modeCalcCount[currentMode]++;
           updateCalcBtnText();
         }
 
@@ -1671,29 +2021,28 @@
           html += '  </div>';
           html += '</div>';
 
-          resultList.innerHTML = html;
-          resultSummary.innerHTML = '🌀 ' + inputStr + ' · ' + sceneLabel + ' · 得【' +
+          var summaryText = '🌀 ' + inputStr + ' · ' + sceneLabel + ' · 得【' +
             finalGong + '】' + GONG_LUCK[finalGong] + ' ' + stars;
 
+          renderToContainer(html, summaryText, finalGong, false);
           updateExtraPanel(currentScene, finalGong);
 
-          // 只有用户主动点击"三宫演算"时才记录历史
           if (countUp !== false) {
-            addHistory(inputStr, finalGong, finalGong, GONG_LUCK[finalGong]);
+            addHistory(inputStr, finalGong, finalGong, GONG_LUCK[finalGong], false);
           }
 
-          if (navigator.vibrate) {
-            navigator.vibrate(20);
-          }
+          if (navigator.vibrate) navigator.vibrate(20);
 
         } catch (e) {
           console.error(e);
-          resultList.innerHTML =
+          var errorHtml =
             '<div class="result-item"><div class="result-content" style="color: #ff6b6b;">⚠️ 演算错误：' + (e.message ||
               '请检查输入') + '</div></div>';
+          renderToContainer(errorHtml, '⚠️ 演算错误', null, false);
         }
       }
 
+      // ===== 更新六宫详解 =====
       function updateExtraPanel(scene, highlightGong) {
         var sceneLabel = SCENE_LABEL[scene] || '通用';
         var html = '<div style="margin-bottom: 12px; color: #8899bb; font-size: 0.9rem;">📌 当前场景：<strong style="color:#8ab4ff;">' +
@@ -1708,11 +2057,12 @@
           var bgColor = isHighlight ? 'rgba(255,215,0,0.06)' : 'transparent';
           html += '<div style="margin-bottom: 10px; border-bottom: 1px solid ' + borderColor +
             '; padding-bottom: 8px; background:' + bgColor + '; border-radius:12px; padding:6px 12px;">';
-          html += '  <span style="color: ' + (isHighlight ? '#f7d44a' : '#8ab4ff') + '; font-weight: 600;">' + name +
-            (isHighlight ? ' ◀' : '') + '</span> ';
-          html += '  <span style="color: #8899bb; font-size: 0.85rem;">' + info.wuxing + ' · ' + info.direction +
-            ' · ' + info.luck + ' ' + luckEmoji + '</span>';
-          html += '  <div style="font-size: 0.92rem; color: #c8d0e0; margin-top: 4px;">' + interp + '</div>';
+          html += '  <span style="color: ' + (isHighlight ? '#f7d44a' : '#8ab4ff') + '; font-weight: 600;">' +
+            name + (isHighlight ? ' ◀' : '') + '</span> ';
+          html += '  <span style="color: #8899bb; font-size: 0.85rem;">' + info.wuxing + ' · ' + info
+            .direction + ' · ' + info.luck + ' ' + luckEmoji + '</span>';
+          html += '  <div style="font-size: 0.92rem; color: #c8d0e0; margin-top: 4px;">' + interp +
+            '</div>';
           if (isHighlight) {
             html += '  <div style="font-size: 0.82rem; color: #f7d44a; margin-top: 2px;">⭐ 当前结果：' + KOUJUE[name] +
               '</div>';
@@ -1722,6 +2072,10 @@
         extraPanel.innerHTML = html;
       }
 
+      // ================================================================
+      // 重置示例（只删除当前模式的历史记录）
+      // ================================================================
+
       function resetExample() {
         monthInput.value = 6;
         dayInput.value = 23;
@@ -1729,20 +2083,49 @@
         num1Input.value = 3;
         num2Input.value = 6;
         num3Input.value = 9;
+        zhiriYear.value = 2026;
+        zhiriMonth.value = 6;
+        zhiriEvent.value = '出行';
         updateDayMax();
 
-        // 重置示例时清空历史记录
-        clearHistory();
+        // 只删除当前模式的历史记录
+        var modeKey = currentMode === 'zhiri' ? 'zhiri' : (currentMode === 'datetime' ? 'datetime' : 'darknum');
+        clearHistoryByMode(modeKey);
 
-        clearErrors();
-        document.querySelectorAll('.btn-scene').forEach(function(b) { b.classList.remove('active'); });
-        document.querySelector('.btn-scene[data-scene="general"]').classList.add('active');
-        currentScene = 'general';
-        calcCount = 0;
+        // 重置当前模式的演算次数
+        modeCalcCount[currentMode] = 0;
         updateCalcBtnText();
 
-        // 重置示例时只渲染结果，不记录历史
-        renderResultOnly();
+        clearErrors();
+        document.querySelectorAll('.scene-selector .btn-scene').forEach(function(b) {
+          b.classList.remove('active');
+          if (b.dataset.scene === 'general') b.classList.add('active');
+        });
+        currentScene = 'general';
+
+        // 清除当前模式的缓存
+        if (currentMode === 'datetime') {
+          cachedResults.datetime = '';
+          cachedSummary.datetime = '';
+          datetimeResult.innerHTML = '';
+          resultSummary.innerHTML = '🌀 等待演算 ...';
+        } else if (currentMode === 'darknum') {
+          cachedResults.darknum = '';
+          cachedSummary.darknum = '';
+          darknumResult.innerHTML = '';
+          resultSummary.innerHTML = '🌀 等待演算 ...';
+        } else if (currentMode === 'zhiri') {
+          cachedResults.zhiri = '';
+          cachedResults.zhiriSummary = '';
+          cachedSummary.zhiri = '';
+          zhiriResultContainer.innerHTML = '';
+          zhiriResult.innerHTML = '选择年月和事项，点击「择日推演」查看吉日建议';
+          resultSummary.innerHTML = '📆 请选择年月和事项，点击「择日推演」';
+        }
+
+        document.querySelectorAll('.zhangjue-item').forEach(function(el) { el.classList.remove('active'); });
+        fangweiContainer.style.display = 'none';
+        detailContainer.style.display = 'none';
       }
 
       function clearErrors() {
@@ -1764,9 +2147,7 @@
       // 随机 & 当前时间
       // ================================================================
 
-      function randomInt(min, max) {
-        return Math.floor(Math.random() * (max - min + 1)) + min;
-      }
+      function randomInt(min, max) { return Math.floor(Math.random() * (max - min + 1)) + min; }
 
       function randomHour() {
         var hours = ['子', '丑', '寅', '卯', '辰', '巳', '午', '未', '申', '酉', '戌', '亥'];
@@ -1799,7 +2180,12 @@
           dayInput.value = randomInt(1, maxDays);
           hourSelect.value = randomHour();
           updateDayMax();
-        } else {
+        }
+        clearErrors();
+      });
+
+      randomAllBtnDark.addEventListener('click', function() {
+        if (currentMode === 'darknum') {
           num1Input.value = randomInt(1, 999);
           num2Input.value = randomInt(1, 999);
           num3Input.value = randomInt(1, 999);
@@ -1833,11 +2219,39 @@
       });
 
       // ================================================================
+      // 弹窗
+      // ================================================================
+
+      aboutToggle.addEventListener('click', function() {
+        document.getElementById('aboutModal').classList.toggle('active');
+      });
+      document.getElementById('aboutModal').addEventListener('click', function(e) {
+        if (e.target === this) this.classList.remove('active');
+      });
+
+      // ================================================================
+      // 模式切换事件绑定
+      // ================================================================
+
+      document.querySelectorAll('#modeToggle label').forEach(function(label) {
+        label.addEventListener('click', function() {
+          switchMode(this.dataset.mode);
+        });
+      });
+
+      // ================================================================
       // 事件绑定
       // ================================================================
 
       calcBtn.addEventListener('click', function() {
-        renderResultWithHistory(true);
+        if (currentMode === 'zhiri') {
+          renderZhiri();
+          // 择日推演次数增加
+          modeCalcCount.zhiri++;
+          updateCalcBtnText();
+        } else {
+          renderResultWithHistory(true);
+        }
       });
 
       resetBtn.addEventListener('click', resetExample);
@@ -1847,25 +2261,36 @@
 
       document.querySelectorAll('input, select').forEach(function(el) {
         el.addEventListener('keydown', function(e) {
-          if (e.key === 'Enter') renderResultWithHistory(true);
+          if (e.key === 'Enter') {
+            if (currentMode === 'zhiri') {
+              renderZhiri();
+              modeCalcCount.zhiri++;
+              updateCalcBtnText();
+            } else {
+              renderResultWithHistory(true);
+            }
+          }
         });
       });
 
-      currentTimeBtn.classList.remove('hidden');
+      // ================================================================
+      // 初始化
+      // ================================================================
 
       window.addEventListener('load', function() {
         currentScene = 'general';
         initNumberInputs();
+        initSceneButtons();
         updateDayMax();
 
-        // 页面加载时初始状态为空
         clearHistory();
 
-        calcCount = 0;
+        modeCalcCount = { datetime: 0, darknum: 0, zhiri: 0 };
         updateCalcBtnText();
         updateExtraPanel('general');
 
-        // 首次加载时渲染示例结果但不记录历史
+        switchMode('datetime');
+
         setTimeout(function() {
           renderResultOnly();
         }, 80);
