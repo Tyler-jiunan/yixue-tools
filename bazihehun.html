@@ -552,7 +552,9 @@
       letter-spacing: 3px;
     }
 
-    /* 择日年份选择器 */
+    /* ============================================================
+      择日年份选择器 - 自定义 +/- 按钮方案
+      ============================================================ */
     .wedding-year-selector {
       display: flex;
       gap: 12px;
@@ -565,21 +567,75 @@
       color: #aabbdd;
       font-size: 0.92rem;
     }
-    .wedding-year-selector input {
-      padding: 6px 12px;
-      border-radius: 20px;
+
+    /* 数字输入框包装器 */
+    .number-input-wrapper {
+      display: flex;
+      align-items: center;
+      gap: 0;
       background: rgba(255, 255, 255, 0.05);
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      color: #e8edf5;
-      width: 100px;
-      font-size: 0.92rem;
-      font-family: inherit;
-      outline: none;
+      border-radius: 20px;
+      border: 1px solid rgba(255, 255, 255, 0.10);
+      overflow: hidden;
+      transition: 0.2s;
     }
-    .wedding-year-selector input:focus {
+    .number-input-wrapper:focus-within {
       border-color: rgba(100, 180, 255, 0.4);
       box-shadow: 0 0 0 3px rgba(60, 120, 255, 0.15);
     }
+
+    .number-input-wrapper input[type="number"] {
+      width: 60px;
+      border: none;
+      background: transparent;
+      text-align: center;
+      padding: 6px 4px;
+      color: #e8edf5;
+      font-size: 0.92rem;
+      font-family: inherit;
+      outline: none;
+      -moz-appearance: textfield;
+      min-width: 40px;
+    }
+    .number-input-wrapper input[type="number"]::-webkit-inner-spin-button,
+    .number-input-wrapper input[type="number"]::-webkit-outer-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
+    }
+
+    .num-btn {
+      background: rgba(255, 255, 255, 0.06);
+      border: none;
+      color: #8ab4ff;
+      font-size: 1.1rem;
+      font-weight: 600;
+      width: 30px;
+      height: 34px;
+      cursor: pointer;
+      transition: 0.2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      user-select: none;
+      font-family: inherit;
+      line-height: 1;
+    }
+    .num-btn:hover {
+      background: rgba(60, 120, 255, 0.2);
+    }
+    .num-btn:active {
+      background: rgba(60, 120, 255, 0.35);
+      transform: scale(0.92);
+    }
+    .num-btn-minus {
+      border-radius: 20px 0 0 20px;
+      padding-left: 2px;
+    }
+    .num-btn-plus {
+      border-radius: 0 20px 20px 0;
+      padding-right: 2px;
+    }
+
     .wedding-year-selector .btn {
       padding: 6px 20px;
       min-width: auto;
@@ -687,6 +743,14 @@
       .wedding-year-selector .btn {
         width: 100%;
         min-width: 0;
+      }
+      .number-input-wrapper input[type="number"] {
+        width: 50px;
+      }
+      .num-btn {
+        width: 28px;
+        height: 32px;
+        font-size: 1rem;
       }
     }
   </style>
@@ -801,10 +865,14 @@
     <!-- 多功能合婚栏 (仅保留嫁娶择日) -->
     <div class="extra-marriage-section" id="extraMarriageSection">
       <div class="extra-title">💒 嫁娶择日</div>
-      <!-- 年份选择器 -->
+      <!-- 年份选择器 - 使用自定义 +/- 按钮 -->
       <div class="wedding-year-selector">
         <label for="weddingYear">📅 择日年份：</label>
-        <input type="number" id="weddingYear" value="2026" min="2020" max="2050" oninput="if(this.value.length>4) this.value=this.value.slice(0,4)">
+        <div class="number-input-wrapper">
+          <button class="num-btn num-btn-minus" type="button">−</button>
+          <input type="number" id="weddingYear" value="2026" min="2020" max="2050">
+          <button class="num-btn num-btn-plus" type="button">+</button>
+        </div>
         <button class="btn btn-secondary" id="refreshWeddingBtn" style="padding:6px 20px;min-width:auto;font-size:0.9rem;flex:0 1 auto;max-width:none;">🔄 刷新吉日</button>
       </div>
       <div class="extra-panel" id="extraPanel">
@@ -2554,6 +2622,65 @@
       var weddingYearInput = document.getElementById('weddingYear');
       var refreshWeddingBtn = document.getElementById('refreshWeddingBtn');
 
+      // ================================================================
+      // 第13块：自定义数字输入框 +/- 按钮控制
+      // ================================================================
+
+      /**
+       * 初始化所有自定义数字输入框的 +/- 按钮
+       */
+      function initNumberInputButtons() {
+        document.querySelectorAll('.number-input-wrapper').forEach(function(wrapper) {
+          var input = wrapper.querySelector('input[type="number"]');
+          var minusBtn = wrapper.querySelector('.num-btn-minus');
+          var plusBtn = wrapper.querySelector('.num-btn-plus');
+
+          if (!input || !minusBtn || !plusBtn) return;
+
+          // 获取步长、最小值和最大值
+          var step = parseFloat(input.step) || 1;
+          var min = parseFloat(input.min) !== undefined && !isNaN(parseFloat(input.min)) ? parseFloat(input.min) : -Infinity;
+          var max = parseFloat(input.max) !== undefined && !isNaN(parseFloat(input.max)) ? parseFloat(input.max) : Infinity;
+
+          // 减按钮
+          minusBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            var val = parseFloat(input.value);
+            if (isNaN(val)) val = 0;
+            var newVal = Math.max(min, val - step);
+            // 处理浮点数精度
+            newVal = parseFloat(newVal.toFixed(10));
+            input.value = newVal;
+            // 触发事件，让其他监听器响应
+            input.dispatchEvent(new Event('input', { bubbles: true }));
+            input.dispatchEvent(new Event('change', { bubbles: true }));
+          });
+
+          // 加按钮
+          plusBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            var val = parseFloat(input.value);
+            if (isNaN(val)) val = 0;
+            var newVal = Math.min(max, val + step);
+            newVal = parseFloat(newVal.toFixed(10));
+            input.value = newVal;
+            input.dispatchEvent(new Event('input', { bubbles: true }));
+            input.dispatchEvent(new Event('change', { bubbles: true }));
+          });
+
+          // 键盘支持：在输入框上按上下箭头键也能调整
+          input.addEventListener('keydown', function(e) {
+            if (e.key === 'ArrowUp') {
+              e.preventDefault();
+              plusBtn.click();
+            } else if (e.key === 'ArrowDown') {
+              e.preventDefault();
+              minusBtn.click();
+            }
+          });
+        });
+      }
+
       /**
        * 绑定时辰转译（实时更新）
        */
@@ -2926,7 +3053,7 @@
       }
 
       // ================================================================
-      // 第13块：事件绑定
+      // 第14块：事件绑定
       // ================================================================
 
       // 月份折叠交互（事件委托）
@@ -2967,6 +3094,8 @@
       // 页面加载后初始化
       window.addEventListener('load', function() {
         bindHourTranslation();
+        // 初始化自定义数字输入框
+        initNumberInputButtons();
         // 设置默认择日年份
         var currentYear = new Date().getFullYear();
         weddingYearInput.value = currentYear;
