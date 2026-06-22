@@ -1,0 +1,1185 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>小六壬 · 全场景演算</title>
+  <style>
+    /* ============================================================
+    第1块：全局重置 & 基础样式（沿用八字合婚的深空风格）
+    ============================================================ */
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    body {
+      background: linear-gradient(145deg, #0b0e1a 0%, #1a1f35 40%, #0d1b2a 100%);
+      font-family: 'Segoe UI', 'Microsoft YaHei', '华文楷体', 'KaiTi', serif;
+      padding: 20px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      color: #c8d0e0;
+    }
+    .container {
+      max-width: 880px;
+      width: 100%;
+      background: rgba(255, 255, 255, 0.06);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+      border-radius: 32px;
+      padding: 28px 24px 20px;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+    h1 {
+      font-size: 2.2rem;
+      font-weight: 400;
+      letter-spacing: 6px;
+      text-align: center;
+      border-bottom: 2px dashed rgba(255, 255, 255, 0.08);
+      padding-bottom: 16px;
+      margin-bottom: 24px;
+      color: #e8edf5;
+      text-shadow: 0 0 40px rgba(60, 120, 255, 0.10);
+    }
+    h1 small {
+      font-size: 0.9rem;
+      letter-spacing: 2px;
+      color: #8899bb;
+      display: block;
+      margin-top: 6px;
+      font-weight: 300;
+    }
+    /* 输入区 – 三列一行，每列独立 */
+    .input-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 16px;
+      background: rgba(255, 255, 255, 0.04);
+      padding: 20px 18px;
+      border-radius: 28px;
+      margin-bottom: 16px;
+      border: 1px solid rgba(255, 255, 255, 0.06);
+    }
+    .input-group {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      min-width: 0;
+    }
+    .input-group label {
+      font-size: 0.95rem;
+      font-weight: 500;
+      color: #aabbdd;
+      letter-spacing: 1px;
+      margin-left: 6px;
+    }
+    /* ---- 数字输入框包装器（带 +/- 按钮） ---- */
+    .number-input-wrapper {
+      display: flex;
+      align-items: center;
+      gap: 0;
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 40px;
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      overflow: hidden;
+      transition: 0.25s ease;
+      width: 100%;
+    }
+    /* 悬停时发光 */
+    .number-input-wrapper:hover {
+      border-color: rgba(60, 120, 255, 0.45);
+      box-shadow: 0 0 20px rgba(60, 120, 255, 0.12);
+    }
+    /* 聚焦时发光（点击输入框时） */
+    .number-input-wrapper:focus-within {
+      border-color: rgba(100, 180, 255, 0.4);
+      box-shadow: 0 0 25px rgba(60, 120, 255, 0.20), 0 0 50px rgba(60, 120, 255, 0.06);
+    }
+    .number-input-wrapper input[type="number"] {
+      flex: 1;
+      border: none;
+      background: transparent;
+      text-align: center;
+      padding: 10px 4px;
+      color: #e8edf5;
+      font-size: 1rem;
+      font-family: inherit;
+      outline: none;
+      -moz-appearance: textfield;
+      min-width: 30px;
+      width: 100%;
+    }
+    .number-input-wrapper input[type="number"]::-webkit-inner-spin-button,
+    .number-input-wrapper input[type="number"]::-webkit-outer-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
+    }
+    .num-btn {
+      background: rgba(255, 255, 255, 0.06);
+      border: none;
+      color: #8ab4ff;
+      font-size: 1.1rem;
+      font-weight: 600;
+      width: 32px;
+      height: 40px;
+      cursor: pointer;
+      transition: 0.2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      user-select: none;
+      font-family: inherit;
+      line-height: 1;
+      flex-shrink: 0;
+    }
+    .num-btn:hover {
+      background: rgba(60, 120, 255, 0.2);
+    }
+    .num-btn:active {
+      background: rgba(60, 120, 255, 0.35);
+      transform: scale(0.92);
+    }
+    .num-btn-minus {
+      border-radius: 40px 0 0 40px;
+      padding-left: 2px;
+    }
+    .num-btn-plus {
+      border-radius: 0 40px 40px 0;
+      padding-right: 2px;
+    }
+    .number-input-wrapper input.error {
+      color: #ff6b6b;
+    }
+    /* ---- 下拉框：默认与月/日一致，悬停/聚焦时发光 ---- */
+    .input-group select {
+      padding: 10px 38px 10px 14px;
+      border: 1px solid rgba(255, 255, 255, 0.25) !important;
+      border-radius: 40px;
+      background: rgba(255, 255, 255, 0.05);
+      font-size: 1rem;
+      font-family: inherit;
+      outline: none;
+      transition: 0.25s ease;
+      color: #e8edf5;
+      width: 100%;
+      appearance: none;
+      -webkit-appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%238ab4ff' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 14px center;
+      cursor: pointer;
+    }
+    /* 悬停时发光 */
+    .input-group select:hover {
+      border-color: rgba(60, 120, 255, 0.55) !important;
+      box-shadow: 0 0 20px rgba(60, 120, 255, 0.15);
+    }
+    /* 聚焦时发光（点击时） */
+    .input-group select:focus {
+      border-color: rgba(100, 180, 255, 0.7) !important;
+      box-shadow: 0 0 25px rgba(60, 120, 255, 0.25), 0 0 50px rgba(60, 120, 255, 0.08);
+      background: rgba(255, 255, 255, 0.07);
+    }
+    /* 下拉选项菜单样式（不受边框影响） */
+    .input-group select option {
+      background: #0d1b2a;
+      color: #c8d0e0;
+      padding: 8px 12px;
+      border: none;
+    }
+    .input-group select option:hover,
+    .input-group select option:checked {
+      background: rgba(60, 120, 255, 0.20);
+      color: #8ab4ff;
+    }
+    .input-group select.error {
+      border-color: rgba(255, 80, 80, 0.5);
+      box-shadow: 0 0 20px rgba(255, 80, 80, 0.15);
+    }
+    .input-error {
+      color: #ff6b6b;
+      font-size: 0.78rem;
+      margin-left: 10px;
+      margin-top: 2px;
+      min-height: 18px;
+    }
+    /* 列内辅助按钮（随机/当前时间） */
+    .inline-actions {
+      display: flex;
+      gap: 6px;
+      margin-top: 4px;
+      flex-wrap: wrap;
+    }
+    .inline-actions .btn-inline {
+      padding: 4px 12px;
+      border-radius: 30px;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      background: rgba(255, 255, 255, 0.04);
+      color: #8899bb;
+      font-size: 0.75rem;
+      cursor: pointer;
+      transition: 0.2s;
+      font-family: inherit;
+      letter-spacing: 0.3px;
+      white-space: nowrap;
+    }
+    .inline-actions .btn-inline:hover {
+      background: rgba(60, 120, 255, 0.15);
+      border-color: rgba(60, 120, 255, 0.25);
+      color: #c8d0e0;
+    }
+    /* 场景选择器 */
+    .scene-selector {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 10px;
+      margin: 6px 0 16px;
+    }
+    .scene-selector .btn-scene {
+      padding: 6px 18px;
+      border-radius: 40px;
+      border: 1px solid rgba(255, 255, 255, 0.10);
+      background: rgba(255, 255, 255, 0.04);
+      color: #aabbdd;
+      font-size: 0.9rem;
+      cursor: pointer;
+      transition: 0.2s;
+      font-family: inherit;
+      letter-spacing: 0.5px;
+    }
+    .scene-selector .btn-scene:hover {
+      background: rgba(60, 120, 255, 0.15);
+      border-color: rgba(60, 120, 255, 0.3);
+      color: #e8edf5;
+    }
+    .scene-selector .btn-scene.active {
+      background: rgba(60, 120, 255, 0.20);
+      border-color: rgba(60, 120, 255, 0.4);
+      color: #8ab4ff;
+      box-shadow: 0 0 12px rgba(60, 120, 255, 0.08);
+    }
+    /* 主操作按钮 */
+    .action-bar {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 16px;
+      margin: 8px 0 16px;
+    }
+    .btn {
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid rgba(255, 255, 255, 0.10);
+      padding: 12px 36px;
+      border-radius: 60px;
+      font-size: 1.15rem;
+      font-weight: 500;
+      color: #c8d0e0;
+      letter-spacing: 2px;
+      cursor: pointer;
+      transition: 0.2s;
+      box-shadow: 0 4px 0 rgba(0, 0, 0, 0.2);
+      font-family: inherit;
+      flex: 1 1 0;
+      min-width: 140px;
+      max-width: 240px;
+      white-space: nowrap;
+    }
+    .btn-primary {
+      background: rgba(60, 120, 255, 0.20);
+      color: #8ab4ff;
+      box-shadow: 0 4px 0 rgba(30, 80, 200, 0.3);
+      border-color: rgba(60, 120, 255, 0.25);
+    }
+    .btn-primary:hover {
+      background: rgba(60, 120, 255, 0.30);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 0 rgba(30, 80, 200, 0.4);
+      border-color: rgba(60, 120, 255, 0.4);
+    }
+    .btn-primary:active {
+      transform: translateY(4px);
+      box-shadow: 0 1px 0 rgba(30, 80, 200, 0.3);
+    }
+    .btn-secondary {
+      background: rgba(255, 255, 255, 0.04);
+      box-shadow: 0 4px 0 rgba(0, 0, 0, 0.2);
+    }
+    .btn-secondary:hover {
+      background: rgba(255, 255, 255, 0.08);
+      transform: translateY(-2px);
+    }
+    .btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      transform: none !important;
+    }
+    /* 结果展示 */
+    .result-container {
+      margin: 20px 0 12px;
+      background: rgba(255, 255, 255, 0.03);
+      border-radius: 28px;
+      padding: 8px;
+      border: 1px solid rgba(255, 255, 255, 0.06);
+    }
+    .result-item {
+      background: rgba(255, 255, 255, 0.03);
+      border-radius: 40px;
+      padding: 16px 20px;
+      margin-bottom: 10px;
+      border-left: 6px solid rgba(60, 120, 255, 0.3);
+      transition: 0.15s;
+    }
+    .result-item:last-child {
+      margin-bottom: 0;
+    }
+    .result-header {
+      display: flex;
+      align-items: baseline;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    .result-num {
+      background: rgba(60, 120, 255, 0.25);
+      color: #8ab4ff;
+      border-radius: 40px;
+      padding: 0 16px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      line-height: 28px;
+      letter-spacing: 1px;
+    }
+    .result-title {
+      font-weight: 600;
+      font-size: 1.2rem;
+      color: #e8edf5;
+    }
+    .result-badge {
+      font-size: 0.75rem;
+      background: rgba(255, 255, 255, 0.06);
+      padding: 2px 14px;
+      border-radius: 30px;
+      color: #8899bb;
+      margin-left: 4px;
+    }
+    .result-content {
+      margin-top: 10px;
+      font-size: 0.98rem;
+      line-height: 1.8;
+      color: #c8d0e0;
+      background: rgba(255, 255, 255, 0.03);
+      border-radius: 24px;
+      padding: 12px 18px;
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      white-space: pre-wrap;
+      word-break: break-word;
+      font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
+    }
+    .result-content .label {
+      font-weight: 600;
+      color: #8ab4ff;
+    }
+    .result-content .scene-interp {
+      color: #e8edf5;
+      background: rgba(60, 120, 255, 0.08);
+      padding: 2px 12px;
+      border-radius: 20px;
+      display: inline-block;
+      margin-top: 4px;
+    }
+    /* 六宫详解 */
+    .extra-detail {
+      margin-top: 18px;
+      background: rgba(255, 255, 255, 0.03);
+      border-radius: 28px;
+      padding: 16px 18px 18px;
+      border: 1px solid rgba(255, 255, 255, 0.06);
+    }
+    .extra-detail .extra-title {
+      text-align: center;
+      font-size: 1.1rem;
+      font-weight: 500;
+      color: #8ab4ff;
+      letter-spacing: 3px;
+      margin-bottom: 14px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+    }
+    .extra-detail .extra-panel {
+      background: rgba(255, 255, 255, 0.03);
+      border-radius: 24px;
+      padding: 2px 16px;
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      font-size: 0.98rem;
+      line-height: 1.8;
+      color: #c8d0e0;
+      white-space: pre-wrap;
+      word-break: break-word;
+      font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
+      max-height: 400px;
+      overflow-y: auto;
+      scrollbar-width: thin;
+      scrollbar-color: rgba(60, 120, 255, 0.3) transparent;
+    }
+    .extra-detail .extra-panel::-webkit-scrollbar {
+      width: 6px;
+    }
+    .extra-detail .extra-panel::-webkit-scrollbar-track {
+      background: transparent;
+      border-radius: 24px;
+    }
+    .extra-detail .extra-panel::-webkit-scrollbar-thumb {
+      background: rgba(60, 120, 255, 0.3);
+      border-radius: 12px;
+      border: 2px solid transparent;
+      background-clip: padding-box;
+    }
+    .extra-detail .extra-panel::-webkit-scrollbar-thumb:hover {
+      background: rgba(60, 120, 255, 0.5);
+    }
+    .extra-detail .extra-panel .label {
+      font-weight: 600;
+      color: #8ab4ff;
+    }
+    .summary-line {
+      margin-top: 22px;
+      padding: 14px 22px;
+      background: rgba(60, 120, 255, 0.10);
+      border-radius: 60px;
+      text-align: center;
+      font-size: 1.2rem;
+      font-weight: 500;
+      letter-spacing: 2px;
+      border: 1px solid rgba(60, 120, 255, 0.15);
+      color: #8ab4ff;
+    }
+    .footnote {
+      margin-top: 20px;
+      text-align: center;
+      font-size: 0.8rem;
+      color: #556688;
+      border-top: 1px solid rgba(255, 255, 255, 0.06);
+      padding-top: 16px;
+      flex-shrink: 0;
+    }
+
+    /* 响应式 */
+    @media (max-width: 820px) {
+      .input-grid {
+        grid-template-columns: 1fr 1fr 1fr;
+        gap: 12px;
+        padding: 16px 14px;
+      }
+      .container {
+        padding: 20px 16px;
+      }
+      .btn {
+        min-width: 120px;
+        max-width: 100%;
+        flex: 1 1 100%;
+        white-space: normal;
+        padding: 10px 20px;
+        font-size: 1rem;
+      }
+      .inline-actions .btn-inline {
+        font-size: 0.7rem;
+        padding: 3px 10px;
+      }
+      .num-btn {
+        width: 28px;
+        height: 36px;
+        font-size: 1rem;
+      }
+      .number-input-wrapper input[type="number"] {
+        padding: 8px 4px;
+        font-size: 0.9rem;
+      }
+    }
+    @media (max-width: 640px) {
+      .input-grid {
+        grid-template-columns: 1fr;
+        gap: 10px;
+        padding: 14px 12px;
+      }
+      .container {
+        padding: 16px 12px;
+      }
+      .result-item {
+        padding: 14px 14px;
+      }
+      .inline-actions {
+        justify-content: flex-start;
+      }
+      .scene-selector .btn-scene {
+        padding: 4px 12px;
+        font-size: 0.8rem;
+      }
+      .num-btn {
+        width: 26px;
+        height: 34px;
+        font-size: 0.9rem;
+      }
+      .number-input-wrapper input[type="number"] {
+        padding: 6px 4px;
+        font-size: 0.85rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container" id="app">
+    <h1>🌀 小六壬 · 全场景演算 <small>六宫断事 · 吉凶分明</small></h1>
+
+    <!-- 输入区：月日时三列一行 -->
+    <div class="input-grid">
+      <!-- 月 -->
+      <div class="input-group">
+        <label>📅 月</label>
+        <div class="number-input-wrapper">
+          <button class="num-btn num-btn-minus" type="button">−</button>
+          <input type="number" id="monthInput" value="6" min="1" max="12">
+          <button class="num-btn num-btn-plus" type="button">+</button>
+        </div>
+        <div class="input-error" id="monthError"></div>
+        <div class="inline-actions">
+          <button class="btn-inline" id="randomMonthBtn">🎲 随机月</button>
+        </div>
+      </div>
+      <!-- 日 -->
+      <div class="input-group">
+        <label>📆 日</label>
+        <div class="number-input-wrapper">
+          <button class="num-btn num-btn-minus" type="button">−</button>
+          <input type="number" id="dayInput" value="23" min="1" max="30">
+          <button class="num-btn num-btn-plus" type="button">+</button>
+        </div>
+        <div class="input-error" id="dayError"></div>
+        <div class="inline-actions">
+          <button class="btn-inline" id="randomDayBtn">🎲 随机日</button>
+        </div>
+      </div>
+      <!-- 时 -->
+      <div class="input-group">
+        <label>🕒 时</label>
+        <select id="hourSelect">
+          <option value="子">子时 (23-01)</option>
+          <option value="丑">丑时 (01-03)</option>
+          <option value="寅" selected>寅时 (03-05)</option>
+          <option value="卯">卯时 (05-07)</option>
+          <option value="辰">辰时 (07-09)</option>
+          <option value="巳">巳时 (09-11)</option>
+          <option value="午">午时 (11-13)</option>
+          <option value="未">未时 (13-15)</option>
+          <option value="申">申时 (15-17)</option>
+          <option value="酉">酉时 (17-19)</option>
+          <option value="戌">戌时 (19-21)</option>
+          <option value="亥">亥时 (21-23)</option>
+        </select>
+        <div class="input-error" id="hourError"></div>
+        <div class="inline-actions">
+          <button class="btn-inline" id="randomHourBtn">🎲 随机时</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 全局辅助按钮（随机全部 + 当前时间）单独一行，置于输入区下方 -->
+    <div class="action-row" style="display: flex; flex-wrap: wrap; justify-content: center; gap: 12px; margin-bottom: 16px;">
+      <button class="btn btn-secondary" id="randomAllBtn" style="padding: 6px 22px; min-width: auto; font-size: 0.92rem; flex: 0 1 auto; max-width: none; white-space: nowrap;">🎲 随机全部</button>
+      <button class="btn btn-secondary" id="currentTimeBtn" style="padding: 6px 22px; min-width: auto; font-size: 0.92rem; flex: 0 1 auto; max-width: none; white-space: nowrap;">🕒 当前月日时</button>
+    </div>
+
+    <!-- 场景选择器 -->
+    <div class="scene-selector" id="sceneSelector">
+      <button class="btn-scene active" data-scene="general">🔮 通用</button>
+      <button class="btn-scene" data-scene="wealth">💰 求财</button>
+      <button class="btn-scene" data-scene="lost">🔍 寻物</button>
+      <button class="btn-scene" data-scene="ask">❓ 问事</button>
+      <button class="btn-scene" data-scene="exam">📝 考试</button>
+      <button class="btn-scene" data-scene="travel">🚗 出行</button>
+    </div>
+
+    <!-- 主操作按钮 -->
+    <div class="action-bar">
+      <button class="btn btn-primary" id="calcBtn">🔮 三宫演算 (0)</button>
+      <button class="btn btn-secondary" id="resetBtn">↺ 重置示例</button>
+    </div>
+
+    <!-- 结果展示 -->
+    <div class="result-container" id="resultContainer">
+      <div id="resultList">
+        <!-- 动态生成三宫结果 -->
+      </div>
+    </div>
+
+    <!-- 六宫详解 -->
+    <div class="extra-detail" id="extraDetail">
+      <div class="extra-title">📖 六宫吉凶详解 · 全场景释义</div>
+      <div class="extra-panel" id="extraPanel">
+        <!-- 默认显示六宫释义 -->
+      </div>
+    </div>
+
+    <div id="resultSummary" class="summary-line">🌀 等待演算 ...</div>
+    <div class="footnote">✧ 小六壬 · 全场景演算 ✧ 基于传统六宫，结合求财、寻物、问事等场景解读</div>
+  </div>
+
+  <script>
+    (function() {
+      'use strict';
+
+      // ================================================================
+      // 第1块：六宫基础数据
+      // ================================================================
+
+      const GONG_NAMES = ['大安', '留连', '速喜', '赤口', '小吉', '空亡'];
+      const GONG_WUXING = { '大安': '木', '留连': '水', '速喜': '火', '赤口': '金', '小吉': '水', '空亡': '土' };
+      const GONG_DIRECTION = { '大安': '东方', '留连': '北方', '速喜': '南方', '赤口': '西方', '小吉': '东北', '空亡': '中央' };
+      const GONG_LUCK = { '大安': '大吉', '留连': '中凶', '速喜': '大吉', '赤口': '大凶', '小吉': '上吉', '空亡': '大凶' };
+
+      // ================================================================
+      // 第2块：场景释义（整合自图片内容 + 扩展）
+      // ================================================================
+
+      const SCENE_INTERP = {
+        general: {
+          '大安': '身不动时，五行属木，颜色青色，方位东方。临青龙，主事一、五、七。有静止、心安、吉祥之象。',
+          '留连': '卒未归时，五行属水，颜色黑色，方位北方。临玄武，主事二、八、十。有拖延、纠缠、反复之象。',
+          '速喜': '人即至时，五行属火，颜色红色，方位南方。临朱雀，主事三、六、九。有喜事、迅速、利见之象。',
+          '赤口': '官事凶时，五行属金，颜色白色，方位西方。临白虎，主事四、七、十。有口舌、官非、破财之象。',
+          '小吉': '人来喜时，五行属水，颜色黑色，方位东北。临六合，主事一、五、七。有和合、吉利、成功之象。',
+          '空亡': '音信稀时，五行属土，颜色黄色，方位中央。临勾陈，主事三、六、九。有落空、破败、忧愁之象。'
+        },
+        wealth: {
+          '大安': '财源广进，宜守旧业，正财稳定。',
+          '留连': '财运拖延，不宜投资，需耐心等待。',
+          '速喜': '意外之财，或有偏财，把握良机。',
+          '赤口': '投资需谨慎，防破财，忌冲动。',
+          '小吉': '正财稳定，小有进账，和气生财。',
+          '空亡': '财运空亡，守成为主，勿贪心。'
+        },
+        lost: {
+          '大安': '失物在近处，易寻，或在家中。',
+          '留连': '失物遗落原处，或被人收走，需细查。',
+          '速喜': '失物被人拾到，有望归还，速寻。',
+          '赤口': '失物可能被隐藏或损坏，寻回较难。',
+          '小吉': '失物可寻，或有贵人相助，近处。',
+          '空亡': '失物难以寻回，或已丢失，勿强求。'
+        },
+        ask: {
+          '大安': '事情顺利，万事可成，宜积极行动。',
+          '留连': '进展缓慢，事有阻滞，宜耐心等待。',
+          '速喜': '问题解决，喜事临门，宜速决断。',
+          '赤口': '需防口舌是非，谨言慎行，以和为贵。',
+          '小吉': '吉人相助，事情可成，和合如意。',
+          '空亡': '事多落空，不宜强求，退守为佳。'
+        },
+        exam: {
+          '大安': '考试顺利，发挥稳定，成绩理想。',
+          '留连': '复习不足，临场紧张，需加倍努力。',
+          '速喜': '发挥超常，灵感涌现，考试大利。',
+          '赤口': '粗心失误，审题不清，需仔细检查。',
+          '小吉': '贵人指导，发挥不错，有望通过。',
+          '空亡': '考试不利，准备不足，宜重新规划。'
+        },
+        travel: {
+          '大安': '出行平安，一路顺风，诸事顺利。',
+          '留连': '行程延误，或有阻碍，宜调整计划。',
+          '速喜': '旅途顺利，遇贵人，出行愉快。',
+          '赤口': '注意安全，防意外，行前谨慎。',
+          '小吉': '一路顺风，旅途愉快，平安归来。',
+          '空亡': '出行不宜，或有麻烦，建议改期。'
+        }
+      };
+
+      const SCENE_LABEL = {
+        general: '通用',
+        wealth: '求财',
+        lost: '寻物',
+        ask: '问事',
+        exam: '考试',
+        travel: '出行'
+      };
+
+      // ================================================================
+      // 第3块：核心推算
+      // ================================================================
+
+      const HOUR_NUM = { '子': 1, '丑': 2, '寅': 3, '卯': 4, '辰': 5, '巳': 6, '午': 7, '未': 8, '申': 9, '酉': 10, '戌': 11,
+        '亥': 12 };
+
+      function xiaoLiuRen(month, day, hour) {
+        var startIdx = 0;
+        var monthIdx = (startIdx + (month - 1)) % 6;
+        var dayIdx = (monthIdx + (day - 1)) % 6;
+        var hourNum = HOUR_NUM[hour] || 1;
+        var finalIdx = (dayIdx + (hourNum - 1)) % 6;
+        return {
+          gong1: GONG_NAMES[monthIdx],
+          gong2: GONG_NAMES[dayIdx],
+          gong3: GONG_NAMES[finalIdx],
+          finalGong: GONG_NAMES[finalIdx],
+          index: finalIdx
+        };
+      }
+
+      function getGongInfo(gongName) {
+        return {
+          name: gongName,
+          wuxing: GONG_WUXING[gongName] || '未知',
+          direction: GONG_DIRECTION[gongName] || '未知',
+          luck: GONG_LUCK[gongName] || '未知'
+        };
+      }
+
+      function getSceneInterpretation(gongName, scene) {
+        var sceneData = SCENE_INTERP[scene] || SCENE_INTERP.general;
+        return sceneData[gongName] || sceneData.general[gongName] || '暂无场景解读。';
+      }
+
+      function getJudgment(finalGong, scene) {
+        var base = {
+          '大安': '诸事顺遂，宜静不宜动，万事可成。',
+          '留连': '事有阻滞，宜守不宜进，耐心等待。',
+          '速喜': '喜事临门，宜速不宜迟，把握良机。',
+          '赤口': '口舌是非，宜忍不宜争，谨慎言行。',
+          '小吉': '和合如意，宜进不宜退，积极作为。',
+          '空亡': '事多落空，宜退不宜进，守成为主。'
+        };
+        var sceneJudgment = {
+          wealth: { '大安': '守业生财', '留连': '守财待时', '速喜': '见财速取', '赤口': '避财免灾', '小吉': '稳中求财', '空亡': '财空勿贪' },
+          lost: { '大安': '近处可寻', '留连': '原处细查', '速喜': '速寻可归', '赤口': '难寻慎思', '小吉': '贵人帮寻', '空亡': '失物难回' },
+          ask: { '大安': '事顺可成', '留连': '事缓待机', '速喜': '事速决断', '赤口': '事防口舌', '小吉': '事有贵助', '空亡': '事空莫求' },
+          exam: { '大安': '考运亨通', '留连': '考运未至', '速喜': '考运爆棚', '赤口': '考运不佳', '小吉': '考运平稳', '空亡': '考运落空' },
+          travel: { '大安': '出行大吉', '留连': '出行迟滞', '速喜': '出行顺利', '赤口': '出行谨慎', '小吉': '出行平安', '空亡': '出行不宜' }
+        };
+        var sJ = sceneJudgment[scene] || {};
+        return sJ[finalGong] || base[finalGong] || '吉凶参半，顺其自然。';
+      }
+
+      // ================================================================
+      // 第4块：UI交互
+      // ================================================================
+
+      var monthInput = document.getElementById('monthInput');
+      var dayInput = document.getElementById('dayInput');
+      var hourSelect = document.getElementById('hourSelect');
+      var monthError = document.getElementById('monthError');
+      var dayError = document.getElementById('dayError');
+      var hourError = document.getElementById('hourError');
+      var calcBtn = document.getElementById('calcBtn');
+      var resetBtn = document.getElementById('resetBtn');
+      var resultList = document.getElementById('resultList');
+      var extraPanel = document.getElementById('extraPanel');
+      var resultSummary = document.getElementById('resultSummary');
+
+      // 按钮
+      var randomMonthBtn = document.getElementById('randomMonthBtn');
+      var randomDayBtn = document.getElementById('randomDayBtn');
+      var randomHourBtn = document.getElementById('randomHourBtn');
+      var randomAllBtn = document.getElementById('randomAllBtn');
+      var currentTimeBtn = document.getElementById('currentTimeBtn');
+
+      // 当前选中的场景
+      var currentScene = 'general';
+
+      // ---------- 演算次数统计 ----------
+      var calcCount = 0;
+
+      // 更新按钮文字
+      function updateCalcBtnText() {
+        calcBtn.textContent = '🔮 三宫演算 (' + calcCount + ')';
+      }
+
+      // ================================================================
+      // 数字输入框 +/- 按钮控制（参照八字合婚）
+      // ================================================================
+
+      /**
+       * 获取某个月份的最大天数
+       * @param {number} month - 月份 (1-12)
+       * @returns {number} 最大天数
+       */
+      function getMaxDays(month) {
+        // 小六壬中不考虑闰年，2月固定28天
+        var daysInMonth = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
+        return daysInMonth[month - 1] || 30;
+      }
+
+      /**
+       * 更新日输入框的 max 属性，并根据当前值自动修正
+       */
+      function updateDayMax() {
+        var month = parseInt(monthInput.value);
+        if (isNaN(month) || month < 1 || month > 12) return;
+
+        var maxDays = getMaxDays(month);
+        dayInput.max = maxDays;
+
+        // 如果当前值超过最大值，自动修正
+        var currentDay = parseInt(dayInput.value);
+        if (!isNaN(currentDay) && currentDay > maxDays) {
+          dayInput.value = maxDays;
+        }
+        // 如果当前值小于1，设为1
+        if (!isNaN(currentDay) && currentDay < 1) {
+          dayInput.value = 1;
+        }
+      }
+
+      function initNumberInputButtons() {
+        document.querySelectorAll('.number-input-wrapper').forEach(function(wrapper) {
+          var input = wrapper.querySelector('input[type="number"]');
+          var minusBtn = wrapper.querySelector('.num-btn-minus');
+          var plusBtn = wrapper.querySelector('.num-btn-plus');
+
+          if (!input || !minusBtn || !plusBtn) return;
+
+          var step = parseFloat(input.step) || 1;
+          var min = parseFloat(input.min) !== undefined && !isNaN(parseFloat(input.min)) ? parseFloat(input.min) : -
+            Infinity;
+          var max = parseFloat(input.max) !== undefined && !isNaN(parseFloat(input.max)) ? parseFloat(input.max) :
+            Infinity;
+
+          minusBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            var val = parseFloat(input.value);
+            if (isNaN(val)) val = 0;
+            var newVal = Math.max(min, val - step);
+            newVal = parseFloat(newVal.toFixed(10));
+            input.value = newVal;
+            input.dispatchEvent(new Event('input', { bubbles: true }));
+            input.dispatchEvent(new Event('change', { bubbles: true }));
+            // 如果是日输入框，触发联动更新
+            if (input.id === 'dayInput') {
+              updateDayMax();
+            }
+          });
+
+          plusBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            var val = parseFloat(input.value);
+            if (isNaN(val)) val = 0;
+            var newVal = Math.min(max, val + step);
+            newVal = parseFloat(newVal.toFixed(10));
+            input.value = newVal;
+            input.dispatchEvent(new Event('input', { bubbles: true }));
+            input.dispatchEvent(new Event('change', { bubbles: true }));
+            if (input.id === 'dayInput') {
+              updateDayMax();
+            }
+          });
+
+          input.addEventListener('keydown', function(e) {
+            if (e.key === 'ArrowUp') {
+              e.preventDefault();
+              plusBtn.click();
+            } else if (e.key === 'ArrowDown') {
+              e.preventDefault();
+              minusBtn.click();
+            }
+          });
+
+          // 日输入框的值变化时，检查是否超出当前月份的最大值
+          if (input.id === 'dayInput') {
+            input.addEventListener('change', function() {
+              var month = parseInt(monthInput.value);
+              if (!isNaN(month)) {
+                var maxDays = getMaxDays(month);
+                var val = parseInt(this.value);
+                if (!isNaN(val) && val > maxDays) {
+                  this.value = maxDays;
+                }
+                if (!isNaN(val) && val < 1) {
+                  this.value = 1;
+                }
+              }
+            });
+          }
+        });
+      }
+
+      // 场景按钮事件
+      document.querySelectorAll('.btn-scene').forEach(function(btn) {
+        btn.addEventListener('click', function() {
+          document.querySelectorAll('.btn-scene').forEach(function(b) { b.classList.remove('active'); });
+          this.classList.add('active');
+          currentScene = this.dataset.scene;
+          if (resultList.children.length > 0) {
+            renderResult(false);
+          } else {
+            updateExtraPanel(currentScene);
+          }
+        });
+      });
+
+      function validateInputs() {
+        var isValid = true;
+        monthError.textContent = '';
+        dayError.textContent = '';
+        hourError.textContent = '';
+        monthInput.classList.remove('error');
+        dayInput.classList.remove('error');
+        hourSelect.classList.remove('error');
+
+        var month = parseInt(monthInput.value);
+        var day = parseInt(dayInput.value);
+        var hour = hourSelect.value;
+
+        if (isNaN(month) || month < 1 || month > 12) {
+          monthError.textContent = '⚠️ 1-12';
+          monthInput.classList.add('error');
+          isValid = false;
+        }
+
+        var maxDays = getMaxDays(month);
+        if (isNaN(day) || day < 1 || day > maxDays) {
+          dayError.textContent = '⚠️ 1-' + maxDays;
+          dayInput.classList.add('error');
+          isValid = false;
+        }
+
+        if (!hour || !HOUR_NUM[hour]) {
+          hourError.textContent = '⚠️ 请选择';
+          hourSelect.classList.add('error');
+          isValid = false;
+        }
+        if (!isValid) {
+          var firstError = document.querySelector('.input-group .error');
+          if (firstError) {
+            var container = firstError.closest('.input-group');
+            if (container) container.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          }
+        }
+        return isValid;
+      }
+
+      function renderResult(countUp) {
+        if (!validateInputs()) return;
+
+        if (countUp !== false) {
+          calcCount++;
+          updateCalcBtnText();
+        }
+
+        try {
+          var month = parseInt(monthInput.value);
+          var day = parseInt(dayInput.value);
+          var hour = hourSelect.value;
+          var result = xiaoLiuRen(month, day, hour);
+
+          var gong1Info = getGongInfo(result.gong1);
+          var gong2Info = getGongInfo(result.gong2);
+          var gong3Info = getGongInfo(result.gong3);
+          var finalGong = result.gong3;
+
+          var interp1 = getSceneInterpretation(result.gong1, currentScene);
+          var interp2 = getSceneInterpretation(result.gong2, currentScene);
+          var interp3 = getSceneInterpretation(result.gong3, currentScene);
+          var judgment = getJudgment(finalGong, currentScene);
+          var sceneLabel = SCENE_LABEL[currentScene] || '通用';
+
+          var html = '';
+          var steps = [
+            { name: '月宫', gong: result.gong1, info: gong1Info, interp: interp1 },
+            { name: '日宫', gong: result.gong2, info: gong2Info, interp: interp2 },
+            { name: '时宫 (结果)', gong: result.gong3, info: gong3Info, interp: interp3 }
+          ];
+
+          steps.forEach(function(s, idx) {
+            var luckEmoji = s.info.luck.includes('大吉') ? '🌟' : (s.info.luck.includes('上吉') ? '⭐' : (s.info
+              .luck.includes('凶') ? '⚡' : '🌀'));
+            html += '<div class="result-item">';
+            html += '  <div class="result-header">';
+            html += '    <span class="result-num">' + (idx + 1) + '</span>';
+            html += '    <span class="result-title">' + s.name + ' · ' + s.gong + '</span>';
+            html += '    <span class="result-badge">' + s.info.luck + ' ' + luckEmoji + '</span>';
+            html += '  </div>';
+            html += '  <div class="result-content">';
+            html += '    <span class="label">五行</span>：' + s.info.wuxing + '　｜　<span class="label">方位</span>：' + s
+              .info.direction + '　｜　<span class="label">吉凶</span>：' + s.info.luck;
+            html += '    <br><span class="label">场景解读</span>（' + sceneLabel + '）：<span class="scene-interp">' + s
+              .interp + '</span>';
+            html += '  </div>';
+            html += '</div>';
+          });
+
+          html += '<div class="result-item" style="border-left-color: rgba(255,215,0,0.5);">';
+          html += '  <div class="result-header">';
+          html += '    <span class="result-num">★</span>';
+          html += '    <span class="result-title">综合断语 · ' + finalGong + '</span>';
+          html += '    <span class="result-badge">' + GONG_LUCK[finalGong] + '</span>';
+          html += '  </div>';
+          html += '  <div class="result-content">';
+          html += '    ' + judgment;
+          html += '  </div>';
+          html += '</div>';
+
+          resultList.innerHTML = html;
+          resultSummary.innerHTML = '🌀 ' + month + '月' + day + '日 ' + hour + '时 · ' + sceneLabel + ' · 得【' +
+            finalGong + '】' + GONG_LUCK[finalGong] + ' · ' + judgment.slice(0, 12) + '...';
+          updateExtraPanel(currentScene);
+
+        } catch (e) {
+          console.error(e);
+          resultList.innerHTML =
+            '<div class="result-item"><div class="result-content" style="color: #ff6b6b;">⚠️ 演算错误：' + (e.message ||
+              '请检查输入') + '</div></div>';
+        }
+      }
+
+      function updateExtraPanel(scene) {
+        var sceneLabel = SCENE_LABEL[scene] || '通用';
+        var html = '<div style="margin-bottom: 12px; color: #8899bb; font-size: 0.9rem;">📌 当前场景：<strong style="color:#8ab4ff;">' +
+          sceneLabel + '</strong> （点击上方场景按钮切换）</div>';
+        GONG_NAMES.forEach(function(name) {
+          var info = getGongInfo(name);
+          var interp = getSceneInterpretation(name, scene);
+          var luckEmoji = info.luck.includes('大吉') ? '🌟' : (info.luck.includes('上吉') ? '⭐' : (info.luck.includes(
+            '凶') ? '⚡' : '🌀'));
+          html += '<div style="margin-bottom: 10px; border-bottom: 1px solid rgba(255,255,255,0.06); padding-bottom: 8px;">';
+          html += '  <span style="color: #8ab4ff; font-weight: 600;">' + name + '</span> ';
+          html += '  <span style="color: #8899bb; font-size: 0.85rem;">' + info.wuxing + ' · ' + info.direction +
+            ' · ' + info.luck + ' ' + luckEmoji + '</span>';
+          html += '  <div style="font-size: 0.92rem; color: #c8d0e0; margin-top: 4px;">' + interp + '</div>';
+          html += '</div>';
+        });
+        extraPanel.innerHTML = html;
+      }
+
+      function resetExample() {
+        monthInput.value = 6;
+        dayInput.value = 23;
+        hourSelect.value = '寅';
+        // 更新日输入框的 max
+        updateDayMax();
+        clearErrors();
+        document.querySelectorAll('.btn-scene').forEach(function(b) { b.classList.remove('active'); });
+        document.querySelector('.btn-scene[data-scene="general"]').classList.add('active');
+        currentScene = 'general';
+        calcCount = 0;
+        updateCalcBtnText();
+        renderResult(false);
+      }
+
+      function clearErrors() {
+        monthError.textContent = '';
+        dayError.textContent = '';
+        hourError.textContent = '';
+        monthInput.classList.remove('error');
+        dayInput.classList.remove('error');
+        hourSelect.classList.remove('error');
+      }
+
+      // ================================================================
+      // 第5块：随机 & 当前时间（仅更新输入框，不触发演算）
+      // ================================================================
+
+      function randomInt(min, max) {
+        return Math.floor(Math.random() * (max - min + 1)) + min;
+      }
+
+      function randomHour() {
+        var hours = ['子', '丑', '寅', '卯', '辰', '巳', '午', '未', '申', '酉', '戌', '亥'];
+        return hours[randomInt(0, 11)];
+      }
+
+      randomMonthBtn.addEventListener('click', function() {
+        monthInput.value = randomInt(1, 12);
+        // 月份变化后更新日输入框的最大值
+        updateDayMax();
+        clearErrors();
+      });
+
+      randomDayBtn.addEventListener('click', function() {
+        var month = parseInt(monthInput.value);
+        var maxDays = getMaxDays(month);
+        dayInput.value = randomInt(1, maxDays);
+        clearErrors();
+      });
+
+      randomHourBtn.addEventListener('click', function() {
+        hourSelect.value = randomHour();
+        clearErrors();
+      });
+
+      randomAllBtn.addEventListener('click', function() {
+        var month = randomInt(1, 12);
+        monthInput.value = month;
+        var maxDays = getMaxDays(month);
+        dayInput.value = randomInt(1, maxDays);
+        hourSelect.value = randomHour();
+        // 更新日输入框的 max
+        updateDayMax();
+        clearErrors();
+      });
+
+      currentTimeBtn.addEventListener('click', function() {
+        var now = new Date();
+        var month = now.getMonth() + 1;
+        var day = now.getDate();
+        var hour = now.getHours();
+        var hourMap = {
+          0: '子', 1: '子', 2: '丑', 3: '丑', 4: '寅', 5: '寅',
+          6: '卯', 7: '卯', 8: '辰', 9: '辰', 10: '巳', 11: '巳',
+          12: '午', 13: '午', 14: '未', 15: '未', 16: '申', 17: '申',
+          18: '酉', 19: '酉', 20: '戌', 21: '戌', 22: '亥', 23: '亥'
+        };
+        var hourStr = hourMap[hour] || '子';
+        monthInput.value = month;
+        // 获取当前月份的最大天数，防止日期超出
+        var maxDays = getMaxDays(month);
+        dayInput.value = Math.min(day, maxDays);
+        hourSelect.value = hourStr;
+        // 更新日输入框的 max
+        updateDayMax();
+        clearErrors();
+      });
+
+      // ================================================================
+      // 第6块：事件绑定
+      // ================================================================
+
+      calcBtn.addEventListener('click', function() {
+        renderResult(true);
+      });
+
+      resetBtn.addEventListener('click', resetExample);
+
+      monthInput.addEventListener('keydown', function(e) { if (e.key === 'Enter') renderResult(true); });
+      dayInput.addEventListener('keydown', function(e) { if (e.key === 'Enter') renderResult(true); });
+      hourSelect.addEventListener('keydown', function(e) { if (e.key === 'Enter') renderResult(true); });
+
+      // 月份变化时，联动更新日输入框的最大值
+      monthInput.addEventListener('change', function() {
+        updateDayMax();
+      });
+
+      monthInput.addEventListener('input', function() {
+        updateDayMax();
+      });
+
+      window.addEventListener('load', function() {
+        currentScene = 'general';
+        updateExtraPanel('general');
+        // 初始化数字输入框的 +/- 按钮
+        initNumberInputButtons();
+        // 初始化日输入框的 max
+        updateDayMax();
+        calcCount = 0;
+        updateCalcBtnText();
+        setTimeout(function() {
+          renderResult(false);
+        }, 80);
+      });
+
+    })();
+  </script>
+</body>
+</html>
