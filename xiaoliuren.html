@@ -56,6 +56,144 @@
       margin-top: 6px;
       font-weight: 300;
     }
+    /* 输入模式切换 */
+    .mode-toggle {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 16px;
+    }
+    .mode-toggle label {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-weight: 400;
+      font-size: 0.92rem;
+      cursor: pointer;
+      color: #aabbdd;
+      padding: 4px 16px;
+      border-radius: 30px;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      background: rgba(255, 255, 255, 0.04);
+      transition: 0.2s;
+    }
+    .mode-toggle label.active {
+      border-color: rgba(60, 120, 255, 0.4);
+      background: rgba(60, 120, 255, 0.12);
+      color: #8ab4ff;
+    }
+    .mode-toggle input[type="radio"] {
+      display: none;
+    }
+    /* 暗数模式输入区 */
+    .dark-number-input {
+      display: none;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 16px;
+      background: rgba(255, 255, 255, 0.04);
+      padding: 20px 18px;
+      border-radius: 28px;
+      margin-bottom: 16px;
+      border: 1px solid rgba(255, 255, 255, 0.06);
+    }
+    .dark-number-input.active {
+      display: grid;
+    }
+    .dark-number-input .number-input-wrapper {
+      display: flex;
+      align-items: center;
+      gap: 0;
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 40px;
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      overflow: hidden;
+      transition: 0.25s ease;
+      width: 100%;
+    }
+    .dark-number-input .number-input-wrapper:hover {
+      border-color: rgba(60, 120, 255, 0.45);
+      box-shadow: 0 0 20px rgba(60, 120, 255, 0.12);
+    }
+    .dark-number-input .number-input-wrapper:focus-within {
+      border-color: rgba(100, 180, 255, 0.4);
+      box-shadow: 0 0 25px rgba(60, 120, 255, 0.20), 0 0 50px rgba(60, 120, 255, 0.06);
+    }
+    .dark-number-input .number-input-wrapper input[type="number"] {
+      flex: 1;
+      border: none;
+      background: transparent;
+      text-align: center;
+      padding: 10px 4px;
+      color: #e8edf5;
+      font-size: 1rem;
+      font-family: inherit;
+      outline: none;
+      -moz-appearance: textfield;
+      min-width: 30px;
+      width: 100%;
+    }
+    .dark-number-input .number-input-wrapper input[type="number"]::-webkit-inner-spin-button,
+    .dark-number-input .number-input-wrapper input[type="number"]::-webkit-outer-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
+    }
+    .dark-number-input .num-btn {
+      background: rgba(255, 255, 255, 0.06);
+      border: none;
+      color: #8ab4ff;
+      font-size: 1.1rem;
+      font-weight: 600;
+      width: 32px;
+      height: 40px;
+      cursor: pointer;
+      transition: 0.2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      user-select: none;
+      font-family: inherit;
+      line-height: 1;
+      flex-shrink: 0;
+    }
+    .dark-number-input .num-btn:hover {
+      background: rgba(60, 120, 255, 0.2);
+    }
+    .dark-number-input .num-btn:active {
+      background: rgba(60, 120, 255, 0.35);
+      transform: scale(0.92);
+    }
+    .dark-number-input .num-btn-minus {
+      border-radius: 40px 0 0 40px;
+      padding-left: 2px;
+    }
+    .dark-number-input .num-btn-plus {
+      border-radius: 0 40px 40px 0;
+      padding-right: 2px;
+    }
+    .dark-number-input .number-input-wrapper input.error {
+      color: #ff6b6b;
+    }
+    .dark-number-input .input-group {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      min-width: 0;
+    }
+    .dark-number-input .input-group label {
+      font-size: 0.95rem;
+      font-weight: 500;
+      color: #aabbdd;
+      letter-spacing: 1px;
+      margin-left: 6px;
+    }
+    .dark-number-input .input-error {
+      color: #ff6b6b;
+      font-size: 0.78rem;
+      margin-left: 10px;
+      margin-top: 2px;
+      min-height: 18px;
+    }
     /* 输入区 – 三列一行，每列独立 */
     .input-grid {
       display: grid;
@@ -66,6 +204,9 @@
       border-radius: 28px;
       margin-bottom: 16px;
       border: 1px solid rgba(255, 255, 255, 0.06);
+    }
+    .input-grid.hidden {
+      display: none;
     }
     .input-group {
       display: flex;
@@ -92,12 +233,10 @@
       transition: 0.25s ease;
       width: 100%;
     }
-    /* 悬停时发光 */
     .number-input-wrapper:hover {
       border-color: rgba(60, 120, 255, 0.45);
       box-shadow: 0 0 20px rgba(60, 120, 255, 0.12);
     }
-    /* 聚焦时发光（点击输入框时） */
     .number-input-wrapper:focus-within {
       border-color: rgba(100, 180, 255, 0.4);
       box-shadow: 0 0 25px rgba(60, 120, 255, 0.20), 0 0 50px rgba(60, 120, 255, 0.06);
@@ -176,18 +315,15 @@
       background-position: right 14px center;
       cursor: pointer;
     }
-    /* 悬停时发光 */
     .input-group select:hover {
       border-color: rgba(60, 120, 255, 0.55) !important;
       box-shadow: 0 0 20px rgba(60, 120, 255, 0.15);
     }
-    /* 聚焦时发光（点击时） */
     .input-group select:focus {
       border-color: rgba(100, 180, 255, 0.7) !important;
       box-shadow: 0 0 25px rgba(60, 120, 255, 0.25), 0 0 50px rgba(60, 120, 255, 0.08);
       background: rgba(255, 255, 255, 0.07);
     }
-    /* 下拉选项菜单样式（不受边框影响） */
     .input-group select option {
       background: #0d1b2a;
       color: #c8d0e0;
@@ -210,7 +346,7 @@
       margin-top: 2px;
       min-height: 18px;
     }
-    /* 列内辅助按钮（随机/当前时间） */
+    /* 列内辅助按钮 */
     .inline-actions {
       display: flex;
       gap: 6px;
@@ -321,6 +457,25 @@
       cursor: not-allowed;
       transform: none !important;
     }
+    /* 辅助按钮行 */
+    .action-row {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+    .action-row .btn {
+      padding: 6px 22px;
+      min-width: auto;
+      font-size: 0.92rem;
+      flex: 0 1 auto;
+      max-width: none;
+      white-space: nowrap;
+    }
+    .action-row .btn.hidden {
+      display: none;
+    }
     /* 结果展示 */
     .result-container {
       margin: 20px 0 12px;
@@ -393,6 +548,129 @@
       border-radius: 20px;
       display: inline-block;
       margin-top: 4px;
+    }
+    /* 吉凶星级 */
+    .stars {
+      font-size: 1.4rem;
+      letter-spacing: 2px;
+      margin-top: 2px;
+    }
+    .stars .star-full {
+      color: #f7d44a;
+    }
+    .stars .star-empty {
+      color: #445566;
+    }
+    /* 速断口诀 */
+    .koujue {
+      background: rgba(60, 120, 255, 0.08);
+      border-radius: 16px;
+      padding: 10px 16px;
+      margin-top: 6px;
+      font-size: 0.95rem;
+      color: #c8d0e0;
+      border-left: 3px solid rgba(60, 120, 255, 0.3);
+    }
+    .koujue .label {
+      color: #8ab4ff;
+      font-weight: 600;
+    }
+    /* 历史记录 */
+    .history-section {
+      margin-top: 18px;
+      background: rgba(255, 255, 255, 0.03);
+      border-radius: 28px;
+      padding: 16px 18px 18px;
+      border: 1px solid rgba(255, 255, 255, 0.06);
+    }
+    .history-section .history-title {
+      text-align: center;
+      font-size: 1.1rem;
+      font-weight: 500;
+      color: #8ab4ff;
+      letter-spacing: 3px;
+      margin-bottom: 14px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .history-section .history-title .clear-btn {
+      font-size: 0.75rem;
+      color: #8899bb;
+      background: rgba(255, 255, 255, 0.06);
+      padding: 4px 14px;
+      border-radius: 30px;
+      cursor: pointer;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      transition: 0.2s;
+      font-family: inherit;
+    }
+    .history-section .history-title .clear-btn:hover {
+      background: rgba(255, 80, 80, 0.15);
+      border-color: rgba(255, 80, 80, 0.2);
+      color: #ff6b6b;
+    }
+    .history-list {
+      max-height: 200px;
+      overflow-y: auto;
+      scrollbar-width: thin;
+      scrollbar-color: rgba(60, 120, 255, 0.3) transparent;
+    }
+    .history-list::-webkit-scrollbar {
+      width: 4px;
+    }
+    .history-list::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    .history-list::-webkit-scrollbar-thumb {
+      background: rgba(60, 120, 255, 0.3);
+      border-radius: 10px;
+    }
+    .history-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 8px 12px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+      font-size: 0.88rem;
+      color: #c8d0e0;
+    }
+    .history-item:last-child {
+      border-bottom: none;
+    }
+    .history-item .h-left {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+    }
+    .history-item .h-left .h-gong {
+      color: #8ab4ff;
+      font-weight: 600;
+    }
+    .history-item .h-left .h-input {
+      color: #8899bb;
+      font-size: 0.8rem;
+    }
+    .history-item .h-luck {
+      font-size: 0.8rem;
+      padding: 2px 12px;
+      border-radius: 20px;
+    }
+    .history-item .h-luck.luck-吉 {
+      background: rgba(100, 200, 100, 0.15);
+      color: #66bb6a;
+    }
+    .history-item .h-luck.luck-凶 {
+      background: rgba(255, 80, 80, 0.15);
+      color: #ff6b6b;
+    }
+    .history-empty {
+      text-align: center;
+      color: #556688;
+      font-size: 0.9rem;
+      padding: 20px 0;
     }
     /* 六宫详解 */
     .extra-detail {
@@ -470,9 +748,67 @@
       flex-shrink: 0;
     }
 
+    /* 六宫掌诀图 */
+    .zhangjue-section {
+      margin-top: 18px;
+      background: rgba(255, 255, 255, 0.03);
+      border-radius: 28px;
+      padding: 16px 18px 18px;
+      border: 1px solid rgba(255, 255, 255, 0.06);
+    }
+    .zhangjue-section .zhangjue-title {
+      text-align: center;
+      font-size: 1.1rem;
+      font-weight: 500;
+      color: #8ab4ff;
+      letter-spacing: 3px;
+      margin-bottom: 14px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+    }
+    .zhangjue-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+      max-width: 360px;
+      margin: 0 auto;
+    }
+    .zhangjue-item {
+      text-align: center;
+      padding: 10px 6px;
+      border-radius: 16px;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      transition: 0.2s;
+      font-size: 0.85rem;
+    }
+    .zhangjue-item .zj-name {
+      font-weight: 600;
+      font-size: 1rem;
+      display: block;
+    }
+    .zhangjue-item .zj-luck {
+      font-size: 0.7rem;
+      display: block;
+      margin-top: 2px;
+    }
+    .zhangjue-item.zj-da-an { border-color: rgba(100, 200, 100, 0.3); }
+    .zhangjue-item.zj-liu-lian { border-color: rgba(255, 200, 50, 0.3); }
+    .zhangjue-item.zj-su-xi { border-color: rgba(255, 100, 100, 0.3); }
+    .zhangjue-item.zj-chi-kou { border-color: rgba(255, 80, 80, 0.4); }
+    .zhangjue-item.zj-xiao-ji { border-color: rgba(100, 200, 200, 0.3); }
+    .zhangjue-item.zj-kong-wang { border-color: rgba(150, 100, 200, 0.3); }
+    .zhangjue-order {
+      text-align: center;
+      color: #556688;
+      font-size: 0.7rem;
+      margin-top: 10px;
+      letter-spacing: 1px;
+    }
+
     /* 响应式 */
     @media (max-width: 820px) {
-      .input-grid {
+      .input-grid, .dark-number-input {
         grid-template-columns: 1fr 1fr 1fr;
         gap: 12px;
         padding: 16px 14px;
@@ -501,9 +837,23 @@
         padding: 8px 4px;
         font-size: 0.9rem;
       }
+      .zhangjue-grid {
+        max-width: 300px;
+      }
+      .zhangjue-item {
+        padding: 8px 4px;
+        font-size: 0.75rem;
+      }
+      .zhangjue-item .zj-name {
+        font-size: 0.85rem;
+      }
+      .action-row .btn {
+        font-size: 0.82rem;
+        padding: 5px 16px;
+      }
     }
     @media (max-width: 640px) {
-      .input-grid {
+      .input-grid, .dark-number-input {
         grid-template-columns: 1fr;
         gap: 10px;
         padding: 14px 12px;
@@ -530,6 +880,28 @@
         padding: 6px 4px;
         font-size: 0.85rem;
       }
+      .zhangjue-grid {
+        max-width: 260px;
+        gap: 6px;
+      }
+      .zhangjue-item {
+        padding: 6px 3px;
+        font-size: 0.7rem;
+      }
+      .zhangjue-item .zj-name {
+        font-size: 0.8rem;
+      }
+      .mode-toggle label {
+        font-size: 0.8rem;
+        padding: 3px 12px;
+      }
+      .action-row {
+        gap: 8px;
+      }
+      .action-row .btn {
+        font-size: 0.78rem;
+        padding: 4px 14px;
+      }
     }
   </style>
 </head>
@@ -537,9 +909,18 @@
   <div class="container" id="app">
     <h1>🌀 小六壬 · 全场景演算 <small>六宫断事 · 吉凶分明</small></h1>
 
-    <!-- 输入区：月日时三列一行 -->
-    <div class="input-grid">
-      <!-- 月 -->
+    <!-- 模式切换 -->
+    <div class="mode-toggle" id="modeToggle">
+      <label class="active" data-mode="datetime">
+        <input type="radio" name="inputMode" value="datetime" checked> 📅 月日时
+      </label>
+      <label data-mode="darknum">
+        <input type="radio" name="inputMode" value="darknum"> 🔢 暗数（数字起卦）
+      </label>
+    </div>
+
+    <!-- 月日时输入区 -->
+    <div class="input-grid" id="datetimeInput">
       <div class="input-group">
         <label>📅 月</label>
         <div class="number-input-wrapper">
@@ -552,12 +933,11 @@
           <button class="btn-inline" id="randomMonthBtn">🎲 随机月</button>
         </div>
       </div>
-      <!-- 日 -->
       <div class="input-group">
         <label>📆 日</label>
         <div class="number-input-wrapper">
           <button class="num-btn num-btn-minus" type="button">−</button>
-          <input type="number" id="dayInput" value="23" min="1" max="30">
+          <input type="number" id="dayInput" value="23" min="1" max="31">
           <button class="num-btn num-btn-plus" type="button">+</button>
         </div>
         <div class="input-error" id="dayError"></div>
@@ -565,7 +945,6 @@
           <button class="btn-inline" id="randomDayBtn">🎲 随机日</button>
         </div>
       </div>
-      <!-- 时 -->
       <div class="input-group">
         <label>🕒 时</label>
         <select id="hourSelect">
@@ -589,10 +968,41 @@
       </div>
     </div>
 
-    <!-- 全局辅助按钮（随机全部 + 当前时间）单独一行，置于输入区下方 -->
-    <div class="action-row" style="display: flex; flex-wrap: wrap; justify-content: center; gap: 12px; margin-bottom: 16px;">
-      <button class="btn btn-secondary" id="randomAllBtn" style="padding: 6px 22px; min-width: auto; font-size: 0.92rem; flex: 0 1 auto; max-width: none; white-space: nowrap;">🎲 随机全部</button>
-      <button class="btn btn-secondary" id="currentTimeBtn" style="padding: 6px 22px; min-width: auto; font-size: 0.92rem; flex: 0 1 auto; max-width: none; white-space: nowrap;">🕒 当前月日时</button>
+    <!-- 暗数输入区 -->
+    <div class="dark-number-input" id="darknumInput">
+      <div class="input-group">
+        <label>🔢 第一数</label>
+        <div class="number-input-wrapper">
+          <button class="num-btn num-btn-minus" type="button">−</button>
+          <input type="number" id="num1Input" value="3" min="1" max="999" maxlength="3">
+          <button class="num-btn num-btn-plus" type="button">+</button>
+        </div>
+        <div class="input-error" id="num1Error"></div>
+      </div>
+      <div class="input-group">
+        <label>🔢 第二数</label>
+        <div class="number-input-wrapper">
+          <button class="num-btn num-btn-minus" type="button">−</button>
+          <input type="number" id="num2Input" value="6" min="1" max="999" maxlength="3">
+          <button class="num-btn num-btn-plus" type="button">+</button>
+        </div>
+        <div class="input-error" id="num2Error"></div>
+      </div>
+      <div class="input-group">
+        <label>🔢 第三数</label>
+        <div class="number-input-wrapper">
+          <button class="num-btn num-btn-minus" type="button">−</button>
+          <input type="number" id="num3Input" value="9" min="1" max="999" maxlength="3">
+          <button class="num-btn num-btn-plus" type="button">+</button>
+        </div>
+        <div class="input-error" id="num3Error"></div>
+      </div>
+    </div>
+
+    <!-- 全局辅助按钮 -->
+    <div class="action-row">
+      <button class="btn btn-secondary" id="randomAllBtn">🎲 随机全部</button>
+      <button class="btn btn-secondary" id="currentTimeBtn">🕒 当前月日时</button>
     </div>
 
     <!-- 场景选择器 -->
@@ -615,6 +1025,31 @@
     <div class="result-container" id="resultContainer">
       <div id="resultList">
         <!-- 动态生成三宫结果 -->
+      </div>
+    </div>
+
+    <!-- 六宫掌诀图 -->
+    <div class="zhangjue-section" id="zhangjueSection">
+      <div class="zhangjue-title">🖐️ 六宫掌诀图</div>
+      <div class="zhangjue-grid">
+        <div class="zhangjue-item zj-da-an"><span class="zj-name">大安</span><span class="zj-luck" style="color:#66bb6a;">大吉</span></div>
+        <div class="zhangjue-item zj-liu-lian"><span class="zj-name">留连</span><span class="zj-luck" style="color:#f7d44a;">中凶</span></div>
+        <div class="zhangjue-item zj-su-xi"><span class="zj-name">速喜</span><span class="zj-luck" style="color:#ff6b6b;">大吉</span></div>
+        <div class="zhangjue-item zj-chi-kou"><span class="zj-name">赤口</span><span class="zj-luck" style="color:#ff4444;">大凶</span></div>
+        <div class="zhangjue-item zj-xiao-ji"><span class="zj-name">小吉</span><span class="zj-luck" style="color:#4dd0e1;">上吉</span></div>
+        <div class="zhangjue-item zj-kong-wang"><span class="zj-name">空亡</span><span class="zj-luck" style="color:#b39ddb;">大凶</span></div>
+      </div>
+      <div class="zhangjue-order">大安 → 留连 → 速喜 → 赤口 → 小吉 → 空亡</div>
+    </div>
+
+    <!-- 历史记录 -->
+    <div class="history-section" id="historySection">
+      <div class="history-title">
+        <span>📜 演算历史</span>
+        <button class="clear-btn" id="clearHistoryBtn">清空记录</button>
+      </div>
+      <div class="history-list" id="historyList">
+        <div class="history-empty">暂无记录，开始您的第一次演算吧</div>
       </div>
     </div>
 
@@ -642,9 +1077,19 @@
       const GONG_WUXING = { '大安': '木', '留连': '水', '速喜': '火', '赤口': '金', '小吉': '水', '空亡': '土' };
       const GONG_DIRECTION = { '大安': '东方', '留连': '北方', '速喜': '南方', '赤口': '西方', '小吉': '东北', '空亡': '中央' };
       const GONG_LUCK = { '大安': '大吉', '留连': '中凶', '速喜': '大吉', '赤口': '大凶', '小吉': '上吉', '空亡': '大凶' };
+      const GONG_LUCK_LEVEL = { '大安': 5, '留连': 2, '速喜': 5, '赤口': 0, '小吉': 4, '空亡': 1 };
+
+      const KOUJUE = {
+        '大安': '身不动时，五行属木，失物去不远，宅舍保安康。',
+        '留连': '卒未归时，五行属水，失物南方见，急讨方称心。',
+        '速喜': '人即至时，五行属火，失物申午未，求财向南方。',
+        '赤口': '官事凶时，五行属金，失物急去寻，行人有惊慌。',
+        '小吉': '人来喜时，五行属水，失物在坤方，行人立便至。',
+        '空亡': '音信稀时，五行属土，失物不可寻，行人正彷徨。'
+      };
 
       // ================================================================
-      // 第2块：场景释义（整合自图片内容 + 扩展）
+      // 第2块：场景释义
       // ================================================================
 
       const SCENE_INTERP = {
@@ -729,12 +1174,29 @@
         };
       }
 
+      // 暗数起卦（支持1-999）
+      function xiaoLiuRenByNumbers(num1, num2, num3) {
+        // 取模运算，适配任意正整数
+        var startIdx = 0;
+        var idx1 = (startIdx + (num1 - 1)) % 6;
+        var idx2 = (idx1 + (num2 - 1)) % 6;
+        var idx3 = (idx2 + (num3 - 1)) % 6;
+        return {
+          gong1: GONG_NAMES[idx1],
+          gong2: GONG_NAMES[idx2],
+          gong3: GONG_NAMES[idx3],
+          finalGong: GONG_NAMES[idx3],
+          index: idx3
+        };
+      }
+
       function getGongInfo(gongName) {
         return {
           name: gongName,
           wuxing: GONG_WUXING[gongName] || '未知',
           direction: GONG_DIRECTION[gongName] || '未知',
-          luck: GONG_LUCK[gongName] || '未知'
+          luck: GONG_LUCK[gongName] || '未知',
+          level: GONG_LUCK_LEVEL[gongName] || 2
         };
       }
 
@@ -763,8 +1225,67 @@
         return sJ[finalGong] || base[finalGong] || '吉凶参半，顺其自然。';
       }
 
+      function getStars(level) {
+        var full = '★'.repeat(level);
+        var empty = '☆'.repeat(5 - level);
+        return full + empty;
+      }
+
       // ================================================================
-      // 第4块：UI交互
+      // 第4块：历史记录
+      // ================================================================
+
+      var historyData = [];
+
+      function saveHistory() {
+        try {
+          localStorage.setItem('xiaoliuren_history', JSON.stringify(historyData));
+        } catch (e) {
+          // ignore
+        }
+      }
+
+      function addHistory(inputStr, resultStr, gongName, luck) {
+        historyData.unshift({
+          time: new Date().toLocaleString(),
+          input: inputStr,
+          result: resultStr,
+          gong: gongName,
+          luck: luck
+        });
+        if (historyData.length > 50) historyData.pop();
+        saveHistory();
+        renderHistory();
+      }
+
+      function renderHistory() {
+        var list = document.getElementById('historyList');
+        if (historyData.length === 0) {
+          list.innerHTML = '<div class="history-empty">暂无记录，开始您的第一次演算吧</div>';
+          return;
+        }
+        var html = '';
+        historyData.forEach(function(item) {
+          var luckClass = item.luck.includes('吉') ? 'luck-吉' : (item.luck.includes('凶') ? 'luck-凶' : '');
+          html += '<div class="history-item">' +
+            '<div class="h-left">' +
+            '<span class="h-gong">' + item.gong + '</span>' +
+            '<span class="h-input">' + item.input + '</span>' +
+            '</div>' +
+            '<span class="h-luck ' + luckClass + '">' + item.luck + '</span>' +
+            '</div>';
+        });
+        list.innerHTML = html;
+      }
+
+      function clearHistory() {
+        historyData = [];
+        saveHistory();
+        renderHistory();
+      }
+
+      // ================================================================
+      // 第5块：UI交互
       // ================================================================
 
       var monthInput = document.getElementById('monthInput');
@@ -773,72 +1294,38 @@
       var monthError = document.getElementById('monthError');
       var dayError = document.getElementById('dayError');
       var hourError = document.getElementById('hourError');
+      var num1Input = document.getElementById('num1Input');
+      var num2Input = document.getElementById('num2Input');
+      var num3Input = document.getElementById('num3Input');
+      var num1Error = document.getElementById('num1Error');
+      var num2Error = document.getElementById('num2Error');
+      var num3Error = document.getElementById('num3Error');
       var calcBtn = document.getElementById('calcBtn');
       var resetBtn = document.getElementById('resetBtn');
       var resultList = document.getElementById('resultList');
       var extraPanel = document.getElementById('extraPanel');
       var resultSummary = document.getElementById('resultSummary');
 
-      // 按钮
       var randomMonthBtn = document.getElementById('randomMonthBtn');
       var randomDayBtn = document.getElementById('randomDayBtn');
       var randomHourBtn = document.getElementById('randomHourBtn');
       var randomAllBtn = document.getElementById('randomAllBtn');
       var currentTimeBtn = document.getElementById('currentTimeBtn');
+      var clearHistoryBtn = document.getElementById('clearHistoryBtn');
 
-      // 当前选中的场景
       var currentScene = 'general';
-
-      // ---------- 演算次数统计 ----------
       var calcCount = 0;
-
-      // 更新按钮文字
-      function updateCalcBtnText() {
-        calcBtn.textContent = '🔮 三宫演算 (' + calcCount + ')';
-      }
+      var currentMode = 'datetime';
 
       // ================================================================
-      // 数字输入框 +/- 按钮控制（参照八字合婚）
+      // 数字输入框 +/- 按钮初始化（通用）
       // ================================================================
 
-      /**
-       * 获取某个月份的最大天数
-       * @param {number} month - 月份 (1-12)
-       * @returns {number} 最大天数
-       */
-      function getMaxDays(month) {
-        // 小六壬中不考虑闰年，2月固定28天
-        var daysInMonth = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
-        return daysInMonth[month - 1] || 30;
-      }
-
-      /**
-       * 更新日输入框的 max 属性，并根据当前值自动修正
-       */
-      function updateDayMax() {
-        var month = parseInt(monthInput.value);
-        if (isNaN(month) || month < 1 || month > 12) return;
-
-        var maxDays = getMaxDays(month);
-        dayInput.max = maxDays;
-
-        // 如果当前值超过最大值，自动修正
-        var currentDay = parseInt(dayInput.value);
-        if (!isNaN(currentDay) && currentDay > maxDays) {
-          dayInput.value = maxDays;
-        }
-        // 如果当前值小于1，设为1
-        if (!isNaN(currentDay) && currentDay < 1) {
-          dayInput.value = 1;
-        }
-      }
-
-      function initNumberInputButtons() {
+      function initNumberInputs() {
         document.querySelectorAll('.number-input-wrapper').forEach(function(wrapper) {
           var input = wrapper.querySelector('input[type="number"]');
           var minusBtn = wrapper.querySelector('.num-btn-minus');
           var plusBtn = wrapper.querySelector('.num-btn-plus');
-
           if (!input || !minusBtn || !plusBtn) return;
 
           var step = parseFloat(input.step) || 1;
@@ -847,65 +1334,80 @@
           var max = parseFloat(input.max) !== undefined && !isNaN(parseFloat(input.max)) ? parseFloat(input.max) :
             Infinity;
 
-          minusBtn.addEventListener('click', function(e) {
-            e.preventDefault();
+          function updateValue(delta) {
             var val = parseFloat(input.value);
             if (isNaN(val)) val = 0;
-            var newVal = Math.max(min, val - step);
+            var newVal = Math.min(max, Math.max(min, val + delta * step));
             newVal = parseFloat(newVal.toFixed(10));
             input.value = newVal;
             input.dispatchEvent(new Event('input', { bubbles: true }));
             input.dispatchEvent(new Event('change', { bubbles: true }));
-            // 如果是日输入框，触发联动更新
-            if (input.id === 'dayInput') {
-              updateDayMax();
-            }
-          });
+            if (input.id === 'dayInput') updateDayMax();
+          }
 
-          plusBtn.addEventListener('click', function(e) {
-            e.preventDefault();
-            var val = parseFloat(input.value);
-            if (isNaN(val)) val = 0;
-            var newVal = Math.min(max, val + step);
-            newVal = parseFloat(newVal.toFixed(10));
-            input.value = newVal;
-            input.dispatchEvent(new Event('input', { bubbles: true }));
-            input.dispatchEvent(new Event('change', { bubbles: true }));
-            if (input.id === 'dayInput') {
-              updateDayMax();
-            }
-          });
+          minusBtn.addEventListener('click', function(e) { e.preventDefault();
+            updateValue(-1); });
+          plusBtn.addEventListener('click', function(e) { e.preventDefault();
+            updateValue(1); });
 
           input.addEventListener('keydown', function(e) {
-            if (e.key === 'ArrowUp') {
-              e.preventDefault();
-              plusBtn.click();
-            } else if (e.key === 'ArrowDown') {
-              e.preventDefault();
-              minusBtn.click();
-            }
+            if (e.key === 'ArrowUp') { e.preventDefault();
+              updateValue(1); } else if (e.key === 'ArrowDown') { e.preventDefault();
+              updateValue(-1); }
           });
-
-          // 日输入框的值变化时，检查是否超出当前月份的最大值
-          if (input.id === 'dayInput') {
-            input.addEventListener('change', function() {
-              var month = parseInt(monthInput.value);
-              if (!isNaN(month)) {
-                var maxDays = getMaxDays(month);
-                var val = parseInt(this.value);
-                if (!isNaN(val) && val > maxDays) {
-                  this.value = maxDays;
-                }
-                if (!isNaN(val) && val < 1) {
-                  this.value = 1;
-                }
-              }
-            });
-          }
         });
       }
 
-      // 场景按钮事件
+      // ================================================================
+      // 月份天数联动（月日时模式）
+      // ================================================================
+
+      function getMaxDays(month) {
+        var daysInMonth = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
+        return daysInMonth[month - 1] || 30;
+      }
+
+      function updateDayMax() {
+        var month = parseInt(monthInput.value);
+        if (isNaN(month) || month < 1 || month > 12) return;
+        var maxDays = getMaxDays(month);
+        dayInput.max = maxDays;
+        var currentDay = parseInt(dayInput.value);
+        if (!isNaN(currentDay) && currentDay > maxDays) {
+          dayInput.value = maxDays;
+        }
+        if (!isNaN(currentDay) && currentDay < 1) {
+          dayInput.value = 1;
+        }
+      }
+
+      // ================================================================
+      // 模式切换
+      // ================================================================
+
+      document.querySelectorAll('#modeToggle label').forEach(function(label) {
+        label.addEventListener('click', function() {
+          document.querySelectorAll('#modeToggle label').forEach(function(l) { l.classList.remove('active'); });
+          this.classList.add('active');
+          currentMode = this.dataset.mode;
+
+          if (currentMode === 'datetime') {
+            document.getElementById('datetimeInput').classList.remove('hidden');
+            document.getElementById('darknumInput').classList.remove('active');
+            currentTimeBtn.classList.remove('hidden');
+          } else {
+            document.getElementById('datetimeInput').classList.add('hidden');
+            document.getElementById('darknumInput').classList.add('active');
+            currentTimeBtn.classList.add('hidden');
+          }
+          clearErrors();
+        });
+      });
+
+      // ================================================================
+      // 场景切换
+      // ================================================================
+
       document.querySelectorAll('.btn-scene').forEach(function(btn) {
         btn.addEventListener('click', function() {
           document.querySelectorAll('.btn-scene').forEach(function(b) { b.classList.remove('active'); });
@@ -919,39 +1421,77 @@
         });
       });
 
+      // ================================================================
+      // 验证和渲染
+      // ================================================================
+
+      function updateCalcBtnText() {
+        calcBtn.textContent = '🔮 三宫演算 (' + calcCount + ')';
+      }
+
       function validateInputs() {
         var isValid = true;
-        monthError.textContent = '';
-        dayError.textContent = '';
-        hourError.textContent = '';
-        monthInput.classList.remove('error');
-        dayInput.classList.remove('error');
-        hourSelect.classList.remove('error');
 
-        var month = parseInt(monthInput.value);
-        var day = parseInt(dayInput.value);
-        var hour = hourSelect.value;
+        if (currentMode === 'datetime') {
+          monthError.textContent = '';
+          dayError.textContent = '';
+          hourError.textContent = '';
+          monthInput.classList.remove('error');
+          dayInput.classList.remove('error');
+          hourSelect.classList.remove('error');
 
-        if (isNaN(month) || month < 1 || month > 12) {
-          monthError.textContent = '⚠️ 1-12';
-          monthInput.classList.add('error');
-          isValid = false;
+          var month = parseInt(monthInput.value);
+          var day = parseInt(dayInput.value);
+          var hour = hourSelect.value;
+
+          if (isNaN(month) || month < 1 || month > 12) {
+            monthError.textContent = '⚠️ 1-12';
+            monthInput.classList.add('error');
+            isValid = false;
+          }
+          var maxDays = getMaxDays(month);
+          if (isNaN(day) || day < 1 || day > maxDays) {
+            dayError.textContent = '⚠️ 1-' + maxDays;
+            dayInput.classList.add('error');
+            isValid = false;
+          }
+          if (!hour || !HOUR_NUM[hour]) {
+            hourError.textContent = '⚠️ 请选择';
+            hourSelect.classList.add('error');
+            isValid = false;
+          }
+        } else {
+          // 暗数模式：支持1-999
+          num1Error.textContent = '';
+          num2Error.textContent = '';
+          num3Error.textContent = '';
+          num1Input.classList.remove('error');
+          num2Input.classList.remove('error');
+          num3Input.classList.remove('error');
+
+          var n1 = parseInt(num1Input.value);
+          var n2 = parseInt(num2Input.value);
+          var n3 = parseInt(num3Input.value);
+
+          if (isNaN(n1) || n1 < 1 || n1 > 999) {
+            num1Error.textContent = '⚠️ 1-999';
+            num1Input.classList.add('error');
+            isValid = false;
+          }
+          if (isNaN(n2) || n2 < 1 || n2 > 999) {
+            num2Error.textContent = '⚠️ 1-999';
+            num2Input.classList.add('error');
+            isValid = false;
+          }
+          if (isNaN(n3) || n3 < 1 || n3 > 999) {
+            num3Error.textContent = '⚠️ 1-999';
+            num3Input.classList.add('error');
+            isValid = false;
+          }
         }
 
-        var maxDays = getMaxDays(month);
-        if (isNaN(day) || day < 1 || day > maxDays) {
-          dayError.textContent = '⚠️ 1-' + maxDays;
-          dayInput.classList.add('error');
-          isValid = false;
-        }
-
-        if (!hour || !HOUR_NUM[hour]) {
-          hourError.textContent = '⚠️ 请选择';
-          hourSelect.classList.add('error');
-          isValid = false;
-        }
         if (!isValid) {
-          var firstError = document.querySelector('.input-group .error');
+          var firstError = document.querySelector('.input-group .error, .input-group input.error');
           if (firstError) {
             var container = firstError.closest('.input-group');
             if (container) container.scrollIntoView({ behavior: 'smooth', block: 'center' });
@@ -960,19 +1500,26 @@
         return isValid;
       }
 
-      function renderResult(countUp) {
+      // 纯渲染函数：只更新界面，不记录历史
+      function renderResultOnly() {
         if (!validateInputs()) return;
 
-        if (countUp !== false) {
-          calcCount++;
-          updateCalcBtnText();
-        }
-
         try {
-          var month = parseInt(monthInput.value);
-          var day = parseInt(dayInput.value);
-          var hour = hourSelect.value;
-          var result = xiaoLiuRen(month, day, hour);
+          var result, inputStr;
+
+          if (currentMode === 'datetime') {
+            var month = parseInt(monthInput.value);
+            var day = parseInt(dayInput.value);
+            var hour = hourSelect.value;
+            result = xiaoLiuRen(month, day, hour);
+            inputStr = month + '月' + day + '日 ' + hour + '时';
+          } else {
+            var n1 = parseInt(num1Input.value);
+            var n2 = parseInt(num2Input.value);
+            var n3 = parseInt(num3Input.value);
+            result = xiaoLiuRenByNumbers(n1, n2, n3);
+            inputStr = n1 + '、' + n2 + '、' + n3;
+          }
 
           var gong1Info = getGongInfo(result.gong1);
           var gong2Info = getGongInfo(result.gong2);
@@ -984,12 +1531,14 @@
           var interp3 = getSceneInterpretation(result.gong3, currentScene);
           var judgment = getJudgment(finalGong, currentScene);
           var sceneLabel = SCENE_LABEL[currentScene] || '通用';
+          var koujue = KOUJUE[finalGong] || '';
+          var stars = getStars(gong3Info.level);
 
           var html = '';
           var steps = [
-            { name: '月宫', gong: result.gong1, info: gong1Info, interp: interp1 },
-            { name: '日宫', gong: result.gong2, info: gong2Info, interp: interp2 },
-            { name: '时宫 (结果)', gong: result.gong3, info: gong3Info, interp: interp3 }
+            { name: '月宫/初爻', gong: result.gong1, info: gong1Info, interp: interp1 },
+            { name: '日宫/中爻', gong: result.gong2, info: gong2Info, interp: interp2 },
+            { name: '时宫/上爻 (结果)', gong: result.gong3, info: gong3Info, interp: interp3 }
           ];
 
           steps.forEach(function(s, idx) {
@@ -1017,14 +1566,23 @@
           html += '    <span class="result-badge">' + GONG_LUCK[finalGong] + '</span>';
           html += '  </div>';
           html += '  <div class="result-content">';
+          html += '    <div class="stars">' + stars + '</div>';
           html += '    ' + judgment;
+          if (koujue) {
+            html += '    <div class="koujue"><span class="label">📿 速断口诀</span>：' + koujue + '</div>';
+          }
           html += '  </div>';
           html += '</div>';
 
           resultList.innerHTML = html;
-          resultSummary.innerHTML = '🌀 ' + month + '月' + day + '日 ' + hour + '时 · ' + sceneLabel + ' · 得【' +
-            finalGong + '】' + GONG_LUCK[finalGong] + ' · ' + judgment.slice(0, 12) + '...';
-          updateExtraPanel(currentScene);
+          resultSummary.innerHTML = '🌀 ' + inputStr + ' · ' + sceneLabel + ' · 得【' +
+            finalGong + '】' + GONG_LUCK[finalGong] + ' ' + stars;
+
+          updateExtraPanel(currentScene, finalGong);
+
+          if (navigator.vibrate) {
+            navigator.vibrate(20);
+          }
 
         } catch (e) {
           console.error(e);
@@ -1034,7 +1592,109 @@
         }
       }
 
-      function updateExtraPanel(scene) {
+      // 完整渲染：更新界面 + 记录历史
+      function renderResultWithHistory(countUp) {
+        if (!validateInputs()) return;
+
+        if (countUp !== false) {
+          calcCount++;
+          updateCalcBtnText();
+        }
+
+        try {
+          var result, inputStr;
+
+          if (currentMode === 'datetime') {
+            var month = parseInt(monthInput.value);
+            var day = parseInt(dayInput.value);
+            var hour = hourSelect.value;
+            result = xiaoLiuRen(month, day, hour);
+            inputStr = month + '月' + day + '日 ' + hour + '时';
+          } else {
+            var n1 = parseInt(num1Input.value);
+            var n2 = parseInt(num2Input.value);
+            var n3 = parseInt(num3Input.value);
+            result = xiaoLiuRenByNumbers(n1, n2, n3);
+            inputStr = n1 + '、' + n2 + '、' + n3;
+          }
+
+          var gong1Info = getGongInfo(result.gong1);
+          var gong2Info = getGongInfo(result.gong2);
+          var gong3Info = getGongInfo(result.gong3);
+          var finalGong = result.gong3;
+
+          var interp1 = getSceneInterpretation(result.gong1, currentScene);
+          var interp2 = getSceneInterpretation(result.gong2, currentScene);
+          var interp3 = getSceneInterpretation(result.gong3, currentScene);
+          var judgment = getJudgment(finalGong, currentScene);
+          var sceneLabel = SCENE_LABEL[currentScene] || '通用';
+          var koujue = KOUJUE[finalGong] || '';
+          var stars = getStars(gong3Info.level);
+
+          var html = '';
+          var steps = [
+            { name: '月宫/初爻', gong: result.gong1, info: gong1Info, interp: interp1 },
+            { name: '日宫/中爻', gong: result.gong2, info: gong2Info, interp: interp2 },
+            { name: '时宫/上爻 (结果)', gong: result.gong3, info: gong3Info, interp: interp3 }
+          ];
+
+          steps.forEach(function(s, idx) {
+            var luckEmoji = s.info.luck.includes('大吉') ? '🌟' : (s.info.luck.includes('上吉') ? '⭐' : (s.info
+              .luck.includes('凶') ? '⚡' : '🌀'));
+            html += '<div class="result-item">';
+            html += '  <div class="result-header">';
+            html += '    <span class="result-num">' + (idx + 1) + '</span>';
+            html += '    <span class="result-title">' + s.name + ' · ' + s.gong + '</span>';
+            html += '    <span class="result-badge">' + s.info.luck + ' ' + luckEmoji + '</span>';
+            html += '  </div>';
+            html += '  <div class="result-content">';
+            html += '    <span class="label">五行</span>：' + s.info.wuxing + '　｜　<span class="label">方位</span>：' + s
+              .info.direction + '　｜　<span class="label">吉凶</span>：' + s.info.luck;
+            html += '    <br><span class="label">场景解读</span>（' + sceneLabel + '）：<span class="scene-interp">' + s
+              .interp + '</span>';
+            html += '  </div>';
+            html += '</div>';
+          });
+
+          html += '<div class="result-item" style="border-left-color: rgba(255,215,0,0.5);">';
+          html += '  <div class="result-header">';
+          html += '    <span class="result-num">★</span>';
+          html += '    <span class="result-title">综合断语 · ' + finalGong + '</span>';
+          html += '    <span class="result-badge">' + GONG_LUCK[finalGong] + '</span>';
+          html += '  </div>';
+          html += '  <div class="result-content">';
+          html += '    <div class="stars">' + stars + '</div>';
+          html += '    ' + judgment;
+          if (koujue) {
+            html += '    <div class="koujue"><span class="label">📿 速断口诀</span>：' + koujue + '</div>';
+          }
+          html += '  </div>';
+          html += '</div>';
+
+          resultList.innerHTML = html;
+          resultSummary.innerHTML = '🌀 ' + inputStr + ' · ' + sceneLabel + ' · 得【' +
+            finalGong + '】' + GONG_LUCK[finalGong] + ' ' + stars;
+
+          updateExtraPanel(currentScene, finalGong);
+
+          // 只有用户主动点击"三宫演算"时才记录历史
+          if (countUp !== false) {
+            addHistory(inputStr, finalGong, finalGong, GONG_LUCK[finalGong]);
+          }
+
+          if (navigator.vibrate) {
+            navigator.vibrate(20);
+          }
+
+        } catch (e) {
+          console.error(e);
+          resultList.innerHTML =
+            '<div class="result-item"><div class="result-content" style="color: #ff6b6b;">⚠️ 演算错误：' + (e.message ||
+              '请检查输入') + '</div></div>';
+        }
+      }
+
+      function updateExtraPanel(scene, highlightGong) {
         var sceneLabel = SCENE_LABEL[scene] || '通用';
         var html = '<div style="margin-bottom: 12px; color: #8899bb; font-size: 0.9rem;">📌 当前场景：<strong style="color:#8ab4ff;">' +
           sceneLabel + '</strong> （点击上方场景按钮切换）</div>';
@@ -1043,11 +1703,20 @@
           var interp = getSceneInterpretation(name, scene);
           var luckEmoji = info.luck.includes('大吉') ? '🌟' : (info.luck.includes('上吉') ? '⭐' : (info.luck.includes(
             '凶') ? '⚡' : '🌀'));
-          html += '<div style="margin-bottom: 10px; border-bottom: 1px solid rgba(255,255,255,0.06); padding-bottom: 8px;">';
-          html += '  <span style="color: #8ab4ff; font-weight: 600;">' + name + '</span> ';
+          var isHighlight = (name === highlightGong);
+          var borderColor = isHighlight ? 'rgba(255,215,0,0.4)' : 'rgba(255,255,255,0.06)';
+          var bgColor = isHighlight ? 'rgba(255,215,0,0.06)' : 'transparent';
+          html += '<div style="margin-bottom: 10px; border-bottom: 1px solid ' + borderColor +
+            '; padding-bottom: 8px; background:' + bgColor + '; border-radius:12px; padding:6px 12px;">';
+          html += '  <span style="color: ' + (isHighlight ? '#f7d44a' : '#8ab4ff') + '; font-weight: 600;">' + name +
+            (isHighlight ? ' ◀' : '') + '</span> ';
           html += '  <span style="color: #8899bb; font-size: 0.85rem;">' + info.wuxing + ' · ' + info.direction +
             ' · ' + info.luck + ' ' + luckEmoji + '</span>';
           html += '  <div style="font-size: 0.92rem; color: #c8d0e0; margin-top: 4px;">' + interp + '</div>';
+          if (isHighlight) {
+            html += '  <div style="font-size: 0.82rem; color: #f7d44a; margin-top: 2px;">⭐ 当前结果：' + KOUJUE[name] +
+              '</div>';
+          }
           html += '</div>';
         });
         extraPanel.innerHTML = html;
@@ -1057,28 +1726,42 @@
         monthInput.value = 6;
         dayInput.value = 23;
         hourSelect.value = '寅';
-        // 更新日输入框的 max
+        num1Input.value = 3;
+        num2Input.value = 6;
+        num3Input.value = 9;
         updateDayMax();
+
+        // 重置示例时清空历史记录
+        clearHistory();
+
         clearErrors();
         document.querySelectorAll('.btn-scene').forEach(function(b) { b.classList.remove('active'); });
         document.querySelector('.btn-scene[data-scene="general"]').classList.add('active');
         currentScene = 'general';
         calcCount = 0;
         updateCalcBtnText();
-        renderResult(false);
+
+        // 重置示例时只渲染结果，不记录历史
+        renderResultOnly();
       }
 
       function clearErrors() {
         monthError.textContent = '';
         dayError.textContent = '';
         hourError.textContent = '';
+        num1Error.textContent = '';
+        num2Error.textContent = '';
+        num3Error.textContent = '';
         monthInput.classList.remove('error');
         dayInput.classList.remove('error');
         hourSelect.classList.remove('error');
+        num1Input.classList.remove('error');
+        num2Input.classList.remove('error');
+        num3Input.classList.remove('error');
       }
 
       // ================================================================
-      // 第5块：随机 & 当前时间（仅更新输入框，不触发演算）
+      // 随机 & 当前时间
       // ================================================================
 
       function randomInt(min, max) {
@@ -1092,7 +1775,6 @@
 
       randomMonthBtn.addEventListener('click', function() {
         monthInput.value = randomInt(1, 12);
-        // 月份变化后更新日输入框的最大值
         updateDayMax();
         clearErrors();
       });
@@ -1110,72 +1792,82 @@
       });
 
       randomAllBtn.addEventListener('click', function() {
-        var month = randomInt(1, 12);
-        monthInput.value = month;
-        var maxDays = getMaxDays(month);
-        dayInput.value = randomInt(1, maxDays);
-        hourSelect.value = randomHour();
-        // 更新日输入框的 max
-        updateDayMax();
+        if (currentMode === 'datetime') {
+          var month = randomInt(1, 12);
+          monthInput.value = month;
+          var maxDays = getMaxDays(month);
+          dayInput.value = randomInt(1, maxDays);
+          hourSelect.value = randomHour();
+          updateDayMax();
+        } else {
+          num1Input.value = randomInt(1, 999);
+          num2Input.value = randomInt(1, 999);
+          num3Input.value = randomInt(1, 999);
+        }
         clearErrors();
       });
 
       currentTimeBtn.addEventListener('click', function() {
-        var now = new Date();
-        var month = now.getMonth() + 1;
-        var day = now.getDate();
-        var hour = now.getHours();
-        var hourMap = {
-          0: '子', 1: '子', 2: '丑', 3: '丑', 4: '寅', 5: '寅',
-          6: '卯', 7: '卯', 8: '辰', 9: '辰', 10: '巳', 11: '巳',
-          12: '午', 13: '午', 14: '未', 15: '未', 16: '申', 17: '申',
-          18: '酉', 19: '酉', 20: '戌', 21: '戌', 22: '亥', 23: '亥'
-        };
-        var hourStr = hourMap[hour] || '子';
-        monthInput.value = month;
-        // 获取当前月份的最大天数，防止日期超出
-        var maxDays = getMaxDays(month);
-        dayInput.value = Math.min(day, maxDays);
-        hourSelect.value = hourStr;
-        // 更新日输入框的 max
-        updateDayMax();
+        if (currentMode === 'datetime') {
+          var now = new Date();
+          var month = now.getMonth() + 1;
+          var day = now.getDate();
+          var hour = now.getHours();
+          var hourMap = { 0: '子', 1: '子', 2: '丑', 3: '丑', 4: '寅', 5: '寅', 6: '卯', 7: '卯', 8: '辰', 9: '辰', 10: '巳',
+            11: '巳', 12: '午', 13: '午', 14: '未', 15: '未', 16: '申', 17: '申', 18: '酉', 19: '酉', 20: '戌', 21: '戌',
+            22: '亥', 23: '亥' };
+          var hourStr = hourMap[hour] || '子';
+          monthInput.value = month;
+          var maxDays = getMaxDays(month);
+          dayInput.value = Math.min(day, maxDays);
+          hourSelect.value = hourStr;
+          updateDayMax();
+        }
         clearErrors();
       });
 
+      clearHistoryBtn.addEventListener('click', function() {
+        if (confirm('确定要清空所有历史记录吗？')) {
+          clearHistory();
+        }
+      });
+
       // ================================================================
-      // 第6块：事件绑定
+      // 事件绑定
       // ================================================================
 
       calcBtn.addEventListener('click', function() {
-        renderResult(true);
+        renderResultWithHistory(true);
       });
 
       resetBtn.addEventListener('click', resetExample);
 
-      monthInput.addEventListener('keydown', function(e) { if (e.key === 'Enter') renderResult(true); });
-      dayInput.addEventListener('keydown', function(e) { if (e.key === 'Enter') renderResult(true); });
-      hourSelect.addEventListener('keydown', function(e) { if (e.key === 'Enter') renderResult(true); });
+      monthInput.addEventListener('change', updateDayMax);
+      monthInput.addEventListener('input', updateDayMax);
 
-      // 月份变化时，联动更新日输入框的最大值
-      monthInput.addEventListener('change', function() {
-        updateDayMax();
+      document.querySelectorAll('input, select').forEach(function(el) {
+        el.addEventListener('keydown', function(e) {
+          if (e.key === 'Enter') renderResultWithHistory(true);
+        });
       });
 
-      monthInput.addEventListener('input', function() {
-        updateDayMax();
-      });
+      currentTimeBtn.classList.remove('hidden');
 
       window.addEventListener('load', function() {
         currentScene = 'general';
-        updateExtraPanel('general');
-        // 初始化数字输入框的 +/- 按钮
-        initNumberInputButtons();
-        // 初始化日输入框的 max
+        initNumberInputs();
         updateDayMax();
+
+        // 页面加载时初始状态为空
+        clearHistory();
+
         calcCount = 0;
         updateCalcBtnText();
+        updateExtraPanel('general');
+
+        // 首次加载时渲染示例结果但不记录历史
         setTimeout(function() {
-          renderResult(false);
+          renderResultOnly();
         }, 80);
       });
 
