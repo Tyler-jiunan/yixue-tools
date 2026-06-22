@@ -20,7 +20,7 @@
     body {
       /* 深空蓝紫渐变，营造深邃星空感 */
       background: linear-gradient(145deg, #0b0e1a 0%, #1a1f35 40%, #0d1b2a 100%);
-      font-family: 'Segoe UI', '华文楷体', 'KaiTi', 'Microsoft YaHei', serif;
+      font-family: 'Segoe UI', 'Microsoft YaHei', '华文楷体', 'KaiTi', serif;
       padding: 20px;
       display: flex;
       justify-content: center;
@@ -552,6 +552,43 @@
       letter-spacing: 3px;
     }
 
+    /* 择日年份选择器 */
+    .wedding-year-selector {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      margin-bottom: 12px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+    .wedding-year-selector label {
+      color: #aabbdd;
+      font-size: 0.92rem;
+    }
+    .wedding-year-selector input {
+      padding: 6px 12px;
+      border-radius: 20px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      color: #e8edf5;
+      width: 100px;
+      font-size: 0.92rem;
+      font-family: inherit;
+      outline: none;
+    }
+    .wedding-year-selector input:focus {
+      border-color: rgba(100, 180, 255, 0.4);
+      box-shadow: 0 0 0 3px rgba(60, 120, 255, 0.15);
+    }
+    .wedding-year-selector .btn {
+      padding: 6px 20px;
+      min-width: auto;
+      font-size: 0.9rem;
+      flex: 0 1 auto;
+      max-width: none;
+      white-space: nowrap;
+    }
+
     /* 响应式 */
     @media (max-width: 820px) {
       .input-grid {
@@ -643,6 +680,14 @@
         font-size: 0.82rem;
         padding: 2px 4px;
       }
+      .wedding-year-selector {
+        flex-direction: column;
+        gap: 8px;
+      }
+      .wedding-year-selector .btn {
+        width: 100%;
+        min-width: 0;
+      }
     }
   </style>
 </head>
@@ -698,10 +743,10 @@
           <label><input type="radio" name="maleCal" value="lunar"> 农历</label>
         </div>
         <div class="date-row">
-          <input type="number" id="maleYear" value="1990" placeholder="年" style="flex:2;" min="1900" max="2100" maxlength="4" oninput="if(this.value.length>4) this.value=this.value.slice(0,4)">
-          <input type="number" id="maleMonth" value="5" placeholder="月" style="flex:1;" min="1" max="12" maxlength="2" oninput="if(this.value.length>2) this.value=this.value.slice(0,2)">
-          <input type="number" id="maleDay" value="12" placeholder="日" style="flex:1;" min="1" max="31" maxlength="2" oninput="if(this.value.length>2) this.value=this.value.slice(0,2)">
-          <input type="number" id="maleHour" value="8" placeholder="时" style="flex:1;" min="0" max="23" maxlength="2" oninput="if(this.value.length>2) this.value=this.value.slice(0,2)">
+          <input type="number" id="maleYear" value="1990" placeholder="年" style="flex:2;" min="1900" max="2100" oninput="if(this.value.length>4) this.value=this.value.slice(0,4)">
+          <input type="number" id="maleMonth" value="5" placeholder="月" style="flex:1;" min="1" max="12" oninput="if(this.value.length>2) this.value=this.value.slice(0,2)">
+          <input type="number" id="maleDay" value="12" placeholder="日" style="flex:1;" min="1" max="31" oninput="if(this.value.length>2) this.value=this.value.slice(0,2)">
+          <input type="number" id="maleHour" value="8" placeholder="时" style="flex:1;" min="0" max="23" oninput="if(this.value.length>2) this.value=this.value.slice(0,2)">
           <span class="hour-label" id="maleHourLabel">辰时</span>
         </div>
         <div class="input-error" id="maleDateError"></div>
@@ -715,10 +760,10 @@
           <label><input type="radio" name="femaleCal" value="lunar"> 农历</label>
         </div>
         <div class="date-row">
-          <input type="number" id="femaleYear" value="1992" placeholder="年" style="flex:2;" min="1900" max="2100" maxlength="4" oninput="if(this.value.length>4) this.value=this.value.slice(0,4)">
-          <input type="number" id="femaleMonth" value="8" placeholder="月" style="flex:1;" min="1" max="12" maxlength="2" oninput="if(this.value.length>2) this.value=this.value.slice(0,2)">
-          <input type="number" id="femaleDay" value="20" placeholder="日" style="flex:1;" min="1" max="31" maxlength="2" oninput="if(this.value.length>2) this.value=this.value.slice(0,2)">
-          <input type="number" id="femaleHour" value="14" placeholder="时" style="flex:1;" min="0" max="23" maxlength="2" oninput="if(this.value.length>2) this.value=this.value.slice(0,2)">
+          <input type="number" id="femaleYear" value="1992" placeholder="年" style="flex:2;" min="1900" max="2100" oninput="if(this.value.length>4) this.value=this.value.slice(0,4)">
+          <input type="number" id="femaleMonth" value="8" placeholder="月" style="flex:1;" min="1" max="12" oninput="if(this.value.length>2) this.value=this.value.slice(0,2)">
+          <input type="number" id="femaleDay" value="20" placeholder="日" style="flex:1;" min="1" max="31" oninput="if(this.value.length>2) this.value=this.value.slice(0,2)">
+          <input type="number" id="femaleHour" value="14" placeholder="时" style="flex:1;" min="0" max="23" oninput="if(this.value.length>2) this.value=this.value.slice(0,2)">
           <span class="hour-label" id="femaleHourLabel">未时</span>
         </div>
         <div class="input-error" id="femaleDateError"></div>
@@ -756,6 +801,12 @@
     <!-- 多功能合婚栏 (仅保留嫁娶择日) -->
     <div class="extra-marriage-section" id="extraMarriageSection">
       <div class="extra-title">💒 嫁娶择日</div>
+      <!-- 年份选择器 -->
+      <div class="wedding-year-selector">
+        <label for="weddingYear">📅 择日年份：</label>
+        <input type="number" id="weddingYear" value="2026" min="2020" max="2050" oninput="if(this.value.length>4) this.value=this.value.slice(0,4)">
+        <button class="btn btn-secondary" id="refreshWeddingBtn" style="padding:6px 20px;min-width:auto;font-size:0.9rem;flex:0 1 auto;max-width:none;">🔄 刷新吉日</button>
+      </div>
       <div class="extra-panel" id="extraPanel">
         <!-- 默认显示嫁娶择日内容 -->
       </div>
@@ -771,7 +822,6 @@
 
       // ================================================================
       // 第1块：常量定义
-      // 作用：集中管理所有常量，提高可维护性
       // ================================================================
 
       /** 天干 */
@@ -914,7 +964,7 @@
       };
 
       // ================================================================
-      // 第2块：纳音映射表
+      // 第2块：纳音映射表（补全所有纳音五行映射）
       // ================================================================
 
       /** 60甲子纳音映射表 */
@@ -936,7 +986,7 @@
         '庚申': '石榴木', '辛酉': '石榴木', '壬戌': '大海水', '癸亥': '大海水'
       };
 
-      /** 纳音→五行 映射 */
+      /** 纳音→五行 映射（补全所有纳音） */
       const NA_YIN_TO_WUXING = {
         '海中金': '金', '炉中火': '火', '大林木': '木', '路旁土': '土',
         '剑锋金': '金', '山头火': '火', '涧下水': '水', '城头土': '土',
@@ -949,8 +999,50 @@
       };
 
       // ================================================================
-      // 第3块：工具函数
+      // 第3块：工具函数（带缓存优化）
       // ================================================================
+
+      /**
+       * 判断是否为闰年
+       * @param {number} year - 年份
+       * @returns {boolean}
+       */
+      function isLeapYear(year) {
+        return (year % 4 === 0 && year % 100 !== 0) || (year % 400 === 0);
+      }
+
+      /** 月份天数缓存 */
+      var _monthDaysCache = {};
+      var _monthDaysCacheKeys = [];
+      var MAX_MONTH_DAYS_CACHE = 24;
+
+      /**
+       * 获取月份天数（带缓存）
+       * @param {number} year - 年份
+       * @param {number} month - 月份 (1-12)
+       * @returns {number} 天数
+       */
+      function getMonthDays(year, month) {
+        var cacheKey = year + '-' + month;
+        if (_monthDaysCache[cacheKey] !== undefined) return _monthDaysCache[cacheKey];
+
+        var days;
+        if (month === 2) {
+          days = isLeapYear(year) ? 29 : 28;
+        } else if (month === 4 || month === 6 || month === 9 || month === 11) {
+          days = 30;
+        } else {
+          days = 31;
+        }
+
+        _monthDaysCache[cacheKey] = days;
+        _monthDaysCacheKeys.push(cacheKey);
+        while (_monthDaysCacheKeys.length > MAX_MONTH_DAYS_CACHE) {
+          var oldestKey = _monthDaysCacheKeys.shift();
+          delete _monthDaysCache[oldestKey];
+        }
+        return days;
+      }
 
       /**
        * 验证日期是否有效
@@ -972,18 +1064,6 @@
       function getShiChen(hour) {
         var idx = Math.floor((hour + 1) / 2) % 12;
         return SHI_CHEN[idx] || '子时';
-      }
-
-      /**
-       * 获取月份天数（简化版，不考虑闰年）
-       * @param {number} year - 年份
-       * @param {number} month - 月份 (1-12)
-       * @returns {number} 天数
-       */
-      function getMonthDays(year, month) {
-        if (month === 2) return 28;
-        if (month === 4 || month === 6 || month === 9 || month === 11) return 30;
-        return 31;
       }
 
       /**
@@ -1021,9 +1101,10 @@
       }
 
       /**
-       * 根据年份获取生肖
+       * 根据年份获取生肖（注意：此方法不考虑立春，仅作快速参考）
        * @param {number} year - 年份
        * @returns {string} 生肖
+       * @deprecated 建议使用 getShengXiaoByDate 或 getShengXiaoByGanZhi
        */
       function getShengXiao(year) {
         return SHENG_XIAO[(year - 4) % 12];
@@ -1036,6 +1117,33 @@
        */
       function getShengXiaoByZhi(zhi) {
         return ZHI_SHENG_XIAO_MAP[zhi] || '';
+      }
+
+      /**
+       * 根据年柱干支获取生肖（最准确，以立春为界）
+       * @param {string} gan - 年干
+       * @param {string} zhi - 年支
+       * @returns {string} 生肖
+       */
+      function getShengXiaoByGanZhi(gan, zhi) {
+        var zhiToSX = {
+          '子': '鼠', '丑': '牛', '寅': '虎', '卯': '兔',
+          '辰': '龙', '巳': '蛇', '午': '马', '未': '羊',
+          '申': '猴', '酉': '鸡', '戌': '狗', '亥': '猪'
+        };
+        return zhiToSX[zhi] || '';
+      }
+
+      /**
+       * 根据日期获取生肖（考虑立春）
+       * @param {number} year - 公历年份
+       * @param {number} month - 公历月份
+       * @param {number} day - 公历日
+       * @returns {string} 生肖
+       */
+      function getShengXiaoByDate(year, month, day) {
+        var yearResult = getYearGanZhi(year, month, day);
+        return getShengXiaoByGanZhi(yearResult.gan, yearResult.zhi);
       }
 
       /**
@@ -1061,15 +1169,39 @@
         return result;
       }
 
+      /**
+       * 获取纳音对应的五行
+       * @param {string} naYin - 纳音名称
+       * @returns {string} 五行
+       */
+      function getNaYinWuxing(naYin) {
+        var result = NA_YIN_TO_WUXING[naYin];
+        if (!result) {
+          console.warn('未找到纳音五行映射:', naYin, '，使用默认值"木"');
+          return '木';
+        }
+        return result;
+      }
+
       // ================================================================
-      // 第4块：农历转换（带缓存）
+      // 第4块：农历转换（带缓存，增加大小限制）
       // ================================================================
 
       /** 农历转换缓存 */
       var _lunarCache = {};
+      var _lunarCacheKeys = [];
+      var MAX_LUNAR_CACHE_SIZE = 100;
+
+      /** 清理农历缓存 */
+      function cleanLunarCache() {
+        while (_lunarCacheKeys.length > MAX_LUNAR_CACHE_SIZE) {
+          var oldestKey = _lunarCacheKeys.shift();
+          delete _lunarCache[oldestKey];
+        }
+      }
 
       /**
-       * 农历转公历（带缓存）
+       * 农历转公历（带缓存，有大小限制）
        * @param {number} lunarYear - 农历年
        * @param {number} lunarMonth - 农历月 (1-12)
        * @param {number} lunarDay - 农历日 (1-30)
@@ -1089,91 +1221,80 @@
             day: solar.getDay()
           };
           _lunarCache[cacheKey] = result;
+          _lunarCacheKeys.push(cacheKey);
+          cleanLunarCache();
           return result;
         } catch (e) {
-          console.warn('农历转换失败，使用降级方案:', e);
-          // 降级方案：粗略估算
-          var targetMonth = lunarMonth;
-          var targetDay = lunarDay;
-          if (lunarMonth === 12) {
-            targetMonth = 1;
-          } else {
-            targetMonth = Math.min(lunarMonth + 1, 12);
-          }
-          var maxDay = 30;
-          if (targetMonth === 2) maxDay = 28;
-          else if ([4, 6, 9, 11].indexOf(targetMonth) !== -1) maxDay = 30;
-          else maxDay = 31;
-          targetDay = Math.min(lunarDay + 1, maxDay);
-          var targetYear = (lunarMonth === 12) ? lunarYear + 1 : lunarYear;
-          var result2 = {
-            year: targetYear,
-            month: targetMonth,
-            day: targetDay
-          };
-          _lunarCache[cacheKey] = result2;
-          return result2;
+          console.warn('农历转换失败，返回null:', e);
+          _lunarCache[cacheKey] = null;
+          _lunarCacheKeys.push(cacheKey);
+          cleanLunarCache();
+          return null;
         }
       }
 
       // ================================================================
-      // 第5块：节气相关（带缓存和LRU清理）
+      // 第5块：节气相关（修复：改进节气计算，增大缓存）
       // ================================================================
 
       /** 节气缓存 */
       var _jieQiCache = {};
-      /** 缓存最大条目数 */
-      var MAX_CACHE_SIZE = 50;
+      /** 缓存最大条目数（从50增加到200） */
+      var MAX_JIEQI_CACHE_SIZE = 200;
       /** 缓存键列表（用于LRU） */
-      var _cacheKeys = [];
+      var _jieQiCacheKeys = [];
 
       /**
        * 清理缓存（LRU策略）
        */
-      function cleanCache() {
-        while (_cacheKeys.length > MAX_CACHE_SIZE) {
-          var oldestKey = _cacheKeys.shift();
+      function cleanJieQiCache() {
+        while (_jieQiCacheKeys.length > MAX_JIEQI_CACHE_SIZE) {
+          var oldestKey = _jieQiCacheKeys.shift();
           delete _jieQiCache[oldestKey];
         }
       }
 
       /**
-       * 获取指定月份的节气日期
+       * 获取指定月份的节气日期（改进：遍历当月所有日期）
        * @param {number} year - 年份
        * @param {number} month - 月份 (1-12)
        * @returns {Object|null} { name: string, day: number } 或 null
        */
       function getJieQiDate(year, month) {
         var cacheKey = year + '-' + month;
-        if (_jieQiCache[cacheKey]) return _jieQiCache[cacheKey];
+        if (_jieQiCache[cacheKey] !== undefined) return _jieQiCache[cacheKey];
 
         try {
-          var solar = Solar.fromYmd(year, month, 1);
-          var lunar = solar.getLunar();
-          var jq = lunar.getJieQiTable() || {};
+          // 遍历当月所有日期，查找节气
+          var maxDay = getMonthDays(year, month);
+          for (var d = 1; d <= maxDay; d++) {
+            var solar = Solar.fromYmd(year, month, d);
+            var lunar = solar.getLunar();
+            var jq = lunar.getJieQiTable() || {};
 
-          // 节气名称到月份的映射
-          var jieMap = {
-            '立春': 1, '惊蛰': 2, '清明': 3, '立夏': 4,
-            '芒种': 5, '小暑': 6, '立秋': 7, '白露': 8,
-            '寒露': 9, '立冬': 10, '大雪': 11, '小寒': 12
-          };
+            // 节气名称到月份的映射
+            var jieMap = {
+              '立春': 1, '惊蛰': 2, '清明': 3, '立夏': 4,
+              '芒种': 5, '小暑': 6, '立秋': 7, '白露': 8,
+              '寒露': 9, '立冬': 10, '大雪': 11, '小寒': 12
+            };
 
-          for (var key in jieMap) {
-            if (jq[key]) {
-              var dateStr = jq[key];
-              if (typeof dateStr === 'string') {
-                var match = dateStr.match(/(\d{4})-(\d{1,2})-(\d{1,2})/);
-                if (match) {
-                  var m = parseInt(match[2]);
-                  var d = parseInt(match[3]);
-                  // ✅ 修复：必须验证月份匹配
-                  if (m === month) {
-                    var result = { name: key, day: d };
-                    _jieQiCache[cacheKey] = result;
-                    _cacheKeys.push(cacheKey);
-                    cleanCache();
-                    return result;
+            for (var key in jieMap) {
+              if (jq[key]) {
+                var dateStr = jq[key];
+                if (typeof dateStr === 'string') {
+                  var match = dateStr.match(/(\d{4})-(\d{1,2})-(\d{1,2})/);
+                  if (match) {
+                    var m = parseInt(match[2]);
+                    var day = parseInt(match[3]);
+                    // 匹配月份和日期
+                    if (m === month && day === d) {
+                      var result = { name: key, day: d };
+                      _jieQiCache[cacheKey] = result;
+                      _jieQiCacheKeys.push(cacheKey);
+                      cleanJieQiCache();
+                      return result;
+                    }
                   }
                 }
               }
@@ -1181,8 +1302,8 @@
           }
 
           _jieQiCache[cacheKey] = null;
-          _cacheKeys.push(cacheKey);
-          cleanCache();
+          _jieQiCacheKeys.push(cacheKey);
+          cleanJieQiCache();
           return null;
         } catch (e) {
           console.warn('获取节气日期失败:', e);
@@ -1205,16 +1326,25 @@
           '春分', '秋分', '夏至', '冬至'
         ];
 
-        for (var i = 0; i < allNames.length; i++) {
-          var jq = getJieQiDate(year, i + 1);
+        for (var i = 1; i <= 12; i++) {
+          var jq = getJieQiDate(year, i);
           if (jq) {
-            result[allNames[i]] = { year: year, month: i + 1, day: jq.day };
+            // 找到对应的节气名称（通过月份匹配）
+            var monthToJie = {
+              1: '小寒', 2: '立春', 3: '惊蛰', 4: '清明',
+              5: '立夏', 6: '芒种', 7: '小暑', 8: '立秋',
+              9: '白露', 10: '寒露', 11: '立冬', 12: '大雪'
+            };
+            var name = monthToJie[i] || '';
+            if (name) {
+              result[name] = { year: year, month: i, day: jq.day };
+            }
           }
         }
 
         _jieQiCache[cacheKey] = result;
-        _cacheKeys.push(cacheKey);
-        cleanCache();
+        _jieQiCacheKeys.push(cacheKey);
+        cleanJieQiCache();
         return result;
       }
 
@@ -1225,15 +1355,9 @@
        */
       function getLiChunDay(year) {
         try {
-          var solar = Solar.fromYmd(year, 2, 1);
-          var lunar = solar.getLunar();
-          var jq = lunar.getJieQiTable() || {};
-          if (jq['立春']) {
-            var dateStr = jq['立春'];
-            var match = dateStr.match(/(\d{4})-(\d{1,2})-(\d{1,2})/);
-            if (match) {
-              return parseInt(match[3]);
-            }
+          var jq = getJieQiDate(year, 2);
+          if (jq && jq.name === '立春') {
+            return jq.day;
           }
         } catch (e) {
           // 忽略错误
@@ -1366,7 +1490,6 @@
         }
 
         // 降级算法：基于1900-01-01（甲子日）的偏移计算
-        // ✅ 已验证：1900-01-01 确实为甲子日
         var baseUTC = Date.UTC(1900, 0, 1);
         var targetUTC = Date.UTC(solarYear, solarMonth - 1, solarDay);
         var diffDays = Math.floor((targetUTC - baseUTC) / 86400000);
@@ -1412,10 +1535,8 @@
             solarMonth = solar.month;
             solarDay = solar.day;
           } else {
-            // 降级方案
-            solarYear = year;
-            solarMonth = Math.min(month + 1, 12);
-            solarDay = Math.min(day + 1, 28);
+            // 农历转换失败，抛出错误
+            throw new Error('农历转换失败，请检查农历日期是否正确');
           }
         }
 
@@ -1442,11 +1563,14 @@
       }
 
       // ================================================================
-      // 第7块：大运排盘
+      // 第7块：大运排盘（性能优化，预取节气）
       // ================================================================
 
+      /** 大运搜索最大天数（从120改为60，提升性能） */
+      var MAX_DA_YUN_SEARCH_DAYS = 60;
+
       /**
-       * 获取大运
+       * 获取大运（优化版：预取节气日期）
        * @param {string} yearGan - 年干
        * @param {string} monthGan - 月干
        * @param {string} monthZhi - 月支
@@ -1475,7 +1599,19 @@
         try {
           var days = 0;
           var found = false;
-          var maxSearchDays = 120;
+          var maxSearchDays = MAX_DA_YUN_SEARCH_DAYS;
+
+          // 预取节气日期以提升性能
+          var jieQiCache = {};
+
+          function getJieQiDay(y, m) {
+            var key = y + '-' + m;
+            if (jieQiCache[key] !== undefined) return jieQiCache[key];
+            var jq = getJieQiDate(y, m);
+            var result = jq ? jq.day : null;
+            jieQiCache[key] = result;
+            return result;
+          }
 
           if (maleOrder === 1) {
             // 顺排：向后找第一个节气
@@ -1484,29 +1620,11 @@
               var y = target.year;
               var m = target.month;
               var d = target.day;
-              try {
-                var solar = Solar.fromYmd(y, m, d);
-                var lunar = solar.getLunar();
-                var jq = lunar.getJieQiTable() || {};
-                for (var k = 0; k < JIE_QI_LIST.length; k++) {
-                  var key = JIE_QI_LIST[k];
-                  if (jq[key]) {
-                    var dateStr = jq[key];
-                    var match = dateStr.match(/(\d{4})-(\d{1,2})-(\d{1,2})/);
-                    if (match) {
-                      var year2 = parseInt(match[1]);
-                      var month2 = parseInt(match[2]);
-                      var day2 = parseInt(match[3]);
-                      if (year2 === y && month2 === m && day2 === d) {
-                        days = i;
-                        found = true;
-                        break;
-                      }
-                    }
-                  }
-                }
-              } catch (e) {
-                // 忽略错误
+              var jqDay = getJieQiDay(y, m);
+              if (jqDay === d) {
+                days = i;
+                found = true;
+                break;
               }
             }
           } else {
@@ -1516,37 +1634,20 @@
               var y2 = target2.year;
               var m2 = target2.month;
               var d2 = target2.day;
-              try {
-                var solar2 = Solar.fromYmd(y2, m2, d2);
-                var lunar2 = solar2.getLunar();
-                var jq2 = lunar2.getJieQiTable() || {};
-                for (var k2 = 0; k2 < JIE_QI_LIST.length; k2++) {
-                  var key2 = JIE_QI_LIST[k2];
-                  if (jq2[key2]) {
-                    var dateStr2 = jq2[key2];
-                    var match2 = dateStr2.match(/(\d{4})-(\d{1,2})-(\d{1,2})/);
-                    if (match2) {
-                      var year3 = parseInt(match2[1]);
-                      var month3 = parseInt(match2[2]);
-                      var day3 = parseInt(match2[3]);
-                      if (year3 === y2 && month3 === m2 && day3 === d2) {
-                        days = i2;
-                        found = true;
-                        break;
-                      }
-                    }
-                  }
-                }
-              } catch (e) {
-                // 忽略错误
+              var jqDay2 = getJieQiDay(y2, m2);
+              if (jqDay2 === d2) {
+                days = i2;
+                found = true;
+                break;
               }
             }
           }
 
           if (days > 0) {
+            // 传统算法：三天折合一岁
             startAge = Math.max(1, Math.ceil(days / 3));
           } else {
-            // 降级方案
+            // 降级方案：使用更简单的估算
             startAge = Math.max(1, Math.floor((birthDay + birthMonth * 2) / 3) % 10 + 1);
           }
         } catch (e) {
@@ -1700,7 +1801,7 @@
       }
 
       // ================================================================
-      // 第10块：嫁娶择日（专业版）
+      // 第10块：嫁娶择日（完整修复版 - 天赦日搜索范围覆盖整个季节）
       // ================================================================
 
       /**
@@ -1766,7 +1867,7 @@
       }
 
       /**
-       * 获取日支
+       * 获取日支（使用库方法，带降级方案）
        * @param {number} year - 年份
        * @param {number} month - 月份 (1-12)
        * @param {number} day - 日
@@ -1781,7 +1882,7 @@
             return dayGanZhi[1];
           }
         } catch (e) {
-          // 忽略错误
+          // 忽略错误，使用降级方案
         }
 
         // 降级算法：基于1900-01-01的偏移
@@ -1813,10 +1914,10 @@
           avoidList.push({ type: '相冲', shengxiao: chongSX2, desc: '日支冲生肖' });
         }
 
-        // 2. 三煞
+        // 2. 三煞（简化版：仅考虑日支三煞）
         var sanShaList = SAN_SHA_MAP[dayZhi] || [];
         for (var i = 0; i < sanShaList.length; i++) {
-          avoidList.push({ type: '三煞', shengxiao: sanShaList[i], desc: '犯三煞' });
+          avoidList.push({ type: '三煞', shengxiao: sanShaList[i], desc: '犯三煞（日支）' });
         }
 
         // 3. 冲犯新人
@@ -1854,41 +1955,191 @@
       }
 
       /**
-       * 获取天赦日列表
+       * 检查某一天是否为天赦日
+       * @param {number} year - 年份
+       * @param {number} month - 月份
+       * @param {number} day - 日
+       * @param {string} targetGan - 目标天干
+       * @param {string} targetZhi - 目标地支
+       * @returns {boolean}
+       */
+      function isTianSheDay(year, month, day, targetGan, targetZhi) {
+        try {
+          var solar = Solar.fromYmd(year, month, day);
+          var lunar = solar.getLunar();
+          var dayGanZhi = lunar.getDayInGanZhi();
+          if (dayGanZhi && dayGanZhi.length === 2) {
+            return dayGanZhi[0] === targetGan && dayGanZhi[1] === targetZhi;
+          }
+        } catch (e) {
+          // 忽略错误
+        }
+        return false;
+      }
+
+      /**
+       * 获取天赦日列表（完整版：搜索范围覆盖整个季节）
+       * 天赦日规则：
+       * - 春：立春后戊寅日（从立春到立夏之前）
+       * - 夏：立夏后甲午日（从立夏到立秋之前）
+       * - 秋：立秋后戊申日（从立秋到立冬之前）
+       * - 冬：立冬后甲子日（从立冬到立春之前）
+       * 
        * @param {number} year - 年份
        * @returns {Array} 天赦日列表 [{ year, month, day }]
        */
       function getTianSheDays(year) {
         var result = [];
+
+        // 获取四季起始日期
+        var liChun = getJieQiDate(year, 2);
+        var liXia = getJieQiDate(year, 5);
+        var liQiu = getJieQiDate(year, 8);
+        var liDong = getJieQiDate(year, 11);
+
+        if (!liChun || !liXia || !liQiu || !liDong) {
+          // 如果获取节气失败，使用备用方案
+          return getTianSheDaysFallback(year);
+        }
+
+        // 定义四季的时间范围
         var seasons = [
-          { start: 2, end: 4, gan: '戊', zhi: '寅' },
-          { start: 5, end: 7, gan: '甲', zhi: '午' },
-          { start: 8, end: 10, gan: '戊', zhi: '申' },
-          { start: 11, end: 13, gan: '甲', zhi: '子' }
+          {
+            name: '春',
+            startMonth: 2,
+            startDay: liChun.day,
+            endMonth: 5,
+            endDay: liXia.day - 1,
+            targetGan: '戊', targetZhi: '寅'
+          },
+          {
+            name: '夏',
+            startMonth: 5,
+            startDay: liXia.day,
+            endMonth: 8,
+            endDay: liQiu.day - 1,
+            targetGan: '甲', targetZhi: '午'
+          },
+          {
+            name: '秋',
+            startMonth: 8,
+            startDay: liQiu.day,
+            endMonth: 11,
+            endDay: liDong.day - 1,
+            targetGan: '戊', targetZhi: '申'
+          },
+          {
+            name: '冬',
+            startMonth: 11,
+            startDay: liDong.day,
+            endMonth: 2,
+            endDay: liChun.day - 1,
+            targetGan: '甲', targetZhi: '子'
+          }
         ];
 
         for (var s = 0; s < seasons.length; s++) {
           var season = seasons[s];
-          var startMonth = season.start;
-          var endMonth = season.end;
-          for (var m = startMonth; m <= endMonth; m++) {
-            var month = m > 12 ? m - 12 : m;
-            var year2 = m > 12 ? year + 1 : year;
-            var maxDay = getMonthDays(year2, month);
-            for (var d = 1; d <= maxDay; d++) {
-              try {
-                var solar = Solar.fromYmd(year2, month, d);
-                var lunar = solar.getLunar();
-                var dayGanZhi = lunar.getDayInGanZhi();
-                if (dayGanZhi && dayGanZhi.length === 2) {
-                  if (dayGanZhi[0] === season.gan && dayGanZhi[1] === season.zhi) {
-                    result.push({ year: year2, month: month, day: d });
-                  }
+          var startMonth = season.startMonth;
+          var startDay = season.startDay;
+          var endMonth = season.endMonth;
+          var endDay = season.endDay;
+          var targetGan = season.targetGan;
+          var targetZhi = season.targetZhi;
+
+          // 处理跨年（冬：从11月到次年2月）
+          if (startMonth > endMonth) {
+            // 当年从 startMonth 到 12月
+            for (var m = startMonth; m <= 12; m++) {
+              var maxDay = getMonthDays(year, m);
+              var dStart = (m === startMonth) ? startDay : 1;
+              for (var d = dStart; d <= maxDay; d++) {
+                if (isTianSheDay(year, m, d, targetGan, targetZhi)) {
+                  result.push({ year: year, month: m, day: d });
+                  break; // 每个季节只取第一个匹配日
                 }
-              } catch (e) {
-                // 忽略错误
               }
             }
+            // 次年从 1月 到 endMonth
+            for (var m2 = 1; m2 <= endMonth; m2++) {
+              var maxDay2 = getMonthDays(year + 1, m2);
+              var dEnd2 = (m2 === endMonth) ? endDay : maxDay2;
+              for (var d2 = 1; d2 <= dEnd2; d2++) {
+                if (isTianSheDay(year + 1, m2, d2, targetGan, targetZhi)) {
+                  result.push({ year: year + 1, month: m2, day: d2 });
+                  break;
+                }
+              }
+            }
+          } else {
+            // 不跨年：从 startMonth 到 endMonth
+            for (var m3 = startMonth; m3 <= endMonth; m3++) {
+              var maxDay3 = getMonthDays(year, m3);
+              var dStart3 = (m3 === startMonth) ? startDay : 1;
+              var dEnd3 = (m3 === endMonth) ? endDay : maxDay3;
+              for (var d3 = dStart3; d3 <= dEnd3; d3++) {
+                if (isTianSheDay(year, m3, d3, targetGan, targetZhi)) {
+                  result.push({ year: year, month: m3, day: d3 });
+                  break;
+                }
+              }
+            }
+          }
+        }
+
+        // 如果找到的天赦日少于4个，补充备用方案
+        if (result.length < 4) {
+          var fallback = getTianSheDaysFallback(year);
+          for (var f = 0; f < fallback.length; f++) {
+            var exists = false;
+            for (var r = 0; r < result.length; r++) {
+              if (result[r].year === fallback[f].year &&
+                result[r].month === fallback[f].month &&
+                result[r].day === fallback[f].day) {
+                exists = true;
+                break;
+              }
+            }
+            if (!exists) {
+              result.push(fallback[f]);
+            }
+          }
+        }
+
+        return result;
+      }
+
+      /**
+       * 天赦日备用方案（基于固定日期）
+       * @param {number} year - 年份
+       * @returns {Array} 天赦日列表
+       */
+      function getTianSheDaysFallback(year) {
+        var result = [];
+        // 使用固定日期作为备选
+        var candidates = [
+          { month: 3, day: 15, gan: '戊', zhi: '寅' },
+          { month: 6, day: 15, gan: '甲', zhi: '午' },
+          { month: 9, day: 15, gan: '戊', zhi: '申' },
+          { month: 12, day: 15, gan: '甲', zhi: '子' }
+        ];
+
+        for (var i = 0; i < candidates.length; i++) {
+          var cand = candidates[i];
+          var month = cand.month;
+          var maxDay = getMonthDays(year, month);
+          var day = Math.min(cand.day, maxDay);
+          try {
+            var solar = Solar.fromYmd(year, month, day);
+            var lunar = solar.getLunar();
+            var dayGanZhi = lunar.getDayInGanZhi();
+            if (dayGanZhi && dayGanZhi.length === 2) {
+              if (dayGanZhi[0] === cand.gan && dayGanZhi[1] === cand.zhi) {
+                result.push({ year: year, month: month, day: day });
+              }
+            }
+          } catch (e) {
+            // 忽略错误
           }
         }
 
@@ -2113,8 +2364,8 @@
         // ----- 第一步：纳音五行 -----
         var maleNaYin = getNaYin(maleBA.year.join(''));
         var femaleNaYin = getNaYin(femaleBA.year.join(''));
-        var maleWuxing = NA_YIN_TO_WUXING[maleNaYin] || '木';
-        var femaleWuxing = NA_YIN_TO_WUXING[femaleNaYin] || '木';
+        var maleWuxing = getNaYinWuxing(maleNaYin);
+        var femaleWuxing = getNaYinWuxing(femaleNaYin);
         var shengKe = getWuXingShengKe(maleWuxing, femaleWuxing);
         var step1Score = shengKe.includes('生') ? 9 : (shengKe.includes('比') ? 6 : 3);
         steps.push({
@@ -2124,9 +2375,9 @@
           score: step1Score
         });
 
-        // ----- 第二步：生肖六合三合 -----
-        var maleSX = getShengXiao(maleYear);
-        var femaleSX = getShengXiao(femaleYear);
+        // ----- 第二步：生肖六合三合（使用基于日期的准确生肖） -----
+        var maleSX = getShengXiaoByDate(maleBA.solarDate.year, maleBA.solarDate.month, maleBA.solarDate.day);
+        var femaleSX = getShengXiaoByDate(femaleBA.solarDate.year, femaleBA.solarDate.month, femaleBA.solarDate.day);
         var heStatus = '无特殊';
         var step2Score = 3;
 
@@ -2147,7 +2398,7 @@
         }
         steps.push({
           title: '第二步 · 生肖六合/三合',
-          content: '【男方生肖】: ' + maleSX + '\n【女方生肖】: ' + femaleSX + '\n【合局结果】: ' + heStatus,
+          content: '【男方生肖】: ' + maleSX + '（基于立春界定）\n【女方生肖】: ' + femaleSX + '（基于立春界定）\n【合局结果】: ' + heStatus,
           score: step2Score
         });
 
@@ -2216,7 +2467,7 @@
           score: step6Score
         });
 
-        // ----- 第七步：五行互补（改进版） -----
+        // ----- 第七步：五行互补 -----
         var wuXingResult = getWuXingBuJi(maleBA, femaleBA);
         var wuXingMatch = wuXingResult.match(/木: (\d+), 火: (\d+), 土: (\d+), 金: (\d+), 水: (\d+)/);
         var step7Score = 6;
@@ -2300,6 +2551,8 @@
       var resultSummary = document.getElementById('resultSummary');
       var extraPanel = document.getElementById('extraPanel');
       var loadingOverlay = document.getElementById('loadingOverlay');
+      var weddingYearInput = document.getElementById('weddingYear');
+      var refreshWeddingBtn = document.getElementById('refreshWeddingBtn');
 
       /**
        * 绑定时辰转译（实时更新）
@@ -2456,7 +2709,6 @@
 
         var html = '';
         stepsData.forEach(function(s, idx) {
-          // 安全地格式化内容（使用 textContent 风格，但保留HTML标签）
           var formattedContent = s.content.replace(/【([^】]+)】/g, '<span class="label">$1</span>');
           html += '<div class="step-item">\n' +
             '            <div class="step-header">\n' +
@@ -2485,12 +2737,25 @@
       }
 
       /**
-       * 更新嫁娶择日面板
+       * 更新嫁娶择日面板（使用指定的年份）
+       * @param {number} year - 择日年份
        */
-      function updateWeddingPanel() {
-        var year = new Date().getFullYear();
-        var maleSX = getShengXiao(parseInt(maleYearInput.value) || 1990);
-        var femaleSX = getShengXiao(parseInt(femaleYearInput.value) || 1992);
+      function updateWeddingPanel(year) {
+        if (!year || isNaN(year)) {
+          year = parseInt(weddingYearInput.value) || new Date().getFullYear();
+        }
+
+        // 使用基于日期的准确生肖计算
+        var mY = parseInt(maleYearInput.value) || 1990;
+        var mM = parseInt(maleMonthInput.value) || 1;
+        var mD = parseInt(maleDayInput.value) || 1;
+        var fY = parseInt(femaleYearInput.value) || 1992;
+        var fM = parseInt(femaleMonthInput.value) || 1;
+        var fD = parseInt(femaleDayInput.value) || 1;
+
+        var maleSX = getShengXiaoByDate(mY, mM, mD);
+        var femaleSX = getShengXiaoByDate(fY, fM, fD);
+
         var dates = getWeddingDatesProfessional(year, maleSX, femaleSX);
 
         var monthGroups = {};
@@ -2504,7 +2769,7 @@
           }
         });
 
-        var html = '<div class="wedding-summary-line">💒 共筛选出 <strong style="color:#8ab4ff;">' + dates.length +
+        var html = '<div class="wedding-summary-line">💒 ' + year + '年共筛选出 <strong style="color:#8ab4ff;">' + dates.length +
           '</strong> 个婚嫁吉日（得分 ≥ 4），按得分降序排列</div>';
 
         for (var mi2 = 0; mi2 < MONTH_NAMES.length; mi2++) {
@@ -2563,7 +2828,7 @@
           '<div style="margin-top:12px;padding:10px 14px;background:rgba(255,255,255,0.03);border-radius:12px;font-size:0.85rem;color:#8899bb;line-height:1.9;">' +
           '💒 择日依据：天德合日、月德合日、天赦日、三合六合等吉神，排除四离四绝、杨公忌日。<br>' +
           '✓ 吉日  ⚠️ 冲生肖日（建议避开）<br>' +
-          '‼️ 冲犯新人  ⚡ 日支相冲  ⚠️ 犯三煞<br>' +
+          '‼️ 冲犯新人  ⚡ 日支相冲  ⚠️ 犯三煞（日支）<br>' +
           '📌 注：此为专业简化版推算，建议结合专业择日师详勘。' +
           '</div>';
 
@@ -2614,18 +2879,19 @@
             renderSteps(result.steps, maleName, femaleName, result.grade);
             updateSummary(result.grade, maleName, femaleName);
 
-            // 更新嫁娶择日
-            updateWeddingPanel();
+            // 更新嫁娶择日（使用当前择日年份）
+            var weddingYear = parseInt(weddingYearInput.value) || new Date().getFullYear();
+            updateWeddingPanel(weddingYear);
 
           } catch (e) {
             console.error('计算错误:', e);
             stepList.innerHTML =
-              '<div class="step-item"><div class="step-content" style="color: #ff6b6b;">⚠️ 计算出现错误，请检查输入数据后重试。</div></div>';
+              '<div class="step-item"><div class="step-content" style="color: #ff6b6b;">⚠️ 计算出现错误：' + (e.message || '请检查输入数据') + '</div></div>';
           } finally {
             loadingOverlay.classList.remove('active');
             calcBtn.disabled = false;
           }
-        }, 150); // 稍微增加延迟，让遮罩显示更平滑
+        }, 150);
       }
 
       /**
@@ -2681,9 +2947,29 @@
       calcBtn.addEventListener('click', calculate);
       resetBtn.addEventListener('click', resetExample);
 
+      // 刷新吉日按钮
+      refreshWeddingBtn.addEventListener('click', function() {
+        var year = parseInt(weddingYearInput.value);
+        if (isNaN(year) || year < 2020 || year > 2050) {
+          weddingYearInput.value = new Date().getFullYear();
+          year = parseInt(weddingYearInput.value);
+        }
+        updateWeddingPanel(year);
+      });
+
+      // 择日年份输入框回车触发刷新
+      weddingYearInput.addEventListener('keydown', function(e) {
+        if (e.key === 'Enter') {
+          refreshWeddingBtn.click();
+        }
+      });
+
       // 页面加载后初始化
       window.addEventListener('load', function() {
         bindHourTranslation();
+        // 设置默认择日年份
+        var currentYear = new Date().getFullYear();
+        weddingYearInput.value = currentYear;
         // 延迟执行，确保所有元素已渲染
         setTimeout(calculate, 50);
       });
