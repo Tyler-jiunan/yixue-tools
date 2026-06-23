@@ -1100,7 +1100,10 @@
 
     <!-- ===== 摘要 ===== -->
     <div id="resultSummary" class="summary-line">🌀 等待演算 ...</div>
-    <div class="footnote">✧ 小六壬 · 全功能版 ✧ 基于传统六宫，融合择日、方位、断语等实用功能</div>
+    <div class="footnote">
+	  ✧ 小六壬 · 全功能版 ✧ 基于传统六宫，融合择日、方位、断语等实用功能<br>
+	  ✦ 仅供文化娱乐参考，以平和之心观世事变迁 ✦ 
+	</div>
 
     <!-- ===== 弹窗：小六壬源流 ===== -->
     <div class="modal-overlay" id="aboutModal">
@@ -1609,9 +1612,15 @@
       }
 
       function getStars(level) {
-        var full = '★'.repeat(level);
-        var empty = '☆'.repeat(5 - level);
-        return full + empty;
+        var html = '';
+        for (var i = 0; i < 5; i++) {
+          if (i < level) {
+            html += '<span class="star-full">★</span>';
+          } else {
+            html += '<span class="star-empty">☆</span>';
+          }
+        }
+        return html;
       }
 
       // ================================================================
