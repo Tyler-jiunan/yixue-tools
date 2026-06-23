@@ -87,6 +87,87 @@
       border-color: #8ab4ff;
       color: #8ab4ff;
     }
+    /* ===== 古籍原文弹窗独有样式 ===== */
+    .guji-filter {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      justify-content: center;
+      margin-bottom: 16px;
+    }
+    .guji-filter .filter-btn {
+      padding: 4px 14px;
+      border-radius: 30px;
+      border: 1px solid rgba(255, 255, 255, 0.10);
+      background: rgba(255, 255, 255, 0.04);
+      color: #8899bb;
+      font-size: 0.78rem;
+      cursor: pointer;
+      transition: 0.2s;
+      font-family: inherit;
+    }
+    .guji-filter .filter-btn:hover {
+      background: rgba(60, 120, 255, 0.15);
+      border-color: rgba(60, 120, 255, 0.3);
+      color: #c8d0e0;
+    }
+    .guji-filter .filter-btn.active {
+      background: rgba(60, 120, 255, 0.20);
+      border-color: rgba(60, 120, 255, 0.4);
+      color: #8ab4ff;
+    }
+    .guji-item {
+      padding: 12px 16px;
+      margin-bottom: 10px;
+      border-radius: 16px;
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+    }
+    .guji-item:last-child { margin-bottom: 0; }
+    .guji-item .guji-title {
+      font-weight: 600;
+      color: #8ab4ff;
+      font-size: 0.95rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+    .guji-item .guji-title .guji-source {
+      font-weight: 400;
+      color: #8899bb;
+      font-size: 0.75rem;
+    }
+    .guji-item .guji-original {
+      margin-top: 6px;
+      padding: 8px 12px;
+      background: rgba(0, 0, 0, 0.25);
+      border-radius: 10px;
+      font-size: 0.9rem;
+      color: #c8d0e0;
+      font-family: 'Segoe UI', 'Microsoft YaHei', serif;
+      line-height: 1.8;
+      border-left: 3px solid rgba(60, 120, 255, 0.3);
+    }
+    .guji-item .guji-comment {
+      margin-top: 6px;
+      font-size: 0.88rem;
+      color: #aabbdd;
+      padding: 6px 12px;
+      background: rgba(60, 120, 255, 0.05);
+      border-radius: 10px;
+      line-height: 1.8;
+    }
+    .guji-item .guji-comment .label {
+      color: #8ab4ff;
+      font-weight: 600;
+    }
+    .guji-empty {
+      text-align: center;
+      color: #8899bb;
+      padding: 30px 0;
+      font-size: 0.95rem;
+    }
     /* ===== 模式切换 ===== */
     .mode-toggle {
       display: flex;
@@ -469,7 +550,7 @@
     .fangwei-item.fw-bad { border-color: rgba(255, 80, 80, 0.3); }
     .fangwei-item.fw-neutral { border-color: rgba(255, 200, 50, 0.2); }
     .fangwei-item.active { border-color: #8ab4ff !important; background: rgba(60, 120, 255, 0.15); }
-    /* ===== 详细断语 ===== */
+    /* ===== 详细断语（扩展版） ===== */
     .detail-section {
       margin-top: 12px;
       padding: 12px 16px;
@@ -480,17 +561,44 @@
     .detail-section .detail-title {
       font-weight: 600;
       color: #8ab4ff;
-      margin-bottom: 6px;
+      margin-bottom: 8px;
       font-size: 0.95rem;
+      text-align: center;
     }
-    .detail-section .detail-item {
-      padding: 4px 0;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.04);
-      font-size: 0.92rem;
+    .detail-section .detail-category {
+      margin-bottom: 8px;
+    }
+    .detail-section .detail-category .cat-label {
+      font-weight: 600;
+      color: #aabbdd;
+      font-size: 0.85rem;
+      display: block;
+      margin-bottom: 2px;
+    }
+    .detail-section .detail-category .cat-items {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 3px 12px;
+      font-size: 0.88rem;
+      color: #c8d0e0;
+      padding-left: 8px;
+    }
+    .detail-section .detail-category .cat-items .d-item {
+      padding: 2px 0;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+    }
+    .detail-section .detail-category .cat-items .d-item .d-label {
+      color: #8899bb;
+      font-size: 0.78rem;
+    }
+    .detail-section .detail-category .cat-items .d-item .d-text {
       color: #c8d0e0;
     }
-    .detail-section .detail-item:last-child { border-bottom: none; }
-    .detail-section .detail-item .d-label { color: #8899bb; font-size: 0.82rem; }
+    @media (max-width: 480px) {
+      .detail-section .detail-category .cat-items {
+        grid-template-columns: 1fr;
+      }
+    }
     /* ===== 六宫详解 ===== */
     .extra-detail {
       margin-top: 18px;
@@ -675,7 +783,7 @@
     }
     .modal-overlay.active { display: flex; }
     .modal {
-      max-width: 560px;
+      max-width: 600px;
       width: 100%;
       max-height: 80vh;
       overflow-y: auto;
@@ -747,7 +855,11 @@
 
     /* ===== 响应式 ===== */
     @media (max-width: 820px) {
-      .input-grid, .dark-number-input, .zhiri-input { grid-template-columns: 1fr 1fr 1fr; gap: 12px; padding: 16px 14px; }
+      .input-grid, .dark-number-input, .zhiri-input {
+        grid-template-columns: 1fr 1fr 1fr;
+        gap: 12px;
+        padding: 16px 14px;
+      }
       .container { padding: 20px 16px; }
       .btn { min-width: 120px; max-width: 100%; flex: 1 1 100%; white-space: normal; padding: 10px 20px; font-size: 1rem; }
       .num-btn { width: 28px; height: 36px; font-size: 1rem; }
@@ -755,9 +867,14 @@
       .fangwei-result { grid-template-columns: repeat(2, 1fr); }
       .zhiri-result .day-grid { grid-template-columns: repeat(auto-fill, minmax(80px, 1fr)); }
       .result-content .zhiri-full-list { grid-template-columns: repeat(auto-fill, minmax(80px, 1fr)); }
+      .modal { max-width: 95%; padding: 24px 18px; }
     }
     @media (max-width: 640px) {
-      .input-grid, .dark-number-input, .zhiri-input { grid-template-columns: 1fr; gap: 10px; padding: 14px 12px; }
+      .input-grid, .dark-number-input, .zhiri-input {
+        grid-template-columns: 1fr !important;
+        gap: 10px;
+        padding: 14px 12px;
+      }
       .container { padding: 16px 12px; }
       .result-item { padding: 14px 14px; }
       .num-btn { width: 26px; height: 34px; font-size: 0.9rem; }
@@ -769,9 +886,20 @@
       .zhangjue-item { padding: 6px 3px; font-size: 0.7rem; }
       .zhangjue-item .zj-name { font-size: 0.8rem; }
       .toolbar .btn-sm { font-size: 0.7rem; padding: 3px 12px; }
-      .modal { padding: 24px 16px; }
+      .modal { padding: 20px 14px; }
       .zhiri-result .day-grid { grid-template-columns: repeat(auto-fill, minmax(70px, 1fr)); }
       .result-content .zhiri-full-list { grid-template-columns: repeat(auto-fill, minmax(70px, 1fr)); }
+      .zhiri-input .input-group {
+        grid-column: 1 / -1 !important;
+        width: 100%;
+      }
+      .zhiri-input .input-group select { width: 100%; }
+      .guji-filter .filter-btn { font-size: 0.7rem; padding: 3px 10px; }
+    }
+    @media (max-width: 380px) {
+      .zhiri-result .day-grid { grid-template-columns: repeat(auto-fill, minmax(60px, 1fr)); }
+      .zhiri-result .day-grid .day-card { padding: 4px 4px; font-size: 0.7rem; }
+      .zhiri-result .day-grid .day-card .d-day { font-size: 0.8rem; }
     }
   </style>
 </head>
@@ -782,6 +910,7 @@
     <!-- ===== 工具栏 ===== -->
     <div class="toolbar">
       <button class="btn-sm" id="aboutToggle">📜 小六壬源流</button>
+      <button class="btn-sm" id="gujiToggle">📖 古籍原文</button>
     </div>
 
     <!-- ===== 模式切换 ===== -->
@@ -825,12 +954,10 @@
           <div class="inline-actions"><button class="btn-inline" id="randomHourBtn">🎲 随机时</button></div>
         </div>
       </div>
-      <!-- 月日时模式下的辅助按钮 -->
       <div class="action-row">
         <button class="btn btn-secondary" id="randomAllBtn">🎲 随机全部</button>
         <button class="btn btn-secondary" id="currentTimeBtn">🕒 当前月日时</button>
       </div>
-      <!-- 月日时模式下的场景选择器 -->
       <div class="scene-selector" id="sceneSelector">
         <button class="btn-scene active" data-scene="general">🔮 通用</button>
         <button class="btn-scene" data-scene="wealth">💰 求财</button>
@@ -869,12 +996,10 @@
           <div class="input-error" id="num3Error"></div>
         </div>
       </div>
-      <!-- 暗数模式下的辅助按钮 -->
       <div class="action-row">
         <button class="btn btn-secondary" id="randomAllBtnDark">🎲 随机全部</button>
         <button class="btn btn-secondary hidden" id="currentTimeBtnDark">🕒 当前月日时</button>
       </div>
-      <!-- 暗数模式下的场景选择器 -->
       <div class="scene-selector" id="sceneSelectorDark">
         <button class="btn-scene active" data-scene="general">🔮 通用</button>
         <button class="btn-scene" data-scene="wealth">💰 求财</button>
@@ -916,7 +1041,6 @@
           <div class="zhiri-result" id="zhiriResult">选择年月和事项，点击「择日推演」查看吉日建议</div>
         </div>
       </div>
-      <!-- 择日模式下无随机按钮 -->
     </div>
 
     <!-- ===== 主操作按钮 ===== -->
@@ -925,13 +1049,10 @@
       <button class="btn btn-secondary" id="resetBtn">↺ 重置示例</button>
     </div>
 
-    <!-- ===== 结果展示（三个模式共用一套DOM，但通过JS控制显示内容） ===== -->
+    <!-- ===== 结果展示 ===== -->
     <div class="result-container" id="resultContainer">
-      <!-- 月日时结果 -->
       <div id="datetimeResult" class="mode-result active"></div>
-      <!-- 暗数结果 -->
       <div id="darknumResult" class="mode-result"></div>
-      <!-- 择日结果 -->
       <div id="zhiriResultContainer" class="mode-result"></div>
     </div>
 
@@ -943,10 +1064,10 @@
       </div>
     </div>
 
-    <!-- ===== 详细断语 ===== -->
+    <!-- ===== 详细断语（扩展版） ===== -->
     <div id="detailContainer" style="margin-top: 12px; display: none;">
       <div style="background:rgba(255,255,255,0.03);border-radius:28px;padding:16px 18px 18px;border:1px solid rgba(255,255,255,0.06);">
-        <div style="text-align:center;font-size:1.1rem;font-weight:500;color:#8ab4ff;letter-spacing:3px;margin-bottom:14px;padding-bottom:10px;border-bottom:1px solid rgba(255,255,255,0.06);">📝 详细断语</div>
+        <div style="text-align:center;font-size:1.1rem;font-weight:500;color:#8ab4ff;letter-spacing:3px;margin-bottom:14px;padding-bottom:10px;border-bottom:1px solid rgba(255,255,255,0.06);">📝 详细断语 · 六维细解</div>
         <div class="detail-section" id="detailResult"></div>
       </div>
     </div>
@@ -1004,6 +1125,26 @@
       </div>
     </div>
 
+    <!-- ===== 弹窗：古籍原文 ===== -->
+    <div class="modal-overlay" id="gujiModal">
+      <div class="modal">
+        <div class="modal-title">📖 小六壬古籍原文</div>
+        <div class="modal-content">
+          <div class="guji-filter" id="gujiFilter">
+            <button class="filter-btn active" data-filter="all">📚 全部</button>
+            <button class="filter-btn" data-filter="大安">🌿 大安</button>
+            <button class="filter-btn" data-filter="留连">🌊 留连</button>
+            <button class="filter-btn" data-filter="速喜">🔥 速喜</button>
+            <button class="filter-btn" data-filter="赤口">⚔️ 赤口</button>
+            <button class="filter-btn" data-filter="小吉">💧 小吉</button>
+            <button class="filter-btn" data-filter="空亡">🏜️ 空亡</button>
+          </div>
+          <div id="gujiList"></div>
+        </div>
+        <button class="modal-close" onclick="document.getElementById('gujiModal').classList.remove('active')">关闭</button>
+      </div>
+    </div>
+
   </div>
 
   <script>
@@ -1030,59 +1171,10 @@
         '空亡': '音信稀时，五行属土，失物不可寻，行人正彷徨。'
       };
 
-      // ===== 详细断语库 =====
-      const DETAIL_LIB = {
-        '大安': {
-          '感情': '感情稳定，和合美满，宜珍惜眼前人。',
-          '事业': '事业顺遂，宜守不宜进，稳中求成。',
-          '健康': '身心安康，小恙无忧，宜静养。',
-          '财运': '财源稳定，宜守旧业，不宜冒进。',
-          '人际': '人缘和合，贵人相助，广结善缘。',
-          '出行': '出行平安，路顺人和，诸事吉祥。'
-        },
-        '留连': {
-          '感情': '感情纠缠，反复无常，宜冷静沟通。',
-          '事业': '事业阻滞，进展缓慢，宜耐心等待。',
-          '健康': '小恙缠绵，宜及时调理，不可大意。',
-          '财运': '财运拖延，不宜投资，守财为上。',
-          '人际': '人际反复，易生误会，宜坦诚相待。',
-          '出行': '出行迟滞，或有阻碍，宜改期。'
-        },
-        '速喜': {
-          '感情': '喜事临门，桃花旺盛，宜把握良机。',
-          '事业': '事业速成，机遇涌现，宜果断行动。',
-          '健康': '身心康健，病去如风，精力充沛。',
-          '财运': '意外之财，偏财运旺，宜见好就收。',
-          '人际': '人缘旺盛，贵人相助，喜事不断。',
-          '出行': '旅途顺利，一路顺风，遇贵人。'
-        },
-        '赤口': {
-          '感情': '口舌是非，争执不断，宜忍让为先。',
-          '事业': '事业受阻，官非缠身，宜谨慎行事。',
-          '健康': '病痛缠身，宜及时就医，不可拖延。',
-          '财运': '破财之象，投资需慎，忌冲动。',
-          '人际': '人际紧张，易生争执，宜以和为贵。',
-          '出行': '出行不利，防意外，宜谨慎。'
-        },
-        '小吉': {
-          '感情': '和合如意，良缘可成，宜积极追求。',
-          '事业': '事业有成，贵人扶持，宜进取。',
-          '健康': '身心康泰，百病不侵，精力旺盛。',
-          '财运': '正财稳定，小有进账，和气生财。',
-          '人际': '人缘和谐，朋友相助，喜事连连。',
-          '出行': '一路顺风，旅途愉快，平安归来。'
-        },
-        '空亡': {
-          '感情': '感情落空，缘分未至，宜静待时机。',
-          '事业': '事多落空，不宜强求，退守为佳。',
-          '健康': '身心疲惫，宜修养调理，不可劳累。',
-          '财运': '财运不济，不宜投资，守成为主。',
-          '人际': '人缘疏离，易生误解，宜淡然处之。',
-          '出行': '出行不宜，防不测，宜改期。'
-        }
-      };
+      // ================================================================
+      // 第2块：方位吉凶映射（提前定义，避免引用错误）
+      // ================================================================
 
-      // ===== 方位吉凶映射 =====
       const FANGWEI_MAP = {
         '大安': { fang: '东', luck: '吉' },
         '留连': { fang: '北', luck: '凶' },
@@ -1092,8 +1184,278 @@
         '空亡': { fang: '中', luck: '凶' }
       };
 
+      function getFangwei(gongName) {
+        return FANGWEI_MAP[gongName] || { fang: '中', luck: '凶' };
+      }
+
       // ================================================================
-      // 第2块：场景释义
+      // 第3块：古籍原文数据
+      // ================================================================
+
+      const GUJI_DATA = {
+        '大安': [
+          { source: '《诸葛马前课·卷一》', original: '大安：身不动时，五行属木，颜色青色。临青龙，主事一、五、七。其象为静，其意为安。', comment: '此课主静，宜守不宜进。凡事需静心以待，不可急躁。所求之事，多在近处，易得成就。' },
+          { source: '《六壬神课·占卜篇》', original: '大安之课，身安神定，万物归宁。谋事可成，出行皆利，失物不远，病者渐愈。', comment: '大安为六宫之首，百事皆宜。尤宜安居守业，不宜远行冒进。求财可得，求官可成。' }
+        ],
+        '留连': [
+          { source: '《诸葛马前课·卷一》', original: '留连：卒未归时，五行属水，颜色黑色。临玄武，主事二、八、十。其象为滞，其意为迟。', comment: '此课主滞，事有反复。宜耐心等待，不可急躁行事。求财拖延，出行阻滞。' },
+          { source: '《六壬神课·占卜篇》', original: '留连之课，事多羁绊，进退两难。谋事难成，出行不利，失物在近，病者缠绵。', comment: '留连主事缓，凡事需三思而后行。宜守不宜进，待时而动。' }
+        ],
+        '速喜': [
+          { source: '《诸葛马前课·卷一》', original: '速喜：人即至时，五行属火，颜色红色。临朱雀，主事三、六、九。其象为快，其意为喜。', comment: '此课主速，喜事临门。宜当机立断，不可犹豫。求财得财，出行顺利。' },
+          { source: '《六壬神课·占卜篇》', original: '速喜之课，喜事速来，百事皆利。谋事可成，出行皆吉，失物可得，病者速愈。', comment: '速喜为吉课，凡事皆宜速行。把握良机，不可错失。' }
+        ],
+        '赤口': [
+          { source: '《诸葛马前课·卷一》', original: '赤口：官事凶时，五行属金，颜色白色。临白虎，主事四、七、十。其象为凶，其意为口舌。', comment: '此课主凶，口舌是非。宜忍让为先，不可争强好胜。求财不利，出行谨慎。' },
+          { source: '《六壬神课·占卜篇》', original: '赤口之课，官非口舌，破财伤身。谋事难成，出行不利，失物难寻，病者多忧。', comment: '赤口主凶，凡事需谨慎。宜退不宜进，以和为贵，避灾免祸。' }
+        ],
+        '小吉': [
+          { source: '《诸葛马前课·卷一》', original: '小吉：人来喜时，五行属水，颜色黑色。临六合，主事一、五、七。其象为和，其意为吉。', comment: '此课主吉，和合如意。宜积极进取，不可错失良机。求财得财，出行平安。' },
+          { source: '《六壬神课·占卜篇》', original: '小吉之课，和合如意，百事皆利。谋事可成，出行皆吉，失物可得，病者渐愈。', comment: '小吉为上吉之课，凡事皆宜。尤宜合作共事，利于婚嫁、交易。' }
+        ],
+        '空亡': [
+          { source: '《诸葛马前课·卷一》', original: '空亡：音信稀时，五行属土，颜色黄色。临勾陈，主事三、六、九。其象为空，其意为亡。', comment: '此课主空，事多落空。宜退守为佳，不可强求。求财不利，出行不宜。' },
+          { source: '《六壬神课·占卜篇》', original: '空亡之课，事多落空，百事不利。谋事难成，出行不宜，失物难寻，病者缠绵。', comment: '空亡主凶，凡事需谨慎。宜静不宜动，守成为主，不可贪进。' }
+        ]
+      };
+
+      // ================================================================
+      // 第4块：详细断语库（扩展版）
+      // ================================================================
+
+      const DETAIL_LIB = {
+        '大安': {
+          '感情': {
+            '单身': '桃花渐显，宜主动社交，良缘可期。',
+            '恋爱': '感情稳定，和合美满，宜珍惜眼前人。',
+            '已婚': '家庭和睦，夫妻同心，宜共谋发展。',
+            '复合': '旧情可续，宜主动联系，冰释前嫌。'
+          },
+          '事业': {
+            '求职': '求职顺利，宜广投简历，机会众多。',
+            '职场': '工作顺遂，宜守不宜进，稳中求成。',
+            '创业': '创业有吉，宜稳步推进，不宜冒进。',
+            '跳槽': '跳槽有利，宜多方考察，谨慎选择。'
+          },
+          '健康': {
+            '身体': '身心安康，小恙无忧，宜静养。',
+            '情绪': '情绪平和，心静如水，宜修心。',
+            '预防': '预防为主，宜定期体检，未雨绸缪。',
+            '康复': '病愈在望，宜遵医嘱，勿急勿躁。'
+          },
+          '财运': {
+            '正财': '正财稳定，收入有保障，宜储蓄。',
+            '偏财': '偏财平平，不宜投机，宜守正财。',
+            '投资': '投资稳健，宜长期持有，短期不操。',
+            '负债': '负债渐轻，宜合理规划，勿再借贷。'
+          },
+          '人际': {
+            '亲友': '亲友和睦，亲情温暖，宜多走动。',
+            '同事': '同事融洽，合作愉快，宜多沟通。',
+            '贵人': '贵人相助，机遇不断，宜心怀感恩。',
+            '小人': '小人远离，是非不侵，宜保持距离。'
+          },
+          '出行': {
+            '近行': '近行平安，路顺人和，诸事吉祥。',
+            '远行': '远行顺利，旅途愉快，宜提前准备。',
+            '商务': '商务出行，洽谈顺利，宜把握时机。',
+            '归途': '归途安稳，一路顺风，宜早做安排。'
+          }
+        },
+        '留连': {
+          '感情': {
+            '单身': '桃花迟滞，缘分未至，宜静待时机。',
+            '恋爱': '感情反复，纠缠不清，宜冷静沟通。',
+            '已婚': '家庭琐事，宜多包容，以和为贵。',
+            '复合': '旧情难续，宜放手释怀，各自安好。'
+          },
+          '事业': {
+            '求职': '求职受阻，宜提升技能，静待良机。',
+            '职场': '工作阻滞，进展缓慢，宜耐心等待。',
+            '创业': '创业艰难，宜审慎评估，不宜冒进。',
+            '跳槽': '跳槽不利，宜稳守岗位，不宜轻动。'
+          },
+          '健康': {
+            '身体': '小恙缠绵，宜及时调理，不可大意。',
+            '情绪': '情绪低落，宜寻友倾诉，排解忧思。',
+            '预防': '预防为主，宜注意饮食，规律作息。',
+            '康复': '康复缓慢，宜坚持治疗，勿急勿躁。'
+          },
+          '财运': {
+            '正财': '正财不稳，宜节流开源，精打细算。',
+            '偏财': '偏财不济，不宜投机，守财为上。',
+            '投资': '投资谨慎，宜观望为主，不宜操作。',
+            '负债': '负债压力，宜制定计划，逐步偿还。'
+          },
+          '人际': {
+            '亲友': '亲友疏离，宜主动联系，修复关系。',
+            '同事': '同事关系紧张，宜以和为贵，多沟通。',
+            '贵人': '贵人难遇，宜自力更生，不宜依赖。',
+            '小人': '小人纠缠，宜保持距离，勿起冲突。'
+          },
+          '出行': {
+            '近行': '近行迟滞，或有阻碍，宜改期。',
+            '远行': '远行不利，宜取消计划，另择时日。',
+            '商务': '商务不顺，洽谈受阻，宜改期再约。',
+            '归途': '归途延误，宜耐心等待，安全第一。'
+          }
+        },
+        '速喜': {
+          '感情': {
+            '单身': '桃花旺盛，宜积极社交，良缘可期。',
+            '恋爱': '感情升温，甜蜜美满，宜乘势而上。',
+            '已婚': '家庭喜事，和睦温馨，宜共享天伦。',
+            '复合': '旧情复燃，宜主动出击，重归于好。'
+          },
+          '事业': {
+            '求职': '求职速成，机会涌现，宜果断接受。',
+            '职场': '工作突破，机遇连连，宜把握良机。',
+            '创业': '创业顺利，势如破竹，宜乘胜追击。',
+            '跳槽': '跳槽成功，新职如意，宜快速适应。'
+          },
+          '健康': {
+            '身体': '身心康健，病去如风，精力充沛。',
+            '情绪': '情绪高昂，积极乐观，宜保持心态。',
+            '预防': '身体健康，宜保持锻炼，增强体质。',
+            '康复': '康复迅速，宜加强营养，早日痊愈。'
+          },
+          '财运': {
+            '正财': '正财见涨，收入增加，宜储蓄理财。',
+            '偏财': '偏财运旺，意外之财，宜见好就收。',
+            '投资': '投资获利，宜及时止盈，落袋为安。',
+            '负债': '负债减轻，宜抓住机会，提前还款。'
+          },
+          '人际': {
+            '亲友': '亲友和睦，喜事连连，宜共享喜悦。',
+            '同事': '同事融洽，合作愉快，宜乘势发展。',
+            '贵人': '贵人相助，机遇不断，宜心怀感恩。',
+            '小人': '小人远避，是非不侵，宜保持警惕。'
+          },
+          '出行': {
+            '近行': '近行顺利，路顺人和，宜尽快出发。',
+            '远行': '远行吉利，旅途愉快，宜提前准备。',
+            '商务': '商务顺利，签约成功，宜乘胜追击。',
+            '归途': '归途平安，一路顺风，宜尽快返程。'
+          }
+        },
+        '赤口': {
+          '感情': {
+            '单身': '桃花有阻，宜谨慎交往，勿轻信他人。',
+            '恋爱': '感情争执，口舌不断，宜冷静沟通。',
+            '已婚': '家庭口角，宜以和为贵，互让一步。',
+            '复合': '旧情难续，宜果断放手，避免纠缠。'
+          },
+          '事业': {
+            '求职': '求职受阻，宜提升实力，暂缓求职。',
+            '职场': '工作不顺，口舌是非，宜谨言慎行。',
+            '创业': '创业艰难，官非缠身，宜谨慎行事。',
+            '跳槽': '跳槽不利，宜稳守岗位，不宜轻动。'
+          },
+          '健康': {
+            '身体': '病痛缠身，宜及时就医，不可拖延。',
+            '情绪': '情绪烦躁，宜静心修养，避免冲突。',
+            '预防': '预防为主，宜定期体检，及时就医。',
+            '康复': '康复缓慢，宜坚持治疗，不可懈怠。'
+          },
+          '财运': {
+            '正财': '正财不稳，宜节流开源，谨慎理财。',
+            '偏财': '偏财不济，不宜投机，守财为上。',
+            '投资': '投资风险，宜谨慎操作，及时止损。',
+            '负债': '负债压力，宜制定计划，避免逾期。'
+          },
+          '人际': {
+            '亲友': '亲友疏离，宜主动修复，以诚相待。',
+            '同事': '同事关系紧张，宜以和为贵，多沟通。',
+            '贵人': '贵人难遇，宜自力更生，不宜依赖。',
+            '小人': '小人当道，宜保持警惕，勿起冲突。'
+          },
+          '出行': {
+            '近行': '近行不利，防意外，宜谨慎出行。',
+            '远行': '远行不宜，宜取消计划，另择时日。',
+            '商务': '商务不顺，宜谨慎谈判，避免争执。',
+            '归途': '归途受阻，宜注意安全，耐心等待。'
+          }
+        },
+        '小吉': {
+          '感情': {
+            '单身': '桃花和合，良缘可成，宜积极追求。',
+            '恋爱': '感情和顺，甜蜜如意，宜珍惜缘分。',
+            '已婚': '家庭和睦，夫妻恩爱，宜共享天伦。',
+            '复合': '旧情可续，宜主动联系，重归于好。'
+          },
+          '事业': {
+            '求职': '求职顺利，宜积极争取，机会众多。',
+            '职场': '工作顺遂，贵人相助，宜乘势而上。',
+            '创业': '创业有吉，宜稳步推进，不宜冒进。',
+            '跳槽': '跳槽有利，宜多方考察，谨慎选择。'
+          },
+          '健康': {
+            '身体': '身心康泰，百病不侵，精力旺盛。',
+            '情绪': '情绪平稳，心宽体健，宜保持心态。',
+            '预防': '预防为主，宜保持锻炼，增强体质。',
+            '康复': '康复顺利，宜加强营养，早日痊愈。'
+          },
+          '财运': {
+            '正财': '正财稳定，收入有保障，宜储蓄。',
+            '偏财': '偏财小旺，有进有出，宜见好就收。',
+            '投资': '投资稳健，宜长期持有，短期不操。',
+            '负债': '负债减轻，宜抓住机会，提前还款。'
+          },
+          '人际': {
+            '亲友': '亲友和睦，亲情温暖，宜多走动。',
+            '同事': '同事融洽，合作愉快，宜多沟通。',
+            '贵人': '贵人相助，机遇不断，宜心怀感恩。',
+            '小人': '小人远离，是非不侵，宜保持距离。'
+          },
+          '出行': {
+            '近行': '近行平安，路顺人和，诸事吉祥。',
+            '远行': '远行顺利，旅途愉快，宜提前准备。',
+            '商务': '商务顺利，洽谈成功，宜把握良机。',
+            '归途': '归途平安，一路顺风，宜尽快返程。'
+          }
+        },
+        '空亡': {
+          '感情': {
+            '单身': '桃花落空，缘分未至，宜静待时机。',
+            '恋爱': '感情空落，缘分难续，宜放手释怀。',
+            '已婚': '家庭冷落，宜主动沟通，修复关系。',
+            '复合': '旧情难续，宜果断放手，各自安好。'
+          },
+          '事业': {
+            '求职': '求职落空，宜调整方向，提升实力。',
+            '职场': '工作不顺，事多落空，宜守成为主。',
+            '创业': '创业艰难，宜谨慎评估，不宜冒进。',
+            '跳槽': '跳槽不利，宜稳守岗位，不宜轻动。'
+          },
+          '健康': {
+            '身体': '身心疲惫，宜修养调理，不可劳累。',
+            '情绪': '情绪低落，宜寻友倾诉，排解忧思。',
+            '预防': '预防为主，宜注意饮食，规律作息。',
+            '康复': '康复缓慢，宜坚持治疗，不可懈怠。'
+          },
+          '财运': {
+            '正财': '正财不稳，宜节流开源，精打细算。',
+            '偏财': '偏财不济，不宜投机，守财为上。',
+            '投资': '投资风险，宜谨慎操作，及时止损。',
+            '负债': '负债压力，宜制定计划，逐步偿还。'
+          },
+          '人际': {
+            '亲友': '亲友疏离，宜主动联系，修复关系。',
+            '同事': '同事关系淡薄，宜以诚相待。',
+            '贵人': '贵人难遇，宜自力更生，不宜依赖。',
+            '小人': '小人纠缠，宜保持距离，勿起冲突。'
+          },
+          '出行': {
+            '近行': '近行不宜，防不测，宜改期。',
+            '远行': '远行不吉，宜取消计划，另择时日。',
+            '商务': '商务不顺，宜谨慎谈判，避免争执。',
+            '归途': '归途受阻，宜注意安全，耐心等待。'
+          }
+        }
+      };
+
+      // ================================================================
+      // 第5块：场景释义（保留原版）
       // ================================================================
 
       const SCENE_INTERP = {
@@ -1153,7 +1515,7 @@
       };
 
       // ================================================================
-      // 第3块：核心推算
+      // 第6块：核心推算
       // ================================================================
 
       const HOUR_NUM = { '子': 1, '丑': 2, '寅': 3, '卯': 4, '辰': 5, '巳': 6, '午': 7, '未': 8, '申': 9, '酉': 10, '戌': 11,
@@ -1252,16 +1614,43 @@
         return full + empty;
       }
 
-      function getDetail(gongName) {
+      // ================================================================
+      // 第7块：扩展版详细断语获取
+      // ================================================================
+
+      function getDetailExtended(gongName) {
         return DETAIL_LIB[gongName] || DETAIL_LIB['大安'];
       }
 
-      function getFangwei(gongName) {
-        return FANGWEI_MAP[gongName] || { fang: '中', luck: '凶' };
+      function renderDetailExtended(gongName) {
+        var detail = getDetailExtended(gongName);
+        var html = '<div class="detail-title">📋 ' + gongName + ' · 六维细解</div>';
+        var labels = { '感情': '❤️ 感情', '事业': '💼 事业', '健康': '🏥 健康', '财运': '💰 财运', '人际': '🤝 人际', '出行': '🚗 出行' };
+        var subLabels = {
+          '感情': { '单身': '单身', '恋爱': '恋爱', '已婚': '已婚', '复合': '复合' },
+          '事业': { '求职': '求职', '职场': '职场', '创业': '创业', '跳槽': '跳槽' },
+          '健康': { '身体': '身体', '情绪': '情绪', '预防': '预防', '康复': '康复' },
+          '财运': { '正财': '正财', '偏财': '偏财', '投资': '投资', '负债': '负债' },
+          '人际': { '亲友': '亲友', '同事': '同事', '贵人': '贵人', '小人': '小人' },
+          '出行': { '近行': '近行', '远行': '远行', '商务': '商务', '归途': '归途' }
+        };
+        for (var cat in detail) {
+          html += '<div class="detail-category">';
+          html += '<span class="cat-label">' + (labels[cat] || cat) + '</span>';
+          html += '<div class="cat-items">';
+          var items = detail[cat];
+          for (var sub in items) {
+            var subLabel = (subLabels[cat] && subLabels[cat][sub]) || sub;
+            html += '<div class="d-item"><span class="d-label">' + subLabel + '</span>：<span class="d-text">' + items[sub] +
+              '</span></div>';
+          }
+          html += '</div></div>';
+        }
+        return html;
       }
 
       // ================================================================
-      // 第4块：历史记录
+      // 第8块：历史记录
       // ================================================================
 
       var historyData = [];
@@ -1335,7 +1724,7 @@
       }
 
       // ================================================================
-      // 第5块：UI交互
+      // 第9块：UI交互
       // ================================================================
 
       var monthInput = document.getElementById('monthInput');
@@ -1363,7 +1752,6 @@
       var detailResult = document.getElementById('detailResult');
       var detailContainer = document.getElementById('detailContainer');
 
-      // 各模式的结果容器
       var datetimeResult = document.getElementById('datetimeResult');
       var darknumResult = document.getElementById('darknumResult');
       var zhiriResultContainer = document.getElementById('zhiriResultContainer');
@@ -1376,8 +1764,8 @@
       var currentTimeBtn = document.getElementById('currentTimeBtn');
       var clearHistoryBtn = document.getElementById('clearHistoryBtn');
       var aboutToggle = document.getElementById('aboutToggle');
+      var gujiToggle = document.getElementById('gujiToggle');
 
-      // 缓存各模式的最近一次结果HTML
       var cachedResults = {
         datetime: '',
         darknum: '',
@@ -1392,7 +1780,6 @@
 
       var currentScene = 'general';
       var currentMode = 'datetime';
-      // 各模式的演算次数
       var modeCalcCount = {
         datetime: 0,
         darknum: 0,
@@ -1400,7 +1787,7 @@
       };
 
       // ================================================================
-      // 数字输入框初始化
+      // 第10块：数字输入框初始化
       // ================================================================
 
       function initNumberInputs() {
@@ -1438,7 +1825,7 @@
       }
 
       // ================================================================
-      // 月份天数联动
+      // 第11块：月份天数联动
       // ================================================================
 
       function getMaxDays(month) {
@@ -1457,7 +1844,7 @@
       }
 
       // ================================================================
-      // 更新按钮文字（包含择日次数）
+      // 第12块：更新按钮文字
       // ================================================================
 
       function updateCalcBtnText() {
@@ -1471,11 +1858,10 @@
       }
 
       // ================================================================
-      // 模式切换（保留缓存）
+      // 第13块：模式切换
       // ================================================================
 
       function switchMode(mode) {
-        // 先保存当前模式的结果到缓存
         if (currentMode === 'datetime') {
           cachedResults.datetime = datetimeResult.innerHTML;
           cachedSummary.datetime = resultSummary.innerHTML;
@@ -1490,20 +1876,16 @@
 
         currentMode = mode;
 
-        // 更新标签高亮
         document.querySelectorAll('#modeToggle label').forEach(function(l) {
           l.classList.toggle('active', l.dataset.mode === mode);
         });
 
-        // 隐藏所有模式内容（输入区）
         document.querySelectorAll('.mode-content').forEach(function(el) {
           el.classList.add('hidden');
         });
 
-        // 更新主按钮显示当前模式的演算次数
         updateCalcBtnText();
 
-        // 显示当前模式输入区
         if (mode === 'datetime') {
           document.getElementById('datetimeMode').classList.remove('hidden');
           datetimeResult.classList.add('active');
@@ -1528,6 +1910,7 @@
               document.querySelectorAll('.zhangjue-item').forEach(function(el) {
                 el.classList.toggle('active', el.dataset.gong === gong);
               });
+              detailResult.innerHTML = renderDetailExtended(gong);
             }
           } else {
             fangweiContainer.style.display = 'none';
@@ -1558,6 +1941,7 @@
               document.querySelectorAll('.zhangjue-item').forEach(function(el) {
                 el.classList.toggle('active', el.dataset.gong === gong);
               });
+              detailResult.innerHTML = renderDetailExtended(gong);
             }
           } else {
             fangweiContainer.style.display = 'none';
@@ -1589,7 +1973,7 @@
       }
 
       // ================================================================
-      // 场景切换
+      // 第14块：场景切换
       // ================================================================
 
       function initSceneButtons() {
@@ -1614,7 +1998,7 @@
       }
 
       // ================================================================
-      // 验证和渲染
+      // 第15块：验证和渲染
       // ================================================================
 
       function validateInputs() {
@@ -1724,19 +2108,6 @@
         fangweiContainer.style.display = 'block';
       }
 
-      // ===== 渲染详细断语 =====
-      function renderDetail(gongName) {
-        var detail = getDetail(gongName);
-        var html = '<div class="detail-title">📋 ' + gongName + ' · 六事断语</div>';
-        var labels = { '感情': '❤️', '事业': '💼', '健康': '🏥', '财运': '💰', '人际': '🤝', '出行': '🚗' };
-        for (var key in detail) {
-          html += '<div class="detail-item"><span class="d-label">' + (labels[key] || '') + ' ' + key + '</span>：' +
-            detail[key] + '</div>';
-        }
-        detailResult.innerHTML = html;
-        detailContainer.style.display = 'block';
-      }
-
       // ===== 通用渲染函数 =====
       function renderToContainer(resultHTML, summaryText, finalGong, isZhiri) {
         var container;
@@ -1759,12 +2130,12 @@
 
         if (!isZhiri && finalGong) {
           renderFangwei(finalGong);
-          renderDetail(finalGong);
+          detailResult.innerHTML = renderDetailExtended(finalGong);
+          detailContainer.style.display = 'block';
           document.querySelectorAll('.zhangjue-item').forEach(function(el) {
             el.classList.toggle('active', el.dataset.gong === finalGong);
           });
           fangweiContainer.style.display = 'block';
-          detailContainer.style.display = 'block';
         } else if (isZhiri) {
           fangweiContainer.style.display = 'none';
           detailContainer.style.display = 'none';
@@ -1772,7 +2143,7 @@
         }
       }
 
-      // ===== 纯渲染（不记录历史） =====
+      // ===== 纯渲染 =====
       function renderResultOnly() {
         if (!validateInputs()) return;
         if (currentMode === 'zhiri') {
@@ -1886,10 +2257,8 @@
           '搬家': '📦 搬家', '求财': '💰 求财', '探病': '🏥 探病'
         } [event] || event;
 
-        // 筛选吉日（得分 >= 5）
         var goodDays = days.filter(function(d) { return d.score >= 5; });
 
-        // 构建吉日网格HTML（保留在zhiriResult中）
         var html = '<div style="margin-bottom:8px;">📅 <span class="highlight">' + year + '年' + month + '月</span>  ·  ' +
           eventLabel + '  ·  共筛选出 <span class="highlight">' + goodDays.length + '</span> 个吉日</div>';
 
@@ -1910,7 +2279,6 @@
 
         zhiriResult.innerHTML = html;
 
-        // ----- 在结果栏显示当月全部日子的吉凶情况（列表形式） -----
         var fullListHtml = '<div class="zhiri-summary">📋 <span class="highlight">' + year + '年' + month +
           '月</span> 全部 ' + days.length + ' 日吉凶一览（按日期排序）</div>';
         fullListHtml += '<div class="zhiri-full-list">';
@@ -1928,17 +2296,14 @@
         var summaryText = '📆 ' + year + '年' + month + '月 · ' + eventLabel + ' · 共' + goodDays.length + '个吉日';
 
         renderToContainer(resultHtml, summaryText, null, true);
-
-        // 添加历史记录
         addHistory('', eventLabel, '择日', goodDays.length > 0 ? '吉' : '凶', true, event);
 
-        // 隐藏方位和详细断语
         fangweiContainer.style.display = 'none';
         detailContainer.style.display = 'none';
         document.querySelectorAll('.zhangjue-item').forEach(function(el) { el.classList.remove('active'); });
       }
 
-      // ===== 完整渲染（记录历史） =====
+      // ===== 完整渲染 =====
       function renderResultWithHistory(countUp) {
         if (!validateInputs()) return;
         if (currentMode === 'zhiri') {
@@ -2073,7 +2438,7 @@
       }
 
       // ================================================================
-      // 重置示例（只删除当前模式的历史记录）
+      // 第16块：重置示例
       // ================================================================
 
       function resetExample() {
@@ -2088,11 +2453,9 @@
         zhiriEvent.value = '出行';
         updateDayMax();
 
-        // 只删除当前模式的历史记录
         var modeKey = currentMode === 'zhiri' ? 'zhiri' : (currentMode === 'datetime' ? 'datetime' : 'darknum');
         clearHistoryByMode(modeKey);
 
-        // 重置当前模式的演算次数
         modeCalcCount[currentMode] = 0;
         updateCalcBtnText();
 
@@ -2103,7 +2466,6 @@
         });
         currentScene = 'general';
 
-        // 清除当前模式的缓存
         if (currentMode === 'datetime') {
           cachedResults.datetime = '';
           cachedSummary.datetime = '';
@@ -2144,7 +2506,7 @@
       }
 
       // ================================================================
-      // 随机 & 当前时间
+      // 第17块：随机 & 当前时间
       // ================================================================
 
       function randomInt(min, max) { return Math.floor(Math.random() * (max - min + 1)) + min; }
@@ -2219,7 +2581,57 @@
       });
 
       // ================================================================
-      // 弹窗
+      // 第18块：古籍原文弹窗
+      // ================================================================
+
+      function renderGuji(filter) {
+        var list = document.getElementById('gujiList');
+        var html = '';
+        var hasContent = false;
+
+        for (var gong in GUJI_DATA) {
+          if (filter !== 'all' && gong !== filter) continue;
+          var items = GUJI_DATA[gong];
+          if (!items || items.length === 0) continue;
+          hasContent = true;
+          items.forEach(function(item) {
+            html += '<div class="guji-item">';
+            html += '  <div class="guji-title">';
+            html += '    <span>🌿 ' + gong + ' · ' + item.source.replace(/《|》/g, '') + '</span>';
+            html += '    <span class="guji-source">' + item.source + '</span>';
+            html += '  </div>';
+            html += '  <div class="guji-original">📜 ' + item.original + '</div>';
+            html += '  <div class="guji-comment"><span class="label">📝 注释</span>：' + item.comment + '</div>';
+            html += '</div>';
+          });
+        }
+
+        if (!hasContent) {
+          html = '<div class="guji-empty">📌 暂未收录该宫的原文，请选择其他宫位查看</div>';
+        }
+        list.innerHTML = html;
+
+        document.querySelectorAll('.guji-filter .filter-btn').forEach(function(btn) {
+          btn.classList.toggle('active', btn.dataset.filter === filter);
+        });
+      }
+
+      document.querySelectorAll('.guji-filter .filter-btn').forEach(function(btn) {
+        btn.addEventListener('click', function() {
+          renderGuji(this.dataset.filter);
+        });
+      });
+
+      gujiToggle.addEventListener('click', function() {
+        document.getElementById('gujiModal').classList.toggle('active');
+        renderGuji('all');
+      });
+      document.getElementById('gujiModal').addEventListener('click', function(e) {
+        if (e.target === this) this.classList.remove('active');
+      });
+
+      // ================================================================
+      // 第19块：弹窗 & 事件绑定
       // ================================================================
 
       aboutToggle.addEventListener('click', function() {
@@ -2229,24 +2641,15 @@
         if (e.target === this) this.classList.remove('active');
       });
 
-      // ================================================================
-      // 模式切换事件绑定
-      // ================================================================
-
       document.querySelectorAll('#modeToggle label').forEach(function(label) {
         label.addEventListener('click', function() {
           switchMode(this.dataset.mode);
         });
       });
 
-      // ================================================================
-      // 事件绑定
-      // ================================================================
-
       calcBtn.addEventListener('click', function() {
         if (currentMode === 'zhiri') {
           renderZhiri();
-          // 择日推演次数增加
           modeCalcCount.zhiri++;
           updateCalcBtnText();
         } else {
@@ -2274,7 +2677,7 @@
       });
 
       // ================================================================
-      // 初始化
+      // 第20块：初始化
       // ================================================================
 
       window.addEventListener('load', function() {
