@@ -219,6 +219,12 @@
             background: rgba(80, 200, 180, 0.06);
         }
 
+        /* 观音灵签 → 淡紫色调，呼应灵性/签文的意象 */
+        .tool-btn.btn-guanyin:hover {
+            border-color: rgba(180, 140, 220, 0.6);
+            background: rgba(180, 140, 220, 0.08);
+        }
+
         /* ============================================================
         第6块：底部信息
         作用：免责声明 + 装饰文字
@@ -321,7 +327,7 @@
             animation: fadeUp 0.7s ease-out;
         }
 
-        /* 三个工具按钮依次延迟出现（0.1s、0.2s、0.3s） */
+        /* 四个工具按钮依次延迟出现（0.1s、0.2s、0.3s、0.4s） */
         .tool-btn:nth-child(1) {
             animation: fadeUp 0.7s ease-out 0.1s both;
         }
@@ -330,6 +336,9 @@
         }
         .tool-btn:nth-child(3) {
             animation: fadeUp 0.7s ease-out 0.3s both;
+        }
+        .tool-btn:nth-child(4) {
+            animation: fadeUp 0.7s ease-out 0.4s both;
         }
     </style>
     <!-- ============================================================
@@ -357,7 +366,7 @@
         <div class="subtitle">择一工具，开启您的易学探索之旅</div>
 
         <!-- ==========================================================
-        工具网格：三个工具卡片
+        工具网格：四个工具卡片（新增观音灵签）
         ========================================================== -->
         <div class="tool-grid">
 
@@ -394,6 +403,17 @@
                 <span class="badge">占卜决疑</span>
             </a>
 
+            <!-- ======================================================
+            工具4：观音灵签 （新增）
+            点击后跳转到 guanyinlingqian.html
+            ====================================================== -->
+            <a href="guanyinlingqian.html" class="tool-btn btn-guanyin">
+                <span class="icon">✨</span>
+                <span class="name">观音灵签</span>
+                <span class="desc">百签灵应 · 诚心祈愿</span>
+                <span class="badge">灵签占卜</span>
+            </a>
+
         </div>
 
         <!-- ==========================================================
@@ -425,7 +445,9 @@
             console.log('%c✦ 梅花易数 — 邵雍心法观象玩辞', 'color: #4A90E2; font-size: 12px;');
             // 第四条：小六壬（青绿色）
             console.log('%c✦ 小六壬 — 三宫演算吉凶分明', 'color: #4AB4A0; font-size: 12px;');
-            // 第五条：寄语（灰色斜体）
+            // 第五条：观音灵签（淡紫色）
+            console.log('%c✦ 观音灵签 — 百签灵应诚心祈愿', 'color: #b48ad6; font-size: 12px;');
+            // 第六条：寄语（灰色斜体）
             console.log('%c✧ 以平和之心，观世事变迁 ✧', 'color: #8a7a68; font-size: 11px; font-style: italic;');
 
             // ---- 检测是否为移动端，在控制台提示 ----
