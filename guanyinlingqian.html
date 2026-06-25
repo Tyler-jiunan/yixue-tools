@@ -1,0 +1,780 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>观音灵签 - 百签灵应</title>
+    <style>
+        /* ===== 全局重置 & 字体 ===== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', 'Microsoft YaHei', '华文楷体', 'KaiTi', serif;
+            min-height: 100vh;
+            background: linear-gradient(145deg, #0b0e1a 0%, #1a1f35 40%, #0d1b2a 100%);
+            background-attachment: fixed;
+            color: #c8d0e0;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            padding: 20px;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image:
+                radial-gradient(1.5px 1.5px at 15% 20%, rgba(255, 255, 255, 0.4), transparent),
+                radial-gradient(1.5px 1.5px at 75% 35%, rgba(255, 255, 255, 0.3), transparent),
+                radial-gradient(2px 2px at 45% 65%, rgba(255, 255, 255, 0.5), transparent),
+                radial-gradient(1px 1px at 85% 80%, rgba(255, 255, 255, 0.3), transparent),
+                radial-gradient(1.5px 1.5px at 10% 90%, rgba(255, 255, 255, 0.4), transparent),
+                radial-gradient(1.5px 1.5px at 60% 10%, rgba(255, 255, 255, 0.3), transparent),
+                radial-gradient(1px 1px at 35% 45%, rgba(255, 255, 255, 0.5), transparent);
+            background-size: 100% 100%;
+            pointer-events: none;
+            z-index: 0;
+            opacity: 0.6;
+        }
+
+        .container {
+            position: relative;
+            z-index: 1;
+            max-width: 880px;
+            width: 100%;
+            background: rgba(255, 255, 255, 0.06);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            border-radius: 32px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+            padding: 28px 24px 30px;
+            transition: all 0.2s;
+        }
+
+        /* 标题区 */
+        .header {
+            text-align: center;
+            margin-bottom: 24px;
+            position: relative;
+        }
+
+        .header h1 {
+            font-size: 2.2rem;
+            font-weight: 400;
+            letter-spacing: 6px;
+            color: #e8edf5;
+            text-shadow: 0 0 40px rgba(60, 120, 255, 0.10);
+            margin-bottom: 6px;
+            font-family: 'Segoe UI', 'Microsoft YaHei', '华文楷体', 'KaiTi', serif;
+        }
+
+        .header .sub {
+            font-size: 0.9rem;
+            color: #8899bb;
+            letter-spacing: 4px;
+            border-top: 1px solid rgba(255, 255, 255, 0.08);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            display: inline-block;
+            padding: 6px 20px;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 30px;
+            margin-top: 4px;
+            font-family: 'Segoe UI', 'Microsoft YaHei', '华文楷体', 'KaiTi', serif;
+        }
+
+        /* 抽签主面板 */
+        .draw-area {
+            background: rgba(255, 255, 255, 0.04);
+            border-radius: 28px;
+            padding: 22px 18px 20px;
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            box-shadow: inset 0 0 30px rgba(0, 0, 0, 0.15);
+            margin-bottom: 24px;
+            text-align: center;
+        }
+
+        /* 签号选择器行 */
+        .selector-row {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            margin-bottom: 14px;
+        }
+
+        .selector-row label {
+            color: #8899bb;
+            font-size: 0.95rem;
+            letter-spacing: 1px;
+            font-family: 'Segoe UI', 'Microsoft YaHei', '华文楷体', 'KaiTi', serif;
+        }
+
+        .selector-row .sign-selector {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 40px;
+            border: 1px solid rgba(255, 255, 255, 0.10);
+            overflow: hidden;
+            transition: 0.25s ease;
+        }
+
+        .selector-row .sign-selector:hover {
+            border-color: rgba(60, 120, 255, 0.35);
+        }
+
+        .selector-row .sign-selector:focus-within {
+            border-color: rgba(60, 120, 255, 0.5);
+            box-shadow: 0 0 20px rgba(60, 120, 255, 0.12);
+        }
+
+        .selector-row .sign-selector button {
+            background: transparent;
+            border: none;
+            color: #8ab4ff;
+            font-size: 1.1rem;
+            font-weight: 600;
+            width: 32px;
+            height: 36px;
+            cursor: pointer;
+            transition: 0.2s;
+            font-family: 'Segoe UI', 'Microsoft YaHei', '华文楷体', 'KaiTi', serif;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .selector-row .sign-selector button:hover {
+            background: rgba(60, 120, 255, 0.15);
+        }
+
+        .selector-row .sign-selector button:active {
+            transform: scale(0.92);
+        }
+
+        .selector-row .sign-selector input[type="number"] {
+            width: 52px;
+            border: none;
+            background: transparent;
+            text-align: center;
+            padding: 6px 2px;
+            color: #e8edf5;
+            font-size: 1.05rem;
+            font-family: 'Segoe UI', 'Microsoft YaHei', '华文楷体', 'KaiTi', serif;
+            outline: none;
+            -moz-appearance: textfield;
+        }
+
+        .selector-row .sign-selector input[type="number"]::-webkit-inner-spin-button,
+        .selector-row .sign-selector input[type="number"]::-webkit-outer-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+
+        .selector-row .go-btn {
+            padding: 6px 22px;
+            border-radius: 30px;
+            border: 1px solid rgba(60, 120, 255, 0.2);
+            background: rgba(60, 120, 255, 0.12);
+            color: #8ab4ff;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: 0.2s;
+            font-family: 'Segoe UI', 'Microsoft YaHei', '华文楷体', 'KaiTi', serif;
+            letter-spacing: 1px;
+        }
+
+        .selector-row .go-btn:hover {
+            background: rgba(60, 120, 255, 0.25);
+            border-color: rgba(60, 120, 255, 0.35);
+        }
+
+        .selector-row .go-btn:active {
+            transform: scale(0.95);
+        }
+
+        .draw-btn {
+            background: rgba(60, 120, 255, 0.20);
+            border: 1px solid rgba(60, 120, 255, 0.25);
+            border-radius: 60px;
+            padding: 12px 40px;
+            font-size: 1.4rem;
+            font-weight: 500;
+            color: #8ab4ff;
+            letter-spacing: 6px;
+            cursor: pointer;
+            box-shadow: 0 4px 0 rgba(30, 80, 200, 0.3);
+            transition: all 0.2s ease;
+            font-family: 'Segoe UI', 'Microsoft YaHei', '华文楷体', 'KaiTi', serif;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.4);
+        }
+
+        .draw-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 0 rgba(30, 80, 200, 0.4), 0 0 40px rgba(60, 120, 255, 0.10);
+            background: rgba(60, 120, 255, 0.28);
+            border-color: rgba(60, 120, 255, 0.4);
+        }
+
+        .draw-btn:active {
+            transform: translateY(4px);
+            box-shadow: 0 1px 0 rgba(30, 80, 200, 0.3);
+        }
+
+        .draw-info {
+            margin-top: 14px;
+            color: #8899bb;
+            font-size: 0.9rem;
+            letter-spacing: 2px;
+            font-family: 'Segoe UI', 'Microsoft YaHei', '华文楷体', 'KaiTi', serif;
+        }
+
+        .draw-info span {
+            color: #8ab4ff;
+            font-weight: bold;
+        }
+
+        /* 签文展示卡片 */
+        .card {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(4px);
+            border-radius: 28px;
+            padding: 24px 22px 26px;
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            box-shadow: inset 0 0 40px rgba(0, 0, 0, 0.1), 0 8px 32px rgba(0, 0, 0, 0.3);
+            margin-top: 10px;
+            transition: all 0.3s;
+        }
+
+        /* 签号行 */
+        .card .sign-number {
+            font-size: 1.1rem;
+            color: #8899bb;
+            border-bottom: 1px dashed rgba(255, 255, 255, 0.08);
+            padding-bottom: 12px;
+            margin-bottom: 14px;
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            flex-wrap: wrap;
+        }
+
+        .card .sign-number .num {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #e8edf5;
+            letter-spacing: 1px;
+            font-family: 'Segoe UI', 'Microsoft YaHei', '华文楷体', 'KaiTi', serif;
+            min-width: 120px;
+            display: inline-block;
+        }
+
+        .card .sign-number .num .sign-title {
+            font-weight: 400;
+            color: #aabbdd;
+            margin-left: 6px;
+        }
+
+        .card .sign-number .badge {
+            background: rgba(60, 120, 255, 0.15);
+            padding: 4px 16px;
+            border-radius: 30px;
+            font-size: 0.95rem;
+            border: 1px solid rgba(60, 120, 255, 0.15);
+            color: #8ab4ff;
+            font-family: 'Segoe UI', 'Microsoft YaHei', '华文楷体', 'KaiTi', serif;
+            flex-shrink: 0;
+        }
+
+        /* ===== 签诗版本切换 ===== */
+        .card .poem-wrapper {
+            margin-top: 12px;
+        }
+
+        .card .poem-tabs {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 8px;
+        }
+
+        .card .poem-tabs .poem-tab {
+            padding: 4px 16px;
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.10);
+            background: rgba(255, 255, 255, 0.04);
+            color: #8899bb;
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: 0.2s;
+            font-family: 'Segoe UI', 'Microsoft YaHei', '华文楷体', 'KaiTi', serif;
+        }
+
+        .card .poem-tabs .poem-tab:hover {
+            background: rgba(60, 120, 255, 0.15);
+            border-color: rgba(60, 120, 255, 0.3);
+            color: #8ab4ff;
+        }
+
+        .card .poem-tabs .poem-tab.active {
+            background: rgba(60, 120, 255, 0.20);
+            border-color: rgba(60, 120, 255, 0.4);
+            color: #8ab4ff;
+        }
+
+        .card .poem {
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 18px;
+            padding: 16px 18px;
+            margin: 0 0 16px 0;
+            border-left: 4px solid rgba(60, 120, 255, 0.3);
+            font-size: 1.05rem;
+            line-height: 1.9;
+            white-space: pre-line;
+            color: #c8d0e0;
+            font-family: 'KaiTi', '楷体', serif;
+            letter-spacing: 1px;
+        }
+
+        /* 统一靠左对齐 */
+        .card .detail {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 4px 20px;
+            margin: 12px 0 8px;
+            font-size: 0.95rem;
+            color: #aabbdd;
+        }
+
+        .card .detail .item {
+            display: flex;
+            justify-content: flex-start;
+            gap: 8px;
+            padding: 4px 0;
+            border-bottom: 1px dotted rgba(255, 255, 255, 0.05);
+        }
+
+        .card .detail .item .label {
+            color: #8899bb;
+            flex-shrink: 0;
+            min-width: 44px;
+            font-family: 'Segoe UI', 'Microsoft YaHei', '华文楷体', 'KaiTi', serif;
+        }
+
+        .card .detail .item .value {
+            color: #c8d0e0;
+            font-weight: 500;
+            word-break: break-word;
+            font-family: 'Segoe UI', 'Microsoft YaHei', '华文楷体', 'KaiTi', serif;
+        }
+
+        /* ===== 内容块统一样式 ===== */
+        .card .content-wrapper {
+            margin-top: 16px;
+            padding-top: 12px;
+            border-top: 1px dashed rgba(255, 255, 255, 0.06);
+        }
+
+        .card .content-wrapper summary {
+            cursor: pointer;
+            color: #8ab4ff;
+            font-weight: 600;
+            letter-spacing: 1px;
+            padding: 4px 0;
+            transition: 0.2s;
+            font-size: 0.98rem;
+            font-family: 'Segoe UI', 'Microsoft YaHei', '华文楷体', 'KaiTi', serif;
+            display: inline-block;
+            list-style: none;
+        }
+
+        .card .content-wrapper summary::-webkit-details-marker {
+            display: none;
+        }
+
+        .card .content-wrapper summary::before {
+            content: '▶ ';
+            font-size: 0.7rem;
+            color: #8ab4ff;
+            transition: transform 0.2s;
+            display: inline-block;
+        }
+
+        .card .content-wrapper[open] summary::before {
+            transform: rotate(90deg);
+        }
+
+        .card .content-wrapper summary:hover {
+            color: #a0c4ff;
+        }
+
+        .card .content-wrapper .content-box {
+            margin-top: 8px;
+            padding: 12px 16px;
+            background: rgba(60, 120, 255, 0.06);
+            border-radius: 18px;
+            border: 1px solid rgba(60, 120, 255, 0.06);
+            white-space: pre-wrap;
+            font-size: 0.95rem;
+            color: #c8d0e0;
+            line-height: 1.7;
+            font-family: 'Segoe UI', 'Microsoft YaHei', '华文楷体', 'KaiTi', serif;
+        }
+
+        /* 响应式 */
+        @media (max-width: 640px) {
+            .container {
+                padding: 16px 14px 22px;
+                border-radius: 24px;
+            }
+
+            .header h1 {
+                font-size: 1.8rem;
+                letter-spacing: 4px;
+            }
+
+            .draw-btn {
+                padding: 10px 24px;
+                font-size: 1.2rem;
+                letter-spacing: 4px;
+            }
+
+            .card .sign-number .num {
+                font-size: 1.2rem;
+            }
+
+            .card .detail {
+                grid-template-columns: 1fr;
+                gap: 2px;
+            }
+
+            .card .poem {
+                font-size: 0.95rem;
+                padding: 12px 14px;
+            }
+
+            .selector-row {
+                gap: 8px;
+            }
+
+            .selector-row .sign-selector input[type="number"] {
+                width: 44px;
+                font-size: 0.95rem;
+            }
+        }
+
+        @media (max-width: 400px) {
+            .header h1 {
+                font-size: 1.4rem;
+                letter-spacing: 3px;
+            }
+            .draw-btn {
+                padding: 8px 16px;
+                font-size: 1rem;
+                letter-spacing: 3px;
+            }
+            .container {
+                padding: 12px 10px 16px;
+            }
+            .card .sign-number .num {
+                font-size: 1rem;
+            }
+            .selector-row .sign-selector input[type="number"] {
+                width: 38px;
+                font-size: 0.85rem;
+            }
+            .selector-row .go-btn {
+                padding: 4px 14px;
+                font-size: 0.8rem;
+            }
+        }
+
+        ::-webkit-scrollbar {
+            width: 6px;
+            background: transparent;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: rgba(60, 120, 255, 0.3);
+            border-radius: 12px;
+        }
+        ::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.02);
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="header">
+        <h1>✦ 观音灵签 ✦</h1>
+        <div class="sub">第一百签 · 灵应全览</div>
+    </div>
+
+    <div class="draw-area">
+        <!-- 签号选择器 -->
+        <div class="selector-row">
+            <label for="signPicker">📌 选签</label>
+            <div class="sign-selector">
+                <button type="button" id="signDecBtn">−</button>
+                <input type="number" id="signPicker" value="1" min="1" max="100">
+                <button type="button" id="signIncBtn">+</button>
+            </div>
+            <button class="go-btn" id="goSignBtn">查看</button>
+        </div>
+
+        <button class="draw-btn" id="drawBtn">🙏 随机抽签</button>
+        <div class="draw-info" id="drawInfo">共 <span>100</span> 签 · 诚心祈愿</div>
+    </div>
+
+    <!-- 签文展示区 -->
+    <div class="card" id="signCard">
+        <!-- 签号行 -->
+        <div class="sign-number">
+            <span class="num" id="signNum">第  —  签<span class="sign-title"></span></span>
+            <span class="badge" id="signBadge">—</span>
+        </div>
+
+        <!-- ===== 签诗（双版本） ===== -->
+        <div class="poem-wrapper">
+            <div class="poem-tabs">
+                <button class="poem-tab active" data-version="1">📜 版本一</button>
+                <button class="poem-tab" data-version="2">📜 版本二</button>
+            </div>
+            <div class="poem" id="signPoem">点击「随机抽签」或「查看」按钮，诚心求取灵签</div>
+        </div>
+
+        <div class="detail" id="signDetail">
+            <div class="item"><span class="label">宫位</span><span class="value" id="dPalace">—</span></div>
+            <div class="item"><span class="label">吉凶</span><span class="value" id="dLuck">—</span></div>
+            <div class="item"><span class="label">诗意</span><span class="value" id="dPoemMeaning">—</span></div>
+            <div class="item"><span class="label">解曰</span><span class="value" id="dExplain">—</span></div>
+        </div>
+
+        <!-- ✨ 签文精髓 -->
+        <details class="content-wrapper" id="essenceBlock" open>
+            <summary>✨ 签文精髓</summary>
+            <div class="content-box" id="signMeaning">点击「随机抽签」或「查看」按钮，诚心求取灵签</div>
+        </details>
+
+        <!-- ===== 圣意 ===== -->
+        <details class="content-wrapper" id="shengyiBlock" open>
+            <summary>📜 圣意</summary>
+            <div class="content-box" id="signShengyi">点击「随机抽签」或「查看」按钮，诚心求取灵签</div>
+        </details>
+
+        <!-- ===== 新增：逐句白话翻译 ===== -->
+        <details class="content-wrapper" id="plainSentBlock" open>
+            <summary>📝 逐句白话翻译</summary>
+            <div class="content-box" id="signPlainSent">点击「随机抽签」或「查看」按钮，诚心求取灵签</div>
+        </details>
+		
+        <!-- ===== 整体解释 ===== -->
+        <details class="content-wrapper" id="overExplainBlock" open>
+            <summary>📖 整体解释</summary>
+            <div class="content-box" id="signoverExplain">点击「随机抽签」或「查看」按钮，诚心求取灵签</div>
+        </details>
+
+        <!-- ===== 简短总结 ===== -->
+        <details class="content-wrapper" id="briefSumBlock" open>
+            <summary>🔮 简短总结</summary>
+            <div class="content-box" id="signbriefSum">点击「随机抽签」或「查看」按钮，诚心求取灵签</div>
+        </details>
+
+        <!-- ===== 行动指引 ===== -->
+        <details class="content-wrapper" id="actionGuideBlock" open>
+            <summary>🎯 行动指引</summary>
+            <div class="content-box" id="signActionGuide">点击「随机抽签」或「查看」按钮，诚心求取灵签</div>
+        </details>
+
+        <!-- 📖 典故 · 签诗故事 -->
+        <details class="content-wrapper" id="storyBlock" open>
+            <summary>📖 典故 · 签诗故事</summary>
+            <div class="content-box" id="signStory">点击「随机抽签」或「查看」按钮，诚心求取灵签</div>
+        </details>
+    </div>
+</div>
+
+<!-- ===== 引用外部签文库 ===== -->
+<script src="guanyinlingqianData.js"></script>
+
+<script>
+    (function() {
+        const SIGNS = typeof SIGN_LIBRARY !== 'undefined' ? SIGN_LIBRARY : [];
+
+        if (SIGNS.length === 0) {
+            console.warn('签文库未加载，请确保 guanyinlingqianData.js 在同一个目录下。');
+        }
+
+        const drawBtn = document.getElementById('drawBtn');
+        const goSignBtn = document.getElementById('goSignBtn');
+        const signPicker = document.getElementById('signPicker');
+        const signDecBtn = document.getElementById('signDecBtn');
+        const signIncBtn = document.getElementById('signIncBtn');
+
+        const signNum = document.getElementById('signNum');
+        const signBadge = document.getElementById('signBadge');
+        const signPoem = document.getElementById('signPoem');
+        const dPalace = document.getElementById('dPalace');
+        const dLuck = document.getElementById('dLuck');
+        const dPoemMeaning = document.getElementById('dPoemMeaning');
+        const dExplain = document.getElementById('dExplain');
+        const signMeaning = document.getElementById('signMeaning');
+        const signPlainSent = document.getElementById('signPlainSent');
+        const signShengyi = document.getElementById('signShengyi');
+        const signoverExplain = document.getElementById('signoverExplain');
+        const signbriefSum = document.getElementById('signbriefSum');
+        const signActionGuide = document.getElementById('signActionGuide');
+        const signStory = document.getElementById('signStory');
+        const drawInfo = document.getElementById('drawInfo');
+
+        // 当前签诗版本
+        let currentPoemVersion = 1;
+
+        function displaySign(index) {
+            if (SIGNS.length === 0) {
+                alert('签文库加载失败，请检查 guanyinlingqianData.js 文件是否存在。');
+                return;
+            }
+
+            if (index < 1) index = 1;
+            if (index > SIGNS.length) index = SIGNS.length;
+            signPicker.value = index;
+
+            const s = SIGNS[index - 1];
+            if (!s) return;
+
+            // 显示 "第 N 签：标题"
+            signNum.innerHTML = `第 ${index} 签<span class="sign-title">：${s.title || ''}</span>`;
+
+            signBadge.textContent = s.luck || '—';
+            signBadge.style.color = s.luck && s.luck.includes('上') ? '#66bb6a' : (s.luck && s.luck.includes('下') ? '#ff6b6b' : '#f7d44a');
+
+            // ===== 签诗双版本 =====
+            const poemTabs = document.querySelectorAll('.poem-tab');
+            
+            function updatePoem(version) {
+                currentPoemVersion = version;
+                let poemContent;
+                if (version === 1) {
+                    poemContent = s.poem1 || s.poem || '（签诗暂缺）';
+                } else {
+                    poemContent = s.poem2 || s.poem || '（签诗暂缺）';
+                }
+                signPoem.textContent = poemContent;
+                
+                poemTabs.forEach(tab => {
+                    const tabVersion = parseInt(tab.dataset.version);
+                    tab.classList.toggle('active', tabVersion === version);
+                });
+            }
+
+            if (s.poem1 || s.poem2 || s.poem) {
+                if (s.poem1) {
+                    updatePoem(1);
+                } else if (s.poem2) {
+                    updatePoem(2);
+                } else {
+                    signPoem.textContent = s.poem || '（签诗暂缺）';
+                }
+            } else {
+                signPoem.textContent = '（签诗暂缺）';
+            }
+
+            poemTabs.forEach(tab => {
+                tab.onclick = function(e) {
+                    e.stopPropagation();
+                    const version = parseInt(this.dataset.version);
+                    updatePoem(version);
+                };
+            });
+
+            // 其他字段赋值
+            dPalace.textContent = s.palace || '—';
+            dLuck.textContent = s.luck || '—';
+            dPoemMeaning.textContent = s.poemMeaning || '—';
+            dExplain.textContent = s.explain || '—';
+
+            signMeaning.textContent = s.essence || '（暂无签文精髓）';
+            // 【新增】逐句白话翻译
+            signPlainSent.textContent = s.plainSent || '（暂无逐句白话翻译）';
+            signShengyi.textContent = s.shengyi || '（暂无圣意）';
+            signoverExplain.textContent = s.overExplain || '（暂无整体解释）';
+            signbriefSum.textContent = s.briefSum || '（暂无简短总结）';
+            signActionGuide.textContent = s.actionGuide || '（暂无行动指引）';
+            signStory.textContent = s.story || '（无典故记载）';
+
+            const card = document.getElementById('signCard');
+            card.style.transform = 'scale(0.98)';
+            setTimeout(() => card.style.transform = 'scale(1)', 120);
+            drawInfo.innerHTML = `诚心祈愿 · 第 <span>${index}</span> 签 现`;
+        }
+
+        function drawRandomSign() {
+            if (SIGNS.length === 0) {
+                alert('签文库加载失败，请检查 guanyinlingqianData.js 文件是否存在。');
+                return;
+            }
+            const idx = Math.floor(Math.random() * SIGNS.length) + 1;
+            displaySign(idx);
+        }
+
+        drawBtn.addEventListener('click', drawRandomSign);
+
+        goSignBtn.addEventListener('click', function() {
+            let val = parseInt(signPicker.value);
+            if (isNaN(val) || val < 1) val = 1;
+            if (val > SIGNS.length) val = SIGNS.length;
+            displaySign(val);
+        });
+
+        signPicker.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter') {
+                goSignBtn.click();
+            }
+        });
+
+        signPicker.addEventListener('blur', function() {
+            let val = parseInt(this.value);
+            if (isNaN(val) || val < 1) val = 1;
+            if (val > SIGNS.length) val = SIGNS.length;
+            this.value = val;
+        });
+
+        signDecBtn.addEventListener('click', function() {
+            let val = parseInt(signPicker.value) || 1;
+            if (val > 1) val--;
+            displaySign(val);
+        });
+
+        signIncBtn.addEventListener('click', function() {
+            let val = parseInt(signPicker.value) || 1;
+            if (val < SIGNS.length) val++;
+            displaySign(val);
+        });
+
+        // 页面加载后保持初始提示状态，不自动显示签文
+        window.addEventListener('load', function() {
+            // 如需自动显示第1签，取消下面注释
+            // if (SIGNS.length > 0) {
+            //     displaySign(1);
+            // }
+        });
+
+        window.displaySign = displaySign;
+        window.drawRandomSign = drawRandomSign;
+    })();
+</script>
+
+</body>
+</html>
