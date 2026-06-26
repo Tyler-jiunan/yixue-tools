@@ -432,6 +432,90 @@
             font-family: 'Segoe UI', 'Microsoft YaHei', '华文楷体', 'KaiTi', serif;
         }
 
+        /* ===== 典故故事版本切换 ===== */
+        .card .story-wrapper {
+            margin-top: 16px;
+            padding-top: 12px;
+            border-top: 1px dashed rgba(255, 255, 255, 0.06);
+        }
+
+        .card .story-wrapper summary {
+            cursor: pointer;
+            color: #8ab4ff;
+            font-weight: 600;
+            letter-spacing: 1px;
+            padding: 4px 0;
+            transition: 0.2s;
+            font-size: 0.98rem;
+            font-family: 'Segoe UI', 'Microsoft YaHei', '华文楷体', 'KaiTi', serif;
+            display: inline-block;
+            list-style: none;
+        }
+
+        .card .story-wrapper summary::-webkit-details-marker {
+            display: none;
+        }
+
+        .card .story-wrapper summary::before {
+            content: '▶ ';
+            font-size: 0.7rem;
+            color: #8ab4ff;
+            transition: transform 0.2s;
+            display: inline-block;
+        }
+
+        .card .story-wrapper[open] summary::before {
+            transform: rotate(90deg);
+        }
+
+        .card .story-wrapper summary:hover {
+            color: #a0c4ff;
+        }
+
+        .card .story-wrapper .story-tabs {
+            display: flex;
+            gap: 8px;
+            margin-top: 4px;
+            margin-bottom: 8px;
+        }
+
+        .card .story-wrapper .story-tabs .story-tab {
+            padding: 4px 16px;
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.10);
+            background: rgba(255, 255, 255, 0.04);
+            color: #8899bb;
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: 0.2s;
+            font-family: 'Segoe UI', 'Microsoft YaHei', '华文楷体', 'KaiTi', serif;
+        }
+
+        .card .story-wrapper .story-tabs .story-tab:hover {
+            background: rgba(60, 120, 255, 0.15);
+            border-color: rgba(60, 120, 255, 0.3);
+            color: #8ab4ff;
+        }
+
+        .card .story-wrapper .story-tabs .story-tab.active {
+            background: rgba(60, 120, 255, 0.20);
+            border-color: rgba(60, 120, 255, 0.4);
+            color: #8ab4ff;
+        }
+
+        .card .story-wrapper .story-box {
+            margin-top: 4px;
+            padding: 12px 16px;
+            background: rgba(60, 120, 255, 0.06);
+            border-radius: 18px;
+            border: 1px solid rgba(60, 120, 255, 0.06);
+            white-space: pre-wrap;
+            font-size: 0.95rem;
+            color: #c8d0e0;
+            line-height: 1.7;
+            font-family: 'Segoe UI', 'Microsoft YaHei', '华文楷体', 'KaiTi', serif;
+        }
+
         /* 响应式 */
         @media (max-width: 640px) {
             .container {
@@ -472,6 +556,15 @@
                 width: 44px;
                 font-size: 0.95rem;
             }
+
+            .card .story-wrapper .story-tabs {
+                gap: 6px;
+            }
+
+            .card .story-wrapper .story-tabs .story-tab {
+                padding: 3px 12px;
+                font-size: 0.7rem;
+            }
         }
 
         @media (max-width: 400px) {
@@ -497,6 +590,10 @@
             .selector-row .go-btn {
                 padding: 4px 14px;
                 font-size: 0.8rem;
+            }
+            .card .story-wrapper .story-tabs .story-tab {
+                padding: 2px 8px;
+                font-size: 0.65rem;
             }
         }
 
@@ -573,22 +670,16 @@
             <div class="content-box" id="signShengyi">点击「随机抽签」或「查看」按钮，诚心求取灵签</div>
         </details>
 
-        <!-- ===== 新增：逐句白话翻译 ===== -->
+        <!-- ===== 逐句白话翻译 ===== -->
         <details class="content-wrapper" id="plainSentBlock" open>
             <summary>📝 逐句白话翻译</summary>
             <div class="content-box" id="signPlainSent">点击「随机抽签」或「查看」按钮，诚心求取灵签</div>
         </details>
-		
+
         <!-- ===== 整体解释 ===== -->
         <details class="content-wrapper" id="overExplainBlock" open>
             <summary>📖 整体解释</summary>
             <div class="content-box" id="signoverExplain">点击「随机抽签」或「查看」按钮，诚心求取灵签</div>
-        </details>
-
-        <!-- ===== 简短总结 ===== -->
-        <details class="content-wrapper" id="briefSumBlock" open>
-            <summary>🔮 简短总结</summary>
-            <div class="content-box" id="signbriefSum">点击「随机抽签」或「查看」按钮，诚心求取灵签</div>
         </details>
 
         <!-- ===== 行动指引 ===== -->
@@ -597,10 +688,20 @@
             <div class="content-box" id="signActionGuide">点击「随机抽签」或「查看」按钮，诚心求取灵签</div>
         </details>
 
-        <!-- 📖 典故 · 签诗故事 -->
-        <details class="content-wrapper" id="storyBlock" open>
+        <!-- ===== 简短总结 ===== -->
+        <details class="content-wrapper" id="briefSumBlock" open>
+            <summary>🔮 简短总结</summary>
+            <div class="content-box" id="signbriefSum">点击「随机抽签」或「查看」按钮，诚心求取灵签</div>
+        </details>
+
+        <!-- ===== 典故 · 签诗故事（双故事） ===== -->
+        <details class="story-wrapper" id="storyBlock" open>
             <summary>📖 典故 · 签诗故事</summary>
-            <div class="content-box" id="signStory">点击「随机抽签」或「查看」按钮，诚心求取灵签</div>
+            <div class="story-tabs">
+                <button class="story-tab active" data-version="1">📜 故事一</button>
+                <button class="story-tab" data-version="2">📜 故事二</button>
+            </div>
+            <div class="story-box" id="signStory">点击「随机抽签」或「查看」按钮，诚心求取灵签</div>
         </details>
     </div>
 </div>
@@ -640,6 +741,8 @@
 
         // 当前签诗版本
         let currentPoemVersion = 1;
+        // 当前故事版本
+        let currentStoryVersion = 1;
 
         function displaySign(index) {
             if (SIGNS.length === 0) {
@@ -699,6 +802,45 @@
                 };
             });
 
+            // ===== 典故故事双故事 =====
+            const storyTabs = document.querySelectorAll('.story-tab');
+            
+            function updateStory(version) {
+                currentStoryVersion = version;
+                let storyContent;
+                if (version === 1) {
+                    storyContent = s.story1 || s.story || '（无典故记载）';
+                } else {
+                    storyContent = s.story2 || s.story || '（无典故记载）';
+                }
+                signStory.textContent = storyContent;
+                
+                storyTabs.forEach(tab => {
+                    const tabVersion = parseInt(tab.dataset.version);
+                    tab.classList.toggle('active', tabVersion === version);
+                });
+            }
+
+            if (s.story1 || s.story2 || s.story) {
+                if (s.story1) {
+                    updateStory(1);
+                } else if (s.story2) {
+                    updateStory(2);
+                } else {
+                    signStory.textContent = s.story || '（无典故记载）';
+                }
+            } else {
+                signStory.textContent = '（无典故记载）';
+            }
+
+            storyTabs.forEach(tab => {
+                tab.onclick = function(e) {
+                    e.stopPropagation();
+                    const version = parseInt(this.dataset.version);
+                    updateStory(version);
+                };
+            });
+
             // 其他字段赋值
             dPalace.textContent = s.palace || '—';
             dLuck.textContent = s.luck || '—';
@@ -706,13 +848,11 @@
             dExplain.textContent = s.explain || '—';
 
             signMeaning.textContent = s.essence || '（暂无签文精髓）';
-            // 【新增】逐句白话翻译
             signPlainSent.textContent = s.plainSent || '（暂无逐句白话翻译）';
             signShengyi.textContent = s.shengyi || '（暂无圣意）';
             signoverExplain.textContent = s.overExplain || '（暂无整体解释）';
             signbriefSum.textContent = s.briefSum || '（暂无简短总结）';
             signActionGuide.textContent = s.actionGuide || '（暂无行动指引）';
-            signStory.textContent = s.story || '（无典故记载）';
 
             const card = document.getElementById('signCard');
             card.style.transform = 'scale(0.98)';
