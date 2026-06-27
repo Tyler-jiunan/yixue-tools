@@ -1,0 +1,1167 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>人缘牌阵</title>
+    <style>
+        /* ===== 全局重置 & 深空主题 ===== */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        body {
+            background: linear-gradient(145deg, #0b0e1a 0%, #1a1f35 40%, #0d1b2a 100%);
+            font-family: 'Segoe UI', 'Microsoft YaHei', '华文楷体', 'KaiTi', serif;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            color: #c8d0e0;
+        }
+        .container {
+            max-width: 960px;
+            width: 100%;
+            background: rgba(255, 255, 255, 0.06);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+            border-radius: 32px;
+            padding: 28px 24px 20px;
+            border: 1px solid rgba(255, 255, 255, 0.12);
+        }
+        h1 {
+            font-size: 2.2rem;
+            font-weight: 400;
+            letter-spacing: 6px;
+            text-align: center;
+            border-bottom: 2px dashed rgba(255, 255, 255, 0.08);
+            padding-bottom: 16px;
+            margin-bottom: 20px;
+            color: #e8edf5;
+            text-shadow: 0 0 40px rgba(60, 120, 255, 0.10);
+        }
+        h1 small {
+            font-size: 0.9rem;
+            letter-spacing: 2px;
+            color: #8899bb;
+            display: block;
+            margin-top: 6px;
+            font-weight: 300;
+        }
+        .info-bar {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            justify-content: center;
+            margin-bottom: 20px;
+            font-size: 0.9rem;
+            color: #8899bb;
+            background: rgba(255,255,255,0.04);
+            padding: 10px 16px;
+            border-radius: 40px;
+            border: 1px solid rgba(255,255,255,0.06);
+        }
+        .info-bar .suit-heart { color: #ff7b89; }
+        .info-bar .suit-diamond { color: #f7d44a; }
+        .info-bar .suit-club { color: #7ac8a8; }
+        .info-bar .suit-spade { color: #8899bb; }
+        /* ===== 牌阵布局：严格5x5 ===== */
+        .grid-21 {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 10px;
+            margin: 18px 0 20px;
+            max-width: 700px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        .card-slot {
+            aspect-ratio: 3/4;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 16px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            font-size: 0.7rem;
+            color: #8899bb;
+            transition: 0.25s ease;
+            cursor: pointer;
+            text-align: center;
+            padding: 4px;
+            position: relative;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+            user-select: none;
+        }
+        .card-slot:hover {
+            border-color: rgba(60, 120, 255, 0.3);
+            background: rgba(255,255,255,0.08);
+        }
+        .card-slot .label {
+            font-size: 0.55rem;
+            color: #667799;
+            line-height: 1.3;
+            margin-top: 2px;
+        }
+        .card-slot .card-value {
+            font-size: 1.4rem;
+            font-weight: 600;
+            color: #e8edf5;
+            line-height: 1.2;
+        }
+        .card-slot .card-suit { font-size: 1.2rem; }
+        .card-slot.revealed {
+            background: rgba(60, 120, 255, 0.12);
+            border-color: rgba(60, 120, 255, 0.25);
+        }
+        .card-slot .badge {
+            position: absolute;
+            top: -6px;
+            right: -6px;
+            background: rgba(60, 120, 255, 0.25);
+            border-radius: 30px;
+            padding: 0 8px;
+            font-size: 0.5rem;
+            color: #8ab4ff;
+            border: 1px solid rgba(60,120,255,0.2);
+        }
+        .pos-num {
+            font-size: 0.5rem;
+            color: #445566;
+            position: absolute;
+            bottom: 4px;
+            right: 6px;
+        }
+        .card-slot.total-slot {
+            border-color: rgba(255, 215, 0, 0.2);
+            background: rgba(255, 215, 0, 0.05);
+        }
+        .card-slot.total-slot.revealed {
+            border-color: rgba(255, 215, 0, 0.4);
+            background: rgba(255, 215, 0, 0.1);
+        }
+        .card-slot.center-slot {
+            border-color: rgba(60, 180, 255, 0.3);
+            background: rgba(60, 180, 255, 0.05);
+        }
+        .card-slot.center-slot.revealed {
+            border-color: rgba(60, 180, 255, 0.5);
+            background: rgba(60, 180, 255, 0.12);
+        }
+        .card-slot.drawn {
+            background: rgba(60, 60, 120, 0.15);
+            border-color: rgba(60, 120, 255, 0.15);
+        }
+        .card-slot.drawn .drawn-badge {
+            position: absolute;
+            top: 4px;
+            left: 4px;
+            background: rgba(60, 120, 255, 0.3);
+            border-radius: 30px;
+            padding: 0 8px;
+            font-size: 0.45rem;
+            color: #8ab4ff;
+            border: 1px solid rgba(60,120,255,0.15);
+        }
+        /* 空位占位 */
+        .card-slot.empty-slot {
+            background: transparent;
+            border: none;
+            box-shadow: none;
+            cursor: default;
+        }
+        .card-slot.empty-slot:hover {
+            border: none;
+            background: transparent;
+        }
+        /* 补牌标记 - 左下角 (仅男女人缘牌显示) */
+        .card-slot .replace-badge {
+            position: absolute;
+            bottom: 18px;
+            left: 4px;
+            background: rgba(255, 215, 0, 0.25);
+            border-radius: 10px;
+            padding: 0 6px;
+            font-size: 0.4rem;
+            color: #f7d44a;
+            border: 1px solid rgba(255, 215, 0, 0.2);
+            line-height: 1.4;
+            pointer-events: none;
+        }
+        /* 补牌按钮 - 左下角 (仅男女人缘牌显示) */
+        .card-slot .rep-btn {
+            position: absolute;
+            bottom: 4px;
+            left: 4px;
+            background: rgba(60, 120, 255, 0.3);
+            border: 1px solid rgba(60, 120, 255, 0.2);
+            border-radius: 12px;
+            padding: 1px 6px;
+            font-size: 0.45rem;
+            color: #8ab4ff;
+            cursor: pointer;
+            transition: 0.2s;
+            line-height: 1.4;
+            font-family: inherit;
+            pointer-events: auto;
+            z-index: 2;
+        }
+        .card-slot .rep-btn:hover {
+            background: rgba(60, 120, 255, 0.5);
+            border-color: rgba(60, 120, 255, 0.4);
+        }
+        /* 回退按钮 - 左上角 (仅男女人缘牌显示) */
+        .card-slot .undo-btn {
+            position: absolute;
+            top: 4px;
+            left: 4px;
+            background: rgba(255, 150, 80, 0.25);
+            border: 1px solid rgba(255, 150, 80, 0.2);
+            border-radius: 12px;
+            padding: 1px 6px;
+            font-size: 0.45rem;
+            color: #ffaa66;
+            cursor: pointer;
+            transition: 0.2s;
+            line-height: 1.4;
+            font-family: inherit;
+            pointer-events: auto;
+            z-index: 2;
+        }
+        .card-slot .undo-btn:hover {
+            background: rgba(255, 150, 80, 0.4);
+            border-color: rgba(255, 150, 80, 0.35);
+        }
+        .card-slot .undo-btn:disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+        }
+        .card-slot .undo-btn:disabled:hover {
+            background: rgba(255, 150, 80, 0.25);
+            border-color: rgba(255, 150, 80, 0.2);
+        }
+        /* ===== 总结区域 ===== */
+        .summary-area {
+            margin: 16px 0 12px;
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 8px;
+            max-width: 700px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        .summary-card {
+            background: rgba(255,255,255,0.04);
+            border-radius: 16px;
+            padding: 8px 6px;
+            border: 1px solid rgba(255,255,255,0.06);
+            text-align: center;
+            cursor: pointer;
+            transition: 0.2s;
+            min-width: 0;
+        }
+        .summary-card:hover {
+            background: rgba(255,255,255,0.08);
+            border-color: rgba(60,120,255,0.2);
+        }
+        .summary-card .title {
+            font-size: 0.6rem;
+            color: #8899bb;
+            letter-spacing: 0.5px;
+            white-space: nowrap;
+        }
+        .summary-card .value {
+            font-size: 1.0rem;
+            font-weight: 600;
+            color: #8ab4ff;
+            margin-top: 2px;
+        }
+        .summary-card .sub {
+            font-size: 0.6rem;
+            color: #667799;
+            margin-top: 1px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .summary-card.active-summary {
+            border-color: rgba(255, 215, 0, 0.3);
+            background: rgba(255, 215, 0, 0.06);
+        }
+        /* ===== 按钮 ===== */
+        .action-bar {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 16px;
+            margin: 16px 0 10px;
+        }
+        .btn {
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid rgba(255, 255, 255, 0.10);
+            padding: 12px 36px;
+            border-radius: 60px;
+            font-size: 1.15rem;
+            font-weight: 500;
+            color: #c8d0e0;
+            letter-spacing: 2px;
+            cursor: pointer;
+            transition: 0.2s;
+            box-shadow: 0 4px 0 rgba(0, 0, 0, 0.2);
+            font-family: inherit;
+            flex: 1 1 0;
+            min-width: 140px;
+            max-width: 260px;
+            white-space: nowrap;
+        }
+        .btn-primary {
+            background: rgba(60, 120, 255, 0.20);
+            color: #8ab4ff;
+            box-shadow: 0 4px 0 rgba(30, 80, 200, 0.3);
+            border-color: rgba(60, 120, 255, 0.25);
+        }
+        .btn-primary:hover {
+            background: rgba(60, 120, 255, 0.30);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 0 rgba(30, 80, 200, 0.4);
+            border-color: rgba(60, 120, 255, 0.4);
+        }
+        .btn-primary:active {
+            transform: translateY(4px);
+            box-shadow: 0 1px 0 rgba(30, 80, 200, 0.3);
+        }
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.04);
+            box-shadow: 0 4px 0 rgba(0, 0, 0, 0.2);
+        }
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.08);
+            transform: translateY(-2px);
+        }
+        .btn:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+            transform: none !important;
+        }
+        /* ===== 日志区域 ===== */
+        .log-section {
+            margin-top: 16px;
+            background: rgba(255,255,255,0.03);
+            border-radius: 24px;
+            border: 1px solid rgba(255,255,255,0.06);
+            overflow: hidden;
+        }
+        .log-section .log-title {
+            padding: 8px 16px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: #8ab4ff;
+            border-bottom: 1px solid rgba(255,255,255,0.06);
+            background: rgba(60,120,255,0.06);
+            letter-spacing: 2px;
+        }
+        .draw-log {
+            padding: 12px 16px;
+            min-height: 85px;
+            max-height: 100px;
+            overflow-y: auto;
+            font-size: 0.85rem;
+            color: #aabbdd;
+            line-height: 1.8;
+            background: rgba(255,255,255,0.02);
+        }
+        .draw-log::-webkit-scrollbar { width: 4px; }
+        .draw-log::-webkit-scrollbar-thumb { background: rgba(60,120,255,0.3); border-radius: 10px; }
+        .draw-log .highlight { color: #8ab4ff; }
+        /* ===== 规则说明区域 ===== */
+        .rules-section {
+            margin-top: 12px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+        .rules-section .rule-card {
+            background: rgba(255,255,255,0.03);
+            border-radius: 16px;
+            padding: 12px 14px;
+            border: 1px solid rgba(255,255,255,0.06);
+        }
+        .rules-section .rule-card .rule-title {
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: #8ab4ff;
+            letter-spacing: 1px;
+            margin-bottom: 6px;
+            border-bottom: 1px solid rgba(255,255,255,0.06);
+            padding-bottom: 4px;
+        }
+        .rules-section .rule-card .rule-body {
+            font-size: 0.78rem;
+            color: #aabbdd;
+            line-height: 1.8;
+        }
+        .rules-section .rule-card .rule-body .highlight {
+            color: #8ab4ff;
+        }
+        .rules-section .rule-card .rule-body .suit-heart { color: #ff7b89; }
+        .rules-section .rule-card .rule-body .suit-diamond { color: #f7d44a; }
+        .rules-section .rule-card .rule-body .suit-club { color: #7ac8a8; }
+        .rules-section .rule-card .rule-body .suit-spade { color: #8899bb; }
+        .rules-section .rule-card.full-width {
+            grid-column: 1 / -1;
+        }
+        @media (max-width: 820px) {
+            .grid-21 { gap: 6px; max-width: 100%; }
+            .card-slot { font-size: 0.6rem; }
+            .card-slot .card-value { font-size: 1.0rem; }
+            .summary-area { grid-template-columns: repeat(5, 1fr); gap: 4px; }
+            .summary-card .title { font-size: 0.5rem; }
+            .summary-card .value { font-size: 0.85rem; }
+            .summary-card .sub { font-size: 0.5rem; }
+            .rules-section { grid-template-columns: 1fr 1fr; }
+        }
+        @media (max-width: 640px) {
+            .container { padding: 16px 12px; }
+            h1 { font-size: 1.6rem; letter-spacing: 3px; }
+            .grid-21 { gap: 4px; }
+            .card-slot { aspect-ratio: 2/3; padding: 2px; border-radius: 10px; }
+            .card-slot .card-value { font-size: 0.8rem; }
+            .card-slot .card-suit { font-size: 0.8rem; }
+            .card-slot .label { font-size: 0.4rem; }
+            .btn { min-width: 100px; max-width: 100%; flex: 1 1 100%; white-space: normal; padding: 10px 16px; font-size: 1rem; }
+            .summary-area { grid-template-columns: repeat(3, 1fr); gap: 6px; }
+            .summary-card .title { font-size: 0.55rem; }
+            .summary-card .value { font-size: 0.9rem; }
+            .summary-card .sub { font-size: 0.5rem; }
+            .info-bar { font-size: 0.7rem; padding: 6px 12px; }
+            .card-slot .rep-btn { font-size: 0.4rem; padding: 0 5px; }
+            .card-slot .undo-btn { font-size: 0.4rem; padding: 0 5px; }
+            .card-slot .replace-badge { font-size: 0.35rem; bottom: 14px; }
+            .rules-section { grid-template-columns: 1fr; }
+            .rules-section .rule-card.full-width { grid-column: 1; }
+        }
+        @media (max-width: 480px) {
+            .grid-21 { gap: 3px; }
+            .card-slot .card-value { font-size: 0.7rem; }
+            .card-slot .card-suit { font-size: 0.6rem; }
+            .card-slot .label { font-size: 0.35rem; }
+            .summary-area { grid-template-columns: repeat(3, 1fr); gap: 4px; }
+            .summary-card { padding: 4px 3px; }
+            .summary-card .title { font-size: 0.45rem; }
+            .summary-card .value { font-size: 0.75rem; }
+            .summary-card .sub { font-size: 0.4rem; }
+            .card-slot .rep-btn { font-size: 0.35rem; padding: 0 4px; bottom: 2px; left: 2px; }
+            .card-slot .undo-btn { font-size: 0.35rem; padding: 0 4px; top: 2px; left: 2px; }
+            .card-slot .replace-badge { font-size: 0.3rem; bottom: 12px; left: 2px; }
+            .draw-log { min-height: 70px; max-height: 80px; }
+        }
+        ::-webkit-scrollbar { width: 6px; background: transparent; }
+        ::-webkit-scrollbar-thumb { background: rgba(60, 120, 255, 0.3); border-radius: 12px; }
+        ::-webkit-scrollbar-track { background: rgba(255, 255, 255, 0.02); }
+        .footnote {
+            margin-top: 20px;
+            text-align: center;
+            font-size: 0.8rem;
+            color: #556688;
+            border-top: 1px solid rgba(255, 255, 255, 0.06);
+            padding-top: 16px;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>🃏 人缘牌阵 <small>扑克牌阵 · 男女人缘·上下半生</small></h1>
+
+    <div class="info-bar">
+        <span class="suit-heart">♥ 红桃</span><span class="suit-heart">·</span>爱和喜欢 &nbsp;|&nbsp; <span class="suit-diamond">♦ 方块</span><span class="suit-diamond">·</span>金钱帮助 &nbsp;|&nbsp; <span class="suit-club">♣ 梅花</span><span class="suit-club">·</span>无条件帮助 &nbsp;|&nbsp; <span class="suit-spade">♠ 黑桃</span><span class="suit-spade">·</span>讨厌反感
+        <span style="margin-left:8px;"></span> 仅左右两侧男女人缘牌支持「补牌」和「回退」
+    </div>
+
+    <!-- 21张牌阵 (5x5) -->
+    <div class="grid-21" id="cardGrid"></div>
+
+    <!-- 总结栏：5个总结卡片 -->
+    <div class="summary-area" id="summaryArea">
+        <div class="summary-card" id="upSummaryCard"><div class="title">🌤 上半生总结</div><div class="value" id="upTotal">—</div><div class="sub" id="upTotalSub">点击上方「上半总结」牌查看</div></div>
+        <div class="summary-card" id="maleSummaryCard"><div class="title">👤 男性总体</div><div class="value" id="maleTotal">—</div><div class="sub" id="maleTotalSub">点击上方「男总体」牌查看</div></div>
+        <div class="summary-card" id="lifeSummaryCard"><div class="title">🌟 人生总结</div><div class="value" id="lifeTotal">—</div><div class="sub" id="lifeTotalSub">点击中央「人生总结」牌查看</div></div>
+        <div class="summary-card" id="femaleSummaryCard"><div class="title">👩 女性总体</div><div class="value" id="femaleTotal">—</div><div class="sub" id="femaleTotalSub">点击上方「女总体」牌查看</div></div>
+        <div class="summary-card" id="downSummaryCard"><div class="title">🌧 下半生总结</div><div class="value" id="downTotal">—</div><div class="sub" id="downTotalSub">点击上方「下半总结」牌查看</div></div>
+    </div>
+
+    <!-- 操作按钮 -->
+    <div class="action-bar">
+        <button class="btn btn-primary" id="drawBtn">🃏 抽牌</button>
+        <button class="btn btn-secondary" id="revealAllBtn">📖 全部翻开</button>
+        <button class="btn btn-secondary" id="resetBtn">↺ 重置牌阵</button>
+    </div>
+
+    <!-- 日志区域 -->
+    <div class="log-section">
+        <div class="log-title">📋 一、日志</div>
+        <div class="draw-log" id="drawLog">✨ 点击「抽牌」分配牌，点击牌面翻开，左右两侧人缘牌支持「补牌」和「回退」...</div>
+    </div>
+
+    <!-- 规则说明区域 -->
+    <div class="rules-section">
+
+        <!-- 二、游玩操作步骤 -->
+        <div class="rule-card full-width">
+            <div class="rule-title">📌 二、游玩操作步骤</div>
+            <div class="rule-body">
+                1. 对方心里想好一个具体的人（爸爸、朋友、长辈、同事等）<br>
+                2. 说出这个人的名字，你对应翻男生侧 / 女生侧对应的牌<br>
+                3. 翻开单张牌，先看花色定核心含义，再结合数字解读<br>
+                4. 最后翻开上下半生、中间总牌，做整体总结
+            </div>
+        </div>
+
+        <!-- 三、固定花色解读规则 -->
+        <div class="rule-card full-width">
+            <div class="rule-title">🎯 三、固定花色解读规则</div>
+            <div class="rule-body">
+                <span class="suit-heart">♥️ 红桃（红心）</span>：代表爱意、喜欢、亲近、真心善待、感情向好<br>
+                <span class="suit-diamond">♦️ 方块</span>：代表财运、资源、人脉帮助、物质扶持、贵人助力<br>
+                <span class="suit-club">♣️ 梅花</span>：代表无条件帮助、照顾、默默付出、靠谱的贵人<br>
+                <span class="suit-spade">♠️ 黑桃</span>：代表隔阂、疏远、矛盾、敌意、相处有阻碍（综艺里的负面牌）
+            </div>
+        </div>
+
+        <!-- 四、基础数字简易解读 -->
+        <div class="rule-card full-width">
+            <div class="rule-title">🔢 四、基础数字简易解读</div>
+            <div class="rule-body">
+                <span class="highlight">A</span>：核心人物、最重要的人、开局 / 新阶段<br>
+                <span class="highlight">J/Q/K</span>：长辈、重要贵人、长辈家人、有分量的人<br>
+                <span class="highlight">2-10</span>：数字越大，对方对你的影响越深、缘分越重
+            </div>
+        </div>
+
+        <!-- 五、完整游玩流程复刻 -->
+        <div class="rule-card full-width">
+            <div class="rule-title">🔄 五、完整游玩流程复刻</div>
+            <div class="rule-body">
+                1. 洗牌扣牌，摆好左右男女两列牌阵<br>
+                2. 玩家逐个说出心里想到的人<br>
+                3. 区分男女翻对应竖列的牌<br>
+                4. 按花色讲对方对你的态度：<span class="suit-heart">红桃</span>喜欢你、<span class="suit-diamond">方块</span>帮你搞资源、<span class="suit-club">梅花</span>愿意帮你、<span class="suit-spade">黑桃</span>相处有隔阂<br>
+                5. 最后翻开上下半生、中间总牌，做趣味总结
+            </div>
+        </div>
+
+        <!-- 六、重要提醒 -->
+        <div class="rule-card full-width">
+            <div class="rule-title">⚠️ 六、重要提醒</div>
+            <div class="rule-body">
+                1. 这只是综艺整活的趣味心理小游戏，不是正规占卜，结果不能当真<br>
+                2. 牌阵和解读都是现场即兴设定的，没有传统扑克牌占卜的正统体系<br>
+                3. 适合朋友聚会、桌面互动玩，不要用来当真测算命运、感情
+            </div>
+        </div>
+
+    </div>
+
+    <div class="footnote">✧ 扑克牌占卜 · 人缘牌阵 ✧ 仅供文化娱乐参考 · 以平和之心观之</div>
+</div>
+
+<script>
+    (function() {
+        'use strict';
+
+        // ============================================================
+        // 1. 牌面定义 (不含大小王)
+        // ============================================================
+        const SUITS = ['♠', '♥', '♦', '♣'];
+        const RANKS = ['A', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K'];
+        const SUIT_MEANING = {
+            '♥': '好感·喜欢·爱',
+            '♦': '金钱·帮助',
+            '♣': '无条件帮助',
+            '♠': '讨厌·反感'
+        };
+        const SUIT_COLOR = {
+            '♥': '#ff7b89',
+            '♦': '#f7d44a',
+            '♣': '#7ac8a8',
+            '♠': '#8899bb'
+        };
+
+        // ============================================================
+        // 2. 牌阵位置 (5x5)
+        // ============================================================
+        const GRID_POSITIONS = [
+            { id: 1, label: '男1', group: 'male', row: 0, col: 0 },
+            { id: 13, label: '上1', group: 'up', row: 0, col: 1 },
+            { id: 14, label: '上2', group: 'up', row: 0, col: 2 },
+            { id: 15, label: '上3', group: 'up', row: 0, col: 3 },
+            { id: 7, label: '女1', group: 'female', row: 0, col: 4 },
+            { id: 2, label: '男2', group: 'male', row: 1, col: 0 },
+            null,
+            { id: 16, label: '上半总结', group: 'upTotal', row: 1, col: 2 },
+            null,
+            { id: 8, label: '女2', group: 'female', row: 1, col: 4 },
+            { id: 3, label: '男3', group: 'male', row: 2, col: 0 },
+            { id: 6, label: '男总体', group: 'maleTotal', row: 2, col: 1 },
+            { id: 21, label: '人生总结', group: 'lifeTotal', row: 2, col: 2 },
+            { id: 12, label: '女总体', group: 'femaleTotal', row: 2, col: 3 },
+            { id: 9, label: '女3', group: 'female', row: 2, col: 4 },
+            { id: 4, label: '男4', group: 'male', row: 3, col: 0 },
+            null,
+            { id: 20, label: '下半总结', group: 'downTotal', row: 3, col: 2 },
+            null,
+            { id: 10, label: '女4', group: 'female', row: 3, col: 4 },
+            { id: 5, label: '男5', group: 'male', row: 4, col: 0 },
+            { id: 17, label: '下1', group: 'down', row: 4, col: 1 },
+            { id: 18, label: '下2', group: 'down', row: 4, col: 2 },
+            { id: 19, label: '下3', group: 'down', row: 4, col: 3 },
+            { id: 11, label: '女5', group: 'female', row: 4, col: 4 }
+        ];
+
+        // 定义哪些位置的牌支持补牌和回退（左右两侧男女人缘牌）
+        // 男1-5: id 1,2,3,4,5 ; 女1-5: id 7,8,9,10,11
+        const ALLOW_REPLACE_IDS = [1, 2, 3, 4, 5, 7, 8, 9, 10, 11];
+        // 男总体6、女总体12、上半总结16、下半总结20、人生总结21、上1-3(13,14,15)、下1-3(17,18,19) 均不支持
+
+        function allowReplaceForPos(posId) {
+            return ALLOW_REPLACE_IDS.indexOf(posId) !== -1;
+        }
+
+        const VALID_INDICES = [];
+        const POS_MAP = {};
+        GRID_POSITIONS.forEach((pos, idx) => {
+            if (pos !== null) {
+                VALID_INDICES.push(idx);
+                POS_MAP[idx] = pos;
+            }
+        });
+
+        function getPosById(id) {
+            for (let idx of VALID_INDICES) {
+                if (POS_MAP[idx].id === id) return { idx, pos: POS_MAP[idx] };
+            }
+            return null;
+        }
+
+        const DRAW_ORDER_IDS = [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21];
+
+        // ============================================================
+        // 3. 状态
+        // ============================================================
+        let deck = [];
+        let hasCard = {};
+        let revealed = {};
+        let cardData = {};
+        let replaceCount = {};          // 每张牌的补牌次数
+        let cardHistory = {};           // 每张牌的历史记录 [card1, card2, ...] 用于回退
+        let allDrawn = false;
+
+        // DOM
+        const grid = document.getElementById('cardGrid');
+        const drawLog = document.getElementById('drawLog');
+        const maleTotalEl = document.getElementById('maleTotal');
+        const maleTotalSub = document.getElementById('maleTotalSub');
+        const femaleTotalEl = document.getElementById('femaleTotal');
+        const femaleTotalSub = document.getElementById('femaleTotalSub');
+        const lifeTotalEl = document.getElementById('lifeTotal');
+        const lifeTotalSub = document.getElementById('lifeTotalSub');
+        const upTotalEl = document.getElementById('upTotal');
+        const upTotalSub = document.getElementById('upTotalSub');
+        const downTotalEl = document.getElementById('downTotal');
+        const downTotalSub = document.getElementById('downTotalSub');
+        const maleSummaryCard = document.getElementById('maleSummaryCard');
+        const femaleSummaryCard = document.getElementById('femaleSummaryCard');
+        const lifeSummaryCard = document.getElementById('lifeSummaryCard');
+        const upSummaryCard = document.getElementById('upSummaryCard');
+        const downSummaryCard = document.getElementById('downSummaryCard');
+        const drawBtn = document.getElementById('drawBtn');
+        const revealAllBtn = document.getElementById('revealAllBtn');
+        const resetBtn = document.getElementById('resetBtn');
+
+        // ============================================================
+        // 4. 工具
+        // ============================================================
+        function shuffle(arr) {
+            for (let i = arr.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [arr[i], arr[j]] = [arr[j], arr[i]];
+            }
+            return arr;
+        }
+
+        function createDeck() {
+            const d = [];
+            for (let s of SUITS) {
+                for (let r of RANKS) {
+                    d.push({ rank: r, suit: s, meaning: SUIT_MEANING[s] || '', color: SUIT_COLOR[s] || '#8899bb' });
+                }
+            }
+            return shuffle(d);
+        }
+
+        function hasDeckCards() {
+            return deck.length > 0;
+        }
+
+        function drawFromDeck() {
+            if (deck.length === 0) {
+                deck = createDeck();
+            }
+            return deck.pop();
+        }
+
+        function returnToDeck(card) {
+            deck.push(card);
+            shuffle(deck);
+        }
+
+        // ============================================================
+        // 5. 核心功能：补牌（仅限男女人缘牌）
+        // ============================================================
+        function replaceCard(idx) {
+            const pos = GRID_POSITIONS[idx];
+            if (!allowReplaceForPos(pos.id)) {
+                drawLog.innerHTML = `⏳ 该位置不支持补牌功能。<br>` + drawLog.innerHTML;
+                return;
+            }
+            if (!hasCard[idx]) {
+                drawLog.innerHTML = `⏳ 这张牌尚未分配，请先点击「抽牌」。<br>` + drawLog.innerHTML;
+                return;
+            }
+            if (!revealed[idx]) {
+                drawLog.innerHTML = `⏳ 请先翻开这张牌，再点击「补牌」。<br>` + drawLog.innerHTML;
+                return;
+            }
+            if (!hasDeckCards()) {
+                deck = createDeck();
+                drawLog.innerHTML = `🔄 牌堆已重新洗牌。<br>` + drawLog.innerHTML;
+            }
+
+            const oldCard = cardData[idx];
+            const newCard = drawFromDeck();
+            
+            if (!cardHistory[idx]) cardHistory[idx] = [];
+            cardHistory[idx].push(oldCard);
+            
+            if (!replaceCount[idx]) replaceCount[idx] = 0;
+            replaceCount[idx]++;
+            const repNum = replaceCount[idx];
+            
+            cardData[idx] = newCard;
+            
+            const msg = `🔄 ${pos.label} (${pos.id}) 补牌 #${repNum}：${oldCard.rank}${oldCard.suit} → ${newCard.rank}${newCard.suit}  ${newCard.meaning}`;
+            drawLog.innerHTML = msg + '<br>' + drawLog.innerHTML;
+            if (drawLog.children.length > 20) drawLog.removeChild(drawLog.lastChild);
+            
+            if (pos.id === 6) updateMaleSummary();
+            if (pos.id === 12) updateFemaleSummary();
+            if (pos.id === 21) updateLifeSummary();
+            if (pos.id === 16) updateUpSummary();
+            if (pos.id === 20) updateDownSummary();
+            
+            renderGrid();
+        }
+
+        // ============================================================
+        // 6. 核心功能：回退（仅限男女人缘牌）
+        // ============================================================
+        function undoReplace(idx) {
+            const pos = GRID_POSITIONS[idx];
+            if (!allowReplaceForPos(pos.id)) {
+                drawLog.innerHTML = `⏳ 该位置不支持回退功能。<br>` + drawLog.innerHTML;
+                return;
+            }
+            if (!hasCard[idx]) {
+                drawLog.innerHTML = `⏳ 这张牌尚未分配。<br>` + drawLog.innerHTML;
+                return;
+            }
+            if (!revealed[idx]) {
+                drawLog.innerHTML = `⏳ 请先翻开这张牌。<br>` + drawLog.innerHTML;
+                return;
+            }
+            if (!cardHistory[idx] || cardHistory[idx].length === 0) {
+                drawLog.innerHTML = `⏳ 这张牌没有可回退的补牌记录。<br>` + drawLog.innerHTML;
+                return;
+            }
+
+            const currentCard = cardData[idx];
+            const prevCard = cardHistory[idx].pop();
+            
+            returnToDeck(currentCard);
+            cardData[idx] = prevCard;
+            
+            if (replaceCount[idx] > 0) {
+                replaceCount[idx]--;
+            }
+            
+            const msg = `↩️ ${pos.label} (${pos.id}) 回退：${currentCard.rank}${currentCard.suit} → ${prevCard.rank}${prevCard.suit}  ${prevCard.meaning}`;
+            drawLog.innerHTML = msg + '<br>' + drawLog.innerHTML;
+            if (drawLog.children.length > 20) drawLog.removeChild(drawLog.lastChild);
+            
+            if (pos.id === 6) updateMaleSummary();
+            if (pos.id === 12) updateFemaleSummary();
+            if (pos.id === 21) updateLifeSummary();
+            if (pos.id === 16) updateUpSummary();
+            if (pos.id === 20) updateDownSummary();
+            
+            renderGrid();
+        }
+
+        // ============================================================
+        // 7. 核心功能：翻开单张牌
+        // ============================================================
+        function revealSingle(idx) {
+            if (!hasCard[idx] || revealed[idx]) return;
+            const pos = GRID_POSITIONS[idx];
+            const card = cardData[idx];
+            
+            revealed[idx] = true;
+            const msg = `📌 ${pos.label} (${pos.id})：${card.rank}${card.suit}  ${card.meaning}`;
+            drawLog.innerHTML = msg + '<br>' + drawLog.innerHTML;
+            if (drawLog.children.length > 20) drawLog.removeChild(drawLog.lastChild);
+            
+            if (pos.id === 6) updateMaleSummary();
+            if (pos.id === 12) updateFemaleSummary();
+            if (pos.id === 21) updateLifeSummary();
+            if (pos.id === 16) updateUpSummary();
+            if (pos.id === 20) updateDownSummary();
+            
+            renderGrid();
+        }
+
+        // ============================================================
+        // 8. 渲染
+        // ============================================================
+        function renderGrid() {
+            let html = '';
+            for (let i = 0; i < 25; i++) {
+                const pos = GRID_POSITIONS[i];
+                if (pos === null) {
+                    html += `<div class="card-slot empty-slot"></div>`;
+                    continue;
+                }
+                const idx = i;
+                const has = hasCard[idx] || false;
+                const isRev = revealed[idx] || false;
+                const card = cardData[idx] || null;
+                const repNum = replaceCount[idx] || 0;
+                const hasHistory = cardHistory[idx] && cardHistory[idx].length > 0;
+                const allowRep = allowReplaceForPos(pos.id);
+
+                let cls = 'card-slot';
+                if (isRev) cls += ' revealed';
+                else if (has) cls += ' drawn';
+
+                if (pos.group === 'maleTotal' || pos.group === 'femaleTotal' || pos.group === 'upTotal' || pos.group === 'downTotal') {
+                    cls += ' total-slot';
+                }
+                if (pos.group === 'lifeTotal') cls += ' center-slot';
+
+                let inner = '';
+                if (isRev && card) {
+                    const color = card.color;
+                    inner = `
+                        <div class="card-value" style="color:${color};">${card.rank}</div>
+                        <div class="card-suit" style="color:${color};">${card.suit}</div>
+                        <div class="label">${card.meaning}</div>
+                    `;
+                    // 仅男女人缘牌显示补牌标记和按钮
+                    if (allowRep) {
+                        if (repNum > 0) {
+                            inner += `<div class="replace-badge">补牌${repNum}</div>`;
+                        }
+                        inner += `<button class="rep-btn" data-pos="${idx}" data-action="replace">补牌</button>`;
+                        const undoDisabled = !hasHistory ? 'disabled' : '';
+                        inner += `<button class="undo-btn" data-pos="${idx}" data-action="undo" ${undoDisabled}>↩回退</button>`;
+                    }
+                } else if (has) {
+                    inner = `
+                        <div style="font-size:1.6rem; opacity:0.4;">🂠</div>
+                        <div class="label">${pos.label}</div>
+                        <span class="drawn-badge">✦</span>
+                    `;
+                } else {
+                    inner = `
+                        <div style="font-size:0.8rem; opacity:0.3;">🂠</div>
+                        <div class="label">${pos.label}</div>
+                    `;
+                }
+                inner += `<span class="pos-num">${pos.id}</span>`;
+                if (isRev) inner += `<span class="badge">✓</span>`;
+
+                html += `<div class="${cls}" data-pos="${idx}" data-id="${pos.id}">${inner}</div>`;
+            }
+            grid.innerHTML = html;
+
+            // 点击事件
+            document.querySelectorAll('.card-slot[data-pos]').forEach(el => {
+                el.addEventListener('click', function(e) {
+                    if (e.target.closest('.rep-btn')) return;
+                    if (e.target.closest('.undo-btn')) return;
+                    
+                    const idx = parseInt(this.dataset.pos);
+                    const pos = GRID_POSITIONS[idx];
+                    
+                    if (revealed[idx] && cardData[idx]) {
+                        const card = cardData[idx];
+                        const repNum = replaceCount[idx] || 0;
+                        const repMsg = repNum > 0 ? ` (补牌${repNum}次)` : '';
+                        const historyCount = cardHistory[idx] ? cardHistory[idx].length : 0;
+                        const histMsg = historyCount > 0 ? ` 可回退${historyCount}次` : '';
+                        const allowMsg = allowReplaceForPos(pos.id) ? '' : ' (不支持补牌/回退)';
+                        const msg = `📌 ${pos.label} (${pos.id})：${card.rank}${card.suit}  ${card.meaning}${repMsg}${histMsg}${allowMsg}`;
+                        drawLog.innerHTML = msg + '<br>' + drawLog.innerHTML;
+                        if (drawLog.children.length > 20) drawLog.removeChild(drawLog.lastChild);
+                    } else if (hasCard[idx] && !revealed[idx]) {
+                        revealSingle(idx);
+                    } else {
+                        drawLog.innerHTML = `⏳ 这张牌尚未分配，请先点击「抽牌」。<br>` + drawLog.innerHTML;
+                    }
+                });
+            });
+
+            // 补牌按钮事件
+            document.querySelectorAll('.rep-btn').forEach(btn => {
+                btn.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    const idx = parseInt(this.dataset.pos);
+                    replaceCard(idx);
+                });
+            });
+
+            // 回退按钮事件
+            document.querySelectorAll('.undo-btn').forEach(btn => {
+                btn.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    const idx = parseInt(this.dataset.pos);
+                    undoReplace(idx);
+                });
+            });
+        }
+
+        // ============================================================
+        // 9. 更新各个总结
+        // ============================================================
+        function updateMaleSummary() {
+            const p = getPosById(6);
+            if (p && revealed[p.idx] && cardData[p.idx]) {
+                const c = cardData[p.idx];
+                maleTotalEl.textContent = c.rank + c.suit;
+                maleTotalSub.textContent = c.meaning;
+                maleTotalEl.style.color = c.color;
+                maleSummaryCard.classList.add('active-summary');
+            } else {
+                maleTotalEl.textContent = '—';
+                maleTotalSub.textContent = '点击上方「男总体」牌查看';
+                maleTotalEl.style.color = '#8899bb';
+                maleSummaryCard.classList.remove('active-summary');
+            }
+        }
+
+        function updateFemaleSummary() {
+            const p = getPosById(12);
+            if (p && revealed[p.idx] && cardData[p.idx]) {
+                const c = cardData[p.idx];
+                femaleTotalEl.textContent = c.rank + c.suit;
+                femaleTotalSub.textContent = c.meaning;
+                femaleTotalEl.style.color = c.color;
+                femaleSummaryCard.classList.add('active-summary');
+            } else {
+                femaleTotalEl.textContent = '—';
+                femaleTotalSub.textContent = '点击上方「女总体」牌查看';
+                femaleTotalEl.style.color = '#8899bb';
+                femaleSummaryCard.classList.remove('active-summary');
+            }
+        }
+
+        function updateLifeSummary() {
+            const p = getPosById(21);
+            if (p && revealed[p.idx] && cardData[p.idx]) {
+                const c = cardData[p.idx];
+                lifeTotalEl.textContent = c.rank + c.suit;
+                lifeTotalSub.textContent = c.meaning;
+                lifeTotalEl.style.color = c.color;
+                lifeSummaryCard.classList.add('active-summary');
+            } else {
+                lifeTotalEl.textContent = '—';
+                lifeTotalSub.textContent = '点击中央「人生总结」牌查看';
+                lifeTotalEl.style.color = '#8899bb';
+                lifeSummaryCard.classList.remove('active-summary');
+            }
+        }
+
+        function updateUpSummary() {
+            const p = getPosById(16);
+            if (p && revealed[p.idx] && cardData[p.idx]) {
+                const c = cardData[p.idx];
+                upTotalEl.textContent = c.rank + c.suit;
+                upTotalSub.textContent = c.meaning;
+                upTotalEl.style.color = c.color;
+                upSummaryCard.classList.add('active-summary');
+            } else {
+                upTotalEl.textContent = '—';
+                upTotalSub.textContent = '点击上方「上半总结」牌查看';
+                upTotalEl.style.color = '#8899bb';
+                upSummaryCard.classList.remove('active-summary');
+            }
+        }
+
+        function updateDownSummary() {
+            const p = getPosById(20);
+            if (p && revealed[p.idx] && cardData[p.idx]) {
+                const c = cardData[p.idx];
+                downTotalEl.textContent = c.rank + c.suit;
+                downTotalSub.textContent = c.meaning;
+                downTotalEl.style.color = c.color;
+                downSummaryCard.classList.add('active-summary');
+            } else {
+                downTotalEl.textContent = '—';
+                downTotalSub.textContent = '点击上方「下半总结」牌查看';
+                downTotalEl.style.color = '#8899bb';
+                downSummaryCard.classList.remove('active-summary');
+            }
+        }
+
+        function updateAllSummaries() {
+            updateMaleSummary();
+            updateFemaleSummary();
+            updateLifeSummary();
+            updateUpSummary();
+            updateDownSummary();
+        }
+
+        // ============================================================
+        // 10. 核心操作
+        // ============================================================
+        function resetGame() {
+            deck = createDeck();
+            hasCard = {};
+            revealed = {};
+            cardData = {};
+            replaceCount = {};
+            cardHistory = {};
+            allDrawn = false;
+            drawLog.innerHTML = '✨ 牌阵已重置，点击「抽牌」分配牌，左右两侧人缘牌支持「补牌」和「回退」...';
+            renderGrid();
+            updateAllSummaries();
+            drawBtn.disabled = false;
+            drawBtn.textContent = '🃏 抽牌';
+            revealAllBtn.disabled = false;
+            revealAllBtn.textContent = '📖 全部翻开';
+        }
+
+        function drawAll() {
+            if (allDrawn) {
+                drawLog.innerHTML = '✅ 牌已全部分配，左右两侧人缘牌支持「补牌」和「回退」。<br>' + drawLog.innerHTML;
+                return;
+            }
+            deck = createDeck();
+            const ids = DRAW_ORDER_IDS.slice();
+            shuffle(ids);
+            for (let id of ids) {
+                const p = getPosById(id);
+                if (!p) continue;
+                const idx = p.idx;
+                if (deck.length === 0) break;
+                const card = deck.pop();
+                hasCard[idx] = true;
+                cardData[idx] = card;
+                replaceCount[idx] = 0;
+                cardHistory[idx] = [];
+            }
+            allDrawn = true;
+            drawLog.innerHTML = '✅ 所有牌已分配完毕！左右两侧人缘牌支持「补牌」和「回退」。<br>' + drawLog.innerHTML;
+            drawBtn.disabled = true;
+            drawBtn.textContent = '✅ 已抽完';
+            renderGrid();
+        }
+
+        function revealAll() {
+            let count = 0;
+            for (let idx of VALID_INDICES) {
+                if (hasCard[idx] && !revealed[idx]) {
+                    revealed[idx] = true;
+                    count++;
+                }
+            }
+            if (count === 0) {
+                drawLog.innerHTML = '⏳ 没有可翻开的牌，请先点击「抽牌」。<br>' + drawLog.innerHTML;
+                return;
+            }
+            drawLog.innerHTML = `📖 已一次性翻开 ${count} 张牌。<br>` + drawLog.innerHTML;
+            updateAllSummaries();
+            renderGrid();
+            revealAllBtn.disabled = true;
+            revealAllBtn.textContent = '✅ 已全翻开';
+            
+            let allRev = true;
+            for (let idx of VALID_INDICES) {
+                if (hasCard[idx] && !revealed[idx]) { allRev = false; break; }
+            }
+            if (allRev) {
+                drawLog.innerHTML = '🎉 所有牌已翻开！左右两侧人缘牌支持「补牌」和「回退」。<br>' + drawLog.innerHTML;
+            }
+        }
+
+        // ============================================================
+        // 11. 总结卡片点击联动
+        // ============================================================
+        function handleSummaryClick(targetId, label) {
+            const p = getPosById(targetId);
+            if (!p) return;
+            if (hasCard[p.idx] && !revealed[p.idx]) {
+                revealSingle(p.idx);
+            } else if (hasCard[p.idx] && revealed[p.idx]) {
+                const c = cardData[p.idx];
+                const repNum = replaceCount[p.idx] || 0;
+                const repMsg = repNum > 0 ? ` (补牌${repNum}次)` : '';
+                const historyCount = cardHistory[p.idx] ? cardHistory[p.idx].length : 0;
+                const histMsg = historyCount > 0 ? ` 可回退${historyCount}次` : '';
+                const allowMsg = allowReplaceForPos(targetId) ? '' : ' (不支持补牌/回退)';
+                drawLog.innerHTML = `📌 ${label} (${targetId})：${c.rank}${c.suit}  ${c.meaning}${repMsg}${histMsg}${allowMsg}<br>` + drawLog.innerHTML;
+            } else {
+                drawLog.innerHTML = `⏳ ${label}牌尚未分配，请先点击「抽牌」。<br>` + drawLog.innerHTML;
+            }
+        }
+
+        // ============================================================
+        // 12. 初始化 & 事件
+        // ============================================================
+        function init() {
+            resetGame();
+
+            drawBtn.addEventListener('click', drawAll);
+            revealAllBtn.addEventListener('click', revealAll);
+            resetBtn.addEventListener('click', function() {
+                resetGame();
+                drawBtn.disabled = false;
+                drawBtn.textContent = '🃏 抽牌';
+                revealAllBtn.disabled = false;
+                revealAllBtn.textContent = '📖 全部翻开';
+            });
+
+            maleSummaryCard.addEventListener('click', function() {
+                handleSummaryClick(6, '男总体');
+            });
+            femaleSummaryCard.addEventListener('click', function() {
+                handleSummaryClick(12, '女总体');
+            });
+            lifeSummaryCard.addEventListener('click', function() {
+                handleSummaryClick(21, '人生总结');
+            });
+            upSummaryCard.addEventListener('click', function() {
+                handleSummaryClick(16, '上半生总结');
+            });
+            downSummaryCard.addEventListener('click', function() {
+                handleSummaryClick(20, '下半生总结');
+            });
+        }
+
+        window.addEventListener('DOMContentLoaded', init);
+    })();
+</script>
+</body>
+</html>
