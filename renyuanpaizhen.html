@@ -24,6 +24,7 @@
         .container {
             max-width: 960px;
             width: 100%;
+			/* 毛玻璃效果卡片 */
             background: rgba(255, 255, 255, 0.06);
             backdrop-filter: blur(20px);
             -webkit-backdrop-filter: blur(20px);
@@ -32,6 +33,43 @@
             padding: 28px 24px 20px;
             border: 1px solid rgba(255, 255, 255, 0.12);
         }
+        /* ===== 首页按钮 ===== */
+        .home-btn-wrap {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 6px;
+        }
+        .home-btn {
+            padding: 6px 18px;
+            border-radius: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            background: rgba(255, 255, 255, 0.06);
+            color: #8899bb;
+            font-size: 0.85rem;
+            cursor: pointer;
+            font-family: inherit;
+            transition: 0.2s;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+        .home-btn:hover {
+            background: rgba(60, 120, 255, 0.15);
+            color: #8ab4ff;
+            border-color: rgba(60, 120, 255, 0.3);
+        }
+        .home-btn-label {
+            font-size: 0.75rem;
+            color: #445566;
+            cursor: pointer;
+            transition: color 0.2s;
+        }
+        .home-btn-label:hover {
+            color: #8ab4ff;
+        }
+		
         h1 {
             font-size: 2.2rem;
             font-weight: 400;
@@ -474,6 +512,12 @@
 </head>
 <body>
 <div class="container">
+    <!-- 首页按钮 - 左上角 -->
+    <div class="home-btn-wrap">
+        <button class="home-btn" onclick="location.href='index.html'">🏠 首页</button>
+        <span class="home-btn-label" onclick="location.href='index.html'">✦ 返回首页</span>
+    </div>
+	
     <h1>🃏 人缘牌阵 <small>扑克牌阵 · 男女人缘·上下半生</small></h1>
 
     <div class="info-bar">
