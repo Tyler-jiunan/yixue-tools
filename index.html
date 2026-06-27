@@ -47,7 +47,7 @@
             -webkit-backdrop-filter: blur(20px);
             border-radius: 48px;
             padding: 48px 40px 36px;
-            max-width: 720px;
+            max-width: 760px;
             width: 100%;
             box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.05);
             border: 1px solid rgba(255, 255, 255, 0.12);
@@ -100,20 +100,20 @@
 
         /* ============================================================
         第4块：工具网格
-        作用：三列网格布局，展示三个工具卡片
+        作用：四列网格布局，展示五个工具卡片
         ============================================================ */
         .tool-grid {
             display: grid;
-            grid-template-columns: 1fr 1fr 1fr;
-            gap: 20px;
+            grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
+            gap: 16px;
             margin-bottom: 8px;
         }
 
         /* 每个工具卡片是一个 <a> 链接，点击后跳转 */
         .tool-btn {
             display: block;
-            padding: 30px 16px 26px;
-            border-radius: 28px;
+            padding: 24px 12px 20px;
+            border-radius: 24px;
             border: 1px solid rgba(255, 255, 255, 0.10);
             background: rgba(255, 255, 255, 0.04);
             cursor: pointer;
@@ -151,45 +151,45 @@
 
         /* 工具图标（大号 emoji） */
         .tool-btn .icon {
-            font-size: 2.8rem;
+            font-size: 2.4rem;
             display: block;
-            margin-bottom: 10px;
+            margin-bottom: 8px;
             position: relative;
             z-index: 1;
         }
 
         /* 工具名称 */
         .tool-btn .name {
-            font-size: 1.15rem;
+            font-size: 0.95rem;
             font-weight: 600;
             position: relative;
             z-index: 1;
-            letter-spacing: 2px;
+            letter-spacing: 1px;
             display: block;
             color: #e8edf5;
         }
 
         /* 工具描述文字（位于名称下方） */
         .tool-btn .desc {
-            font-size: 0.82rem;
+            font-size: 0.65rem;
             color: #7a8aaa;
-            margin-top: 6px;
+            margin-top: 4px;
             position: relative;
             z-index: 1;
-            letter-spacing: 1px;
+            letter-spacing: 0.5px;
             display: block;
-            font-weight: 500;
+            font-weight: 400;
         }
 
         /* 工具标签（小圆标） */
         .tool-btn .badge {
             display: inline-block;
-            font-size: 0.65rem;
+            font-size: 0.55rem;
             background: rgba(100, 140, 255, 0.15);
             color: #8ab4ff;
-            padding: 2px 14px;
+            padding: 2px 12px;
             border-radius: 30px;
-            margin-top: 6px;
+            margin-top: 4px;
             position: relative;
             z-index: 1;
             letter-spacing: 0.5px;
@@ -225,6 +225,12 @@
             background: rgba(180, 140, 220, 0.08);
         }
 
+        /* 人缘牌阵 → 暖橙色调，呼应人际/温暖的意象 */
+        .tool-btn.btn-renyuan:hover {
+            border-color: rgba(255, 180, 100, 0.5);
+            background: rgba(255, 180, 100, 0.06);
+        }
+
         /* ============================================================
         第6块：底部信息
         作用：免责声明 + 装饰文字
@@ -247,24 +253,28 @@
         第7块：响应式适配
         作用：在不同屏幕宽度下调整布局和字号
         ============================================================ */
-        /* 平板及小屏设备（≤ 700px）：改为两列，缩小内边距和字号 */
-        @media (max-width: 700px) {
+        /* 平板及小屏设备（≤ 820px）：改为三列 */
+        @media (max-width: 820px) {
             .home-card {
                 padding: 32px 20px 28px;
                 border-radius: 32px;
             }
 
             .tool-grid {
-                grid-template-columns: 1fr 1fr;
+                grid-template-columns: 1fr 1fr 1fr;
                 gap: 14px;
             }
 
             .tool-btn {
-                padding: 22px 16px 18px;
+                padding: 20px 12px 16px;
             }
 
             .tool-btn .icon {
-                font-size: 2.2rem;
+                font-size: 2.0rem;
+            }
+
+            .tool-btn .name {
+                font-size: 0.85rem;
             }
 
             h1 {
@@ -278,8 +288,8 @@
             }
         }
 
-        /* 手机小屏（≤ 480px）：改为单列 */
-        @media (max-width: 480px) {
+        /* 手机小屏（≤ 560px）：改为两列 */
+        @media (max-width: 560px) {
             body {
                 padding: 12px;
             }
@@ -290,20 +300,42 @@
             }
 
             .tool-grid {
-                grid-template-columns: 1fr;
-                gap: 12px;
+                grid-template-columns: 1fr 1fr;
+                gap: 10px;
             }
 
             .tool-btn {
-                padding: 18px 12px 14px;
+                padding: 16px 10px 12px;
+                border-radius: 18px;
             }
 
             .tool-btn .name {
-                font-size: 1rem;
+                font-size: 0.8rem;
             }
 
             .tool-btn .icon {
-                font-size: 2rem;
+                font-size: 1.8rem;
+            }
+
+            .tool-btn .desc {
+                font-size: 0.55rem;
+            }
+
+            .tool-btn .badge {
+                font-size: 0.45rem;
+                padding: 1px 8px;
+            }
+        }
+
+        /* 超小屏（≤ 400px）：改为单列 */
+        @media (max-width: 400px) {
+            .tool-grid {
+                grid-template-columns: 1fr;
+                gap: 10px;
+            }
+
+            .tool-btn {
+                padding: 14px 10px 12px;
             }
         }
 
@@ -327,7 +359,7 @@
             animation: fadeUp 0.7s ease-out;
         }
 
-        /* 四个工具按钮依次延迟出现（0.1s、0.2s、0.3s、0.4s） */
+        /* 五个工具按钮依次延迟出现（0.1s、0.2s、0.3s、0.4s、0.5s） */
         .tool-btn:nth-child(1) {
             animation: fadeUp 0.7s ease-out 0.1s both;
         }
@@ -339,6 +371,9 @@
         }
         .tool-btn:nth-child(4) {
             animation: fadeUp 0.7s ease-out 0.4s both;
+        }
+        .tool-btn:nth-child(5) {
+            animation: fadeUp 0.7s ease-out 0.5s both;
         }
     </style>
     <!-- ============================================================
@@ -366,13 +401,12 @@
         <div class="subtitle">择一工具，开启您的易学探索之旅</div>
 
         <!-- ==========================================================
-        工具网格：四个工具卡片（新增观音灵签）
+        工具网格：五个工具卡片
         ========================================================== -->
         <div class="tool-grid">
 
             <!-- ======================================================
             工具1：八字合婚
-            点击后跳转到 bazihehun.html
             ====================================================== -->
             <a href="bazihehun.html" class="tool-btn btn-bazi">
                 <span class="icon">⚛️</span>
@@ -383,7 +417,6 @@
 
             <!-- ======================================================
             工具2：梅花易数
-            点击后跳转到 meihuayishu.html
             ====================================================== -->
             <a href="meihuayishu.html" class="tool-btn btn-meihua">
                 <span class="icon">🌸</span>
@@ -394,7 +427,6 @@
 
             <!-- ======================================================
             工具3：小六壬
-            点击后跳转到 xiaoliuren.html
             ====================================================== -->
             <a href="xiaoliuren.html" class="tool-btn btn-xiaoliuren">
                 <span class="icon">🌀</span>
@@ -404,14 +436,23 @@
             </a>
 
             <!-- ======================================================
-            工具4：观音灵签 （新增）
-            点击后跳转到 guanyinlingqian.html
+            工具4：观音灵签
             ====================================================== -->
             <a href="guanyinlingqian.html" class="tool-btn btn-guanyin">
                 <span class="icon">✨</span>
                 <span class="name">观音灵签</span>
                 <span class="desc">百签灵应 · 诚心祈愿</span>
                 <span class="badge">灵签占卜</span>
+            </a>
+
+            <!-- ======================================================
+            工具5：人缘牌阵（新增）
+            ====================================================== -->
+            <a href="renyuanpaizhen.html" class="tool-btn btn-renyuan">
+                <span class="icon">🃏</span>
+                <span class="name">人缘牌阵</span>
+                <span class="desc">扑克牌阵 · 人缘占卜</span>
+                <span class="badge">趣味占卜</span>
             </a>
 
         </div>
@@ -447,7 +488,9 @@
             console.log('%c✦ 小六壬 — 三宫演算吉凶分明', 'color: #4AB4A0; font-size: 12px;');
             // 第五条：观音灵签（淡紫色）
             console.log('%c✦ 观音灵签 — 百签灵应诚心祈愿', 'color: #b48ad6; font-size: 12px;');
-            // 第六条：寄语（灰色斜体）
+            // 第六条：人缘牌阵（暖橙色）
+            console.log('%c✦ 人缘牌阵 — 扑克牌阵人缘占卜', 'color: #f7b773; font-size: 12px;');
+            // 第七条：寄语（灰色斜体）
             console.log('%c✧ 以平和之心，观世事变迁 ✧', 'color: #8a7a68; font-size: 11px; font-style: italic;');
 
             // ---- 检测是否为移动端，在控制台提示 ----
