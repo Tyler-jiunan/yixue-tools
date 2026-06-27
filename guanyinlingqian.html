@@ -50,6 +50,7 @@
             z-index: 1;
             max-width: 880px;
             width: 100%;
+			/* 毛玻璃效果卡片 */
             background: rgba(255, 255, 255, 0.06);
             backdrop-filter: blur(20px);
             -webkit-backdrop-filter: blur(20px);
@@ -58,6 +59,43 @@
             box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.05);
             padding: 28px 24px 30px;
             transition: all 0.2s;
+        }
+
+        /* ===== 首页按钮 ===== */
+        .home-btn-wrap {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 6px;
+        }
+        .home-btn {
+            padding: 6px 18px;
+            border-radius: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            background: rgba(255, 255, 255, 0.06);
+            color: #8899bb;
+            font-size: 0.85rem;
+            cursor: pointer;
+            font-family: inherit;
+            transition: 0.2s;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+        .home-btn:hover {
+            background: rgba(60, 120, 255, 0.15);
+            color: #8ab4ff;
+            border-color: rgba(60, 120, 255, 0.3);
+        }
+        .home-btn-label {
+            font-size: 0.75rem;
+            color: #445566;
+            cursor: pointer;
+            transition: color 0.2s;
+        }
+        .home-btn-label:hover {
+            color: #8ab4ff;
         }
 
         /* 标题区 */
@@ -613,6 +651,12 @@
 <body>
 
 <div class="container">
+    <!-- 首页按钮 - 左上角 -->
+    <div class="home-btn-wrap">
+        <button class="home-btn" onclick="location.href='index.html'">🏠 首页</button>
+        <span class="home-btn-label" onclick="location.href='index.html'">✦ 返回首页</span>
+    </div>
+	
     <div class="header">
         <h1>✦ 观音灵签 ✦</h1>
         <div class="sub">第一百签 · 灵应全览</div>
