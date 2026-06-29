@@ -50,7 +50,6 @@
             z-index: 1;
             max-width: 880px;
             width: 100%;
-			/* 毛玻璃效果卡片 */
             background: rgba(255, 255, 255, 0.06);
             backdrop-filter: blur(20px);
             -webkit-backdrop-filter: blur(20px);
@@ -101,7 +100,7 @@
         /* 标题区 */
         .header {
             text-align: center;
-            margin-bottom: 24px;
+            margin-bottom: 16px;
             position: relative;
         }
 
@@ -127,6 +126,84 @@
             border-radius: 30px;
             margin-top: 4px;
             font-family: 'Segoe UI', 'Microsoft YaHei', '华文楷体', 'KaiTi', serif;
+        }
+
+        /* ===== 抽签须知 ===== */
+        .notice-wrapper {
+            background: rgba(255, 255, 255, 0.04);
+            border-radius: 28px;
+            padding: 18px 20px 16px;
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            margin-bottom: 20px;
+            box-shadow: inset 0 0 30px rgba(0, 0, 0, 0.08);
+        }
+
+        .notice-wrapper summary {
+            cursor: pointer;
+            color: #8ab4ff;
+            font-weight: 600;
+            letter-spacing: 1px;
+            padding: 4px 0;
+            transition: 0.2s;
+            font-size: 0.98rem;
+            font-family: 'Segoe UI', 'Microsoft YaHei', '华文楷体', 'KaiTi', serif;
+            display: inline-block;
+            list-style: none;
+        }
+
+        .notice-wrapper summary::-webkit-details-marker {
+            display: none;
+        }
+
+        .notice-wrapper summary::before {
+            content: '▶ ';
+            font-size: 0.7rem;
+            color: #8ab4ff;
+            transition: transform 0.2s;
+            display: inline-block;
+        }
+
+        .notice-wrapper[open] summary::before {
+            transform: rotate(90deg);
+        }
+
+        .notice-wrapper summary:hover {
+            color: #a0c4ff;
+        }
+
+        .notice-wrapper .notice-content {
+            margin-top: 10px;
+            padding: 12px 16px;
+            background: rgba(60, 120, 255, 0.06);
+            border-radius: 18px;
+            border: 1px solid rgba(60, 120, 255, 0.06);
+            font-size: 0.92rem;
+            color: #c8d0e0;
+            line-height: 1.9;
+            font-family: 'Segoe UI', 'Microsoft YaHei', '华文楷体', 'KaiTi', serif;
+        }
+
+        .notice-wrapper .notice-content .notice-item {
+            padding: 3px 0 3px 22px;
+            position: relative;
+        }
+
+        .notice-wrapper .notice-content .notice-item::before {
+            content: '✦';
+            position: absolute;
+            left: 0;
+            color: #8ab4ff;
+            font-size: 0.7rem;
+        }
+
+        .notice-wrapper .notice-content .highlight {
+            color: #f7d44a;
+            font-weight: 500;
+        }
+
+        .notice-wrapper .notice-content .important {
+            color: #ff6b6b;
+            font-weight: 500;
         }
 
         /* 抽签主面板 */
@@ -603,6 +680,11 @@
                 padding: 3px 12px;
                 font-size: 0.7rem;
             }
+
+            .notice-wrapper .notice-content {
+                font-size: 0.85rem;
+                padding: 10px 14px;
+            }
         }
 
         @media (max-width: 400px) {
@@ -633,6 +715,13 @@
                 padding: 2px 8px;
                 font-size: 0.65rem;
             }
+            .notice-wrapper .notice-content {
+                font-size: 0.8rem;
+                padding: 8px 10px;
+            }
+            .notice-wrapper .notice-content .notice-item {
+                padding-left: 16px;
+            }
         }
 
         ::-webkit-scrollbar {
@@ -661,6 +750,21 @@
         <h1>✦ 观音灵签 ✦</h1>
         <div class="sub">第一百签 · 灵应全览</div>
     </div>
+
+    <!-- ===== 抽签须知 ===== -->
+    <details class="notice-wrapper" id="noticeBlock">
+        <summary>📋 抽签须知 · 诚心为先</summary>
+        <div class="notice-content">
+            <div class="notice-item">抽签时要当事人自己亲自抽，不可代抽。</div>
+            <div class="notice-item">需<span class="highlight">虔诚</span>、认真，不可以玩笑试之，亦不可随便抽签，要遵守：<span class="highlight">"无事不占"</span>的规律，所谓<span class="highlight">"心诚则灵"</span>。</div>
+            <div class="notice-item">抽签的时间：中午十二点左右和晚上十一点前或者后，晚上十一点是<span class="highlight">阴阳相接</span>之时，最适宜抽签，抽签的信息也最准确。</div>
+            <div class="notice-item"><span class="important">房事后</span>和<span class="important">打雷下大雨</span>时不要抽签，因为此时信息不稳。</div>
+            <div class="notice-item">不要连续抽多个签，古书云：<span class="highlight">多占者不准确</span>，问出来的卦也不准了；如果确实有几个问题要问，最好相隔<span class="highlight">12天</span>以后再抽，实在着急至少也要休息几个小时。</div>
+            <div class="notice-item"><span class="highlight">净身</span>（就是洗澡），如无条件洗澡的，也必须把双手洗干净。</div>
+            <div class="notice-item">环境要<span class="highlight">安静</span>，无外界噪声干扰以及人干扰，手机关机或者震动放到另外房间，抽签的地方要干净，不可在污垢不堪之地抽签。</div>
+            <div class="notice-item">准备开始抽签前，先要对求测的事情<span class="highlight">专注静心思考二分钟</span>，默默许愿起誓，今后要<span class="highlight">行善积德</span>。</div>
+        </div>
+    </details>
 
     <div class="draw-area">
         <!-- 签号选择器 -->
