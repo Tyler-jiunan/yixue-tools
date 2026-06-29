@@ -1417,7 +1417,4 @@ const SIGN_LIBRARY = [
         story1: "【三教谈道】\n儒释道三家争辩道义，争论终日却无定论，比喻当下凡事纠缠不清、越折腾越无解，不如静守本心。",
         story2: "【楚襄王阳台梦醒】\n楚襄王梦神女，人生如幻。" }
 ];
-// 兼容 CommonJS 和浏览器全局
-if (typeof module !== 'undefined' && module.exports) {
-    module.exports = SIGN_LIBRARY;
-}
+export { SIGN_LIBRARY };
