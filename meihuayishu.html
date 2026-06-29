@@ -4,8 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>梅花易数</title>
-    <!-- 引入《周易》64卦数据库 -->
-    <script src="zhouyi-db.js"></script>
     <style>
         /* ==========================================================================
            【样式表】
@@ -972,2021 +970,2017 @@
 
     <!-- ========================================================================
     【JavaScript 脚本】
+    使用 importmap 管理依赖，主脚本改为 type="module"
     ========================================================================= -->
-    <script>
-        /**
-         * ========================================================================
-         * 梅花易数 · 核心引擎
-         * 版本：1.0.0
-         * 说明：基于邵雍《梅花易数》原理，提供数字、时间、汉字、随机四种起卦方式
-         * ========================================================================
-         */
 
-        // ============================================================
-        // 一、常量与数据定义
-        // ============================================================
+    <!-- 使用 importmap 管理依赖 -->
+    <script type="importmap">
+    {
+        "imports": {
+            "./zhouyi-db.js": "./zhouyi-db.js"
+        }
+    }
+    </script>
 
-        /**
-         * 八卦基础数据
-         * @property {number} num - 卦序数（1-8）
-         * @property {string} name - 卦名
-         * @property {string} symbol - 卦符（Unicode）
-         * @property {string} nature - 自然象征
-         * @property {string} direction - 方位
-         * @property {string} element - 五行属性
-         */
-        const BA_GUA = {
-            1: { name: '乾', symbol: '☰', nature: '天', direction: '西北', element: '阳金' },
-            2: { name: '兑', symbol: '☱', nature: '泽', direction: '西', element: '阴金' },
-            3: { name: '离', symbol: '☲', nature: '火', direction: '南', element: '火' },
-            4: { name: '震', symbol: '☳', nature: '雷', direction: '东', element: '阳木' },
-            5: { name: '巽', symbol: '☴', nature: '风', direction: '东南', element: '阴木' },
-            6: { name: '坎', symbol: '☵', nature: '水', direction: '北', element: '水' },
-            7: { name: '艮', symbol: '☶', nature: '山', direction: '东北', element: '阳土' },
-            8: { name: '坤', symbol: '☷', nature: '地', direction: '西南', element: '阴土' }
+    <!-- 主脚本改为 type="module" -->
+    <script type="module">
+    import { ZHOUYI_QUANJI } from './zhouyi-db.js';
+
+    // ============================================================
+    // 一、常量与数据定义
+    // ============================================================
+
+    /**
+     * 八卦基础数据
+     * @property {number} num - 卦序数（1-8）
+     * @property {string} name - 卦名
+     * @property {string} symbol - 卦符（Unicode）
+     * @property {string} nature - 自然象征
+     * @property {string} direction - 方位
+     * @property {string} element - 五行属性
+     */
+    const BA_GUA = {
+        1: { name: '乾', symbol: '☰', nature: '天', direction: '西北', element: '阳金' },
+        2: { name: '兑', symbol: '☱', nature: '泽', direction: '西', element: '阴金' },
+        3: { name: '离', symbol: '☲', nature: '火', direction: '南', element: '火' },
+        4: { name: '震', symbol: '☳', nature: '雷', direction: '东', element: '阳木' },
+        5: { name: '巽', symbol: '☴', nature: '风', direction: '东南', element: '阴木' },
+        6: { name: '坎', symbol: '☵', nature: '水', direction: '北', element: '水' },
+        7: { name: '艮', symbol: '☶', nature: '山', direction: '东北', element: '阳土' },
+        8: { name: '坤', symbol: '☷', nature: '地', direction: '西南', element: '阴土' }
+    };
+
+    /**
+     * 64卦名称映射表
+     * key: "上卦数,下卦数"（如 "1,1" 表示乾上乾下）
+     * value: 卦名
+     */
+    const GUA_NAMES = {
+        '1,1': '乾为天', '1,2': '天泽履', '1,3': '天火同人', '1,4': '天雷无妄',
+        '1,5': '天风姤', '1,6': '天水讼', '1,7': '天山遁', '1,8': '天地否',
+        '2,1': '泽天夬', '2,2': '兑为泽', '2,3': '泽火革', '2,4': '泽雷随',
+        '2,5': '泽风大过', '2,6': '泽水困', '2,7': '泽山咸', '2,8': '泽地萃',
+        '3,1': '火天大有', '3,2': '火泽睽', '3,3': '离为火', '3,4': '火雷噬嗑',
+        '3,5': '火风鼎', '3,6': '火水未济', '3,7': '火山旅', '3,8': '火地晋',
+        '4,1': '雷天大壮', '4,2': '雷泽归妹', '4,3': '雷火丰', '4,4': '震为雷',
+        '4,5': '雷风恒', '4,6': '雷水解', '4,7': '雷山小过', '4,8': '雷地豫',
+        '5,1': '风天小畜', '5,2': '风泽中孚', '5,3': '风火家人', '5,4': '风雷益',
+        '5,5': '巽为风', '5,6': '风水涣', '5,7': '风山渐', '5,8': '风地观',
+        '6,1': '水天需', '6,2': '水泽节', '6,3': '水火既济', '6,4': '水雷屯',
+        '6,5': '水风井', '6,6': '坎为水', '6,7': '水山蹇', '6,8': '水地比',
+        '7,1': '山天大畜', '7,2': '山泽损', '7,3': '山火贲', '7,4': '山雷颐',
+        '7,5': '山风蛊', '7,6': '山水蒙', '7,7': '艮为山', '7,8': '山地剥',
+        '8,1': '地天泰', '8,2': '地泽临', '8,3': '地火明夷', '8,4': '地雷复',
+        '8,5': '地风升', '8,6': '地水师', '8,7': '地山谦', '8,8': '坤为地'
+    };
+
+    /**
+     * 八卦列表（用于UI渲染）
+     */
+    const BAGUA_LIST = [
+        { num: 1, name: '乾', symbol: '☰' },
+        { num: 2, name: '兑', symbol: '☱' },
+        { num: 3, name: '离', symbol: '☲' },
+        { num: 4, name: '震', symbol: '☳' },
+        { num: 5, name: '巽', symbol: '☴' },
+        { num: 6, name: '坎', symbol: '☵' },
+        { num: 7, name: '艮', symbol: '☶' },
+        { num: 8, name: '坤', symbol: '☷' }
+    ];
+
+    /**
+     * 八卦五行属性映射
+     */
+    const GUA_WUXING = {
+        '乾': '阳金',
+        '兑': '阴金',
+        '离': '火',
+        '震': '阳木',
+        '巽': '阴木',
+        '坎': '水',
+        '艮': '阳土',
+        '坤': '阴土'
+    };
+
+    /**
+     * 八卦寓意详解
+     */
+    const GUA_MEANING = {
+        '乾': { nature: '天', symbol: '☰', positive: '刚健、创造、领导', negative: '过刚易折、独断专行',
+        advice: '保持谦逊，刚柔并济' },
+        '兑': { nature: '泽', symbol: '☱', positive: '喜悦、沟通、亲和', negative: '巧言令色、谄媚取宠',
+        advice: '真诚待人，言而有信' },
+        '离': { nature: '火', symbol: '☲', positive: '光明、热情、文明', negative: '浮躁、依附、虚华',
+        advice: '保持冷静，脚踏实地' },
+        '震': { nature: '雷', symbol: '☳', positive: '行动、变革、活力', negative: '冲动、惊惧、冒进',
+        advice: '谋定后动，稳中求进' },
+        '巽': { nature: '风', symbol: '☴', positive: '柔顺、渗透、顺势', negative: '犹豫、盲从、无主见',
+        advice: '坚定立场，顺势而为' },
+        '坎': { nature: '水', symbol: '☵', positive: '智慧、流动、适应', negative: '险陷、劳苦、曲折',
+        advice: '以智取胜，耐心等待' },
+        '艮': { nature: '山', symbol: '☶', positive: '稳定、停止、沉淀', negative: '固执、保守、停滞',
+        advice: '适时而动，不可固守' },
+        '坤': { nature: '地', symbol: '☷', positive: '包容、柔顺、承载', negative: '被动、软弱、无主',
+        advice: '厚德载物，柔中带刚' }
+    };
+
+    /**
+     * 八卦方位映射
+     */
+    const GUA_DIRECTION = {
+        '乾': { direction: '西北', action: '宜见贵人、求官、求名', avoid: '不宜独断专行' },
+        '兑': { direction: '西', action: '宜沟通、谈判、聚会', avoid: '不宜口舌之争' },
+        '离': { direction: '南', action: '宜展示才华、求光明之事', avoid: '不宜急躁冒进' },
+        '震': { direction: '东', action: '宜行动、创业、开拓', avoid: '不宜冲动决策' },
+        '巽': { direction: '东南', action: '宜计划、谋略、学习', avoid: '不宜犹豫不决' },
+        '坎': { direction: '北', action: '宜谋划、静养、等待', avoid: '不宜冒险涉水' },
+        '艮': { direction: '东北', action: '宜守成、休息、积蓄', avoid: '不宜强求改变' },
+        '坤': { direction: '西南', action: '宜合作、包容、求稳', avoid: '不宜单独行动' }
+    };
+
+    /**
+     * 八卦五行核心（去阴阳前缀）
+     */
+    const GUA_ELEMENT = {
+        '乾': '金',
+        '兑': '金',
+        '离': '火',
+        '震': '木',
+        '巽': '木',
+        '坎': '水',
+        '艮': '土',
+        '坤': '土'
+    };
+
+    /**
+     * 数字五行属性（河图数）
+     */
+    const NUM_WUXING = {
+        0: { wuxing: '土', yao: '阴', color: '黄', direction: '中', meaning: '包容、承载、转化' },
+        1: { wuxing: '水', yao: '阳', color: '黑', direction: '北', meaning: '起源、智慧、流动' },
+        2: { wuxing: '火', yao: '阴', color: '红', direction: '南', meaning: '热情、光明、文明' },
+        3: { wuxing: '木', yao: '阳', color: '青', direction: '东', meaning: '生长、行动、创造' },
+        4: { wuxing: '金', yao: '阴', color: '白', direction: '西', meaning: '收敛、决断、刚毅' },
+        5: { wuxing: '土', yao: '阳', color: '黄', direction: '中', meaning: '稳定、包容、承载' },
+        6: { wuxing: '水', yao: '阴', color: '黑', direction: '北', meaning: '智慧、流动、险陷' },
+        7: { wuxing: '火', yao: '阳', color: '红', direction: '南', meaning: '热情、光明、突破' },
+        8: { wuxing: '木', yao: '阴', color: '青', direction: '东', meaning: '生长、柔顺、渗透' },
+        9: { wuxing: '金', yao: '阳', color: '白', direction: '西', meaning: '决断、刚毅、改革' }
+    };
+
+    /**
+     * 数字吉凶寓意
+     */
+    const NUM_LUCK = {
+        1: { type: '吉', meaning: '开端、领导、独立' },
+        2: { type: '吉', meaning: '合作、平衡、柔和' },
+        3: { type: '吉', meaning: '创造、行动、活力' },
+        4: { type: '平', meaning: '稳定、守成、规矩' },
+        5: { type: '大吉', meaning: '中心、权威、丰盛' },
+        6: { type: '平', meaning: '顺利、和谐、安泰' },
+        7: { type: '吉', meaning: '突破、变革、创新' },
+        8: { type: '吉', meaning: '发展、通达、富有' },
+        9: { type: '大吉', meaning: '圆满、成就、尊贵' }
+    };
+
+    /**
+     * 天干数据
+     */
+    const GAN = ['甲', '乙', '丙', '丁', '戊', '己', '庚', '辛', '壬', '癸'];
+
+    /**
+     * 地支数据
+     */
+    const ZHI = ['子', '丑', '寅', '卯', '辰', '巳', '午', '未', '申', '酉', '戌', '亥'];
+
+    /**
+     * 天干五行
+     */
+    const GAN_WUXING = {
+        '甲': '木', '乙': '木',
+        '丙': '火', '丁': '火',
+        '戊': '土', '己': '土',
+        '庚': '金', '辛': '金',
+        '壬': '水', '癸': '水'
+    };
+
+    /**
+     * 地支五行
+     */
+    const ZHI_WUXING = {
+        '寅': '木', '卯': '木',
+        '巳': '火', '午': '火',
+        '辰': '土', '戌': '土', '丑': '土', '未': '土',
+        '申': '金', '酉': '金',
+        '子': '水', '亥': '水'
+    };
+
+    /**
+     * 节气五行旺衰表
+     */
+    const SOLAR_TERM_WUXING = {
+        '立春': '木', '雨水': '木', '惊蛰': '木', '春分': '木', '清明': '木', '谷雨': '木',
+        '立夏': '火', '小满': '火', '芒种': '火', '夏至': '火', '小暑': '火', '大暑': '火',
+        '立秋': '金', '处暑': '金', '白露': '金', '秋分': '金', '寒露': '金', '霜降': '金',
+        '立冬': '水', '小雪': '水', '大雪': '水', '冬至': '水', '小寒': '水', '大寒': '水'
+    };
+
+    /**
+     * 体用生克解读映射表
+     */
+    const SHENGKE_INTERPRETATION = {
+        '比和': {
+            getResult: function(bodyGuaName, useGuaName, bodyInfo, useInfo, bodyWuxing, useWuxing) {
+                let result = '✨ 体用关系：体用比和（' + bodyWuxing + '与' + useWuxing + '同类相助）\n\n';
+                result += '【吉凶判断】大吉之象。内外和谐，天人合一，所谋之事顺遂如意。\n\n';
+                result += '【卦象寓意】' + bodyGuaName + bodyInfo.nature + '与' + useGuaName + useInfo.nature +
+                    '本质相通，如同同声相应、同气相求。\n\n';
+                var extraAdvice = {
+                    '乾': '乾为天，刚健中正，比和意味着您处于主动地位，宜发挥领导力。',
+                    '坤': '坤为地，厚德载物，比和意味着您应以柔顺包容之心应对，自然得吉。',
+                    '震': '震为雷，变动不居，比和意味着变革顺利，顺势而为可得成功。',
+                    '巽': '巽为风，无孔不入，比和意味着您的策略能够渗透各方，事半功倍。',
+                    '坎': '坎为水，智慧流动，比和意味着以智取胜，险中求稳。',
+                    '离': '离为火，光明依附，比和意味着热情与才华能够被看见，宜展现自己。',
+                    '艮': '艮为山，止其所止，比和意味着静待时机比贸然行动更有利。',
+                    '兑': '兑为泽，喜悦言说，比和意味着良好沟通是关键，以诚待人可得助。'
+                };
+                result += extraAdvice[bodyGuaName] || '';
+                return result;
+            }
+        },
+        '用生体': {
+            getResult: function(bodyGuaName, useGuaName, bodyInfo, useInfo, bodyWuxing, useWuxing) {
+                var result = '✨ 体用关系：用卦生体卦（' + useWuxing + '生' + bodyWuxing + '）→ 外界生助您\n\n';
+                result += '【吉凶判断】上吉之象。外部环境对您有利，贵人相助，事半功倍。\n\n';
+                result += '【卦象寓意】' + useGuaName + useInfo.nature + '（' + useWuxing + '）滋养' + bodyGuaName +
+                    bodyInfo.nature + '（' + bodyWuxing + '）。';
+                var elementAdvice = {
+                    '水火': '水能生木，象征智慧（坎水）滋养行动（震/巽木）。您当前的谋划和策略能够有效推动事情发展。',
+                    '木火': '木能生火，象征计划（震/巽木）点燃热情（离火）。您的创意和想法将转化为实际行动力。',
+                    '火土': '火能生土，象征热情（离火）夯实基础（坤/艮土）。您的积极态度将带来实质性成果。',
+                    '土金': '土能生金，象征包容（坤/艮土）孕育价值（乾/兑金）。您的积累和沉淀将产生实际收益。',
+                    '金水': '金能生水，象征决断（乾/兑金）催生智慧（坎水）。您的果断决策将带来明智的方案。'
+                };
+                var key = useWuxing.replace('阳', '').replace('阴', '') + bodyWuxing.replace('阳', '').replace('阴', '');
+                result += elementAdvice[key] || '';
+                return result;
+            }
+        },
+        '体生用': {
+            getResult: function(bodyGuaName, useGuaName, bodyInfo, useInfo, bodyWuxing, useWuxing) {
+                var result = '✨ 体用关系：体卦生用卦（' + bodyWuxing + '生' + useWuxing + '）→ 您付出于外界\n\n';
+                result += '【吉凶判断】平中之象，有付出之劳。事虽可成，但需投入心力。\n\n';
+                result += '【卦象寓意】' + bodyGuaName + bodyInfo.nature + '（' + bodyWuxing + '）滋养' + useGuaName +
+                    useInfo.nature + '（' + useWuxing + '）。';
+                var elementAdvice = {
+                    '木火': '木能生火，象征您的行动（震/巽木）在推动事情（离火）发展，但也在消耗您的精力。',
+                    '火土': '火能生土，象征您的热情（离火）在夯实外部基础（坤/艮土），但需注意劳逸结合。',
+                    '土金': '土能生金，象征您的包容（坤/艮土）在滋养结果（乾/兑金），付出终有回报。',
+                    '金水': '金能生水，象征您的决断（乾/兑金）在催生外界变化（坎水），但需量力而行。',
+                    '水木': '水能生木，象征您的智慧（坎水）在滋养事态发展（震/巽木），谋略付出较多。'
+                };
+                var key = bodyWuxing.replace('阳', '').replace('阴', '') + useWuxing.replace('阳', '').replace('阴', '');
+                result += elementAdvice[key] || '';
+                return result;
+            }
+        },
+        '体克用': {
+            getResult: function(bodyGuaName, useGuaName, bodyInfo, useInfo, bodyWuxing, useWuxing) {
+                var result = '✨ 体用关系：体卦克用卦（' + bodyWuxing + '克' + useWuxing + '）→ 您掌控局面\n\n';
+                result += '【吉凶判断】吉象，但需努力。您有能力驾驭此事，虽有阻碍但可克服。\n\n';
+                result += '【卦象寓意】' + bodyGuaName + bodyInfo.nature + '（' + bodyWuxing + '）制约' + useGuaName +
+                    useInfo.nature + '（' + useWuxing + '）。';
+                var elementAdvice = {
+                    '木土': '木能克土，象征您的行动力（震/巽木）能够突破外部阻碍（坤/艮土）。',
+                    '土水': '土能克水，象征您的稳重（坤/艮土）能够控制风险（坎水）。',
+                    '水火': '水能克火，象征您的智慧（坎水）能够调节外部热情（离火），避免过热。',
+                    '火金': '火能克金，象征您的热情（离火）能够打破外部僵化规则（乾/兑金）。',
+                    '金木': '金能克木，象征您的决断（乾/兑金）能够约束外部变动（震/巽木）。'
+                };
+                var key = bodyWuxing.replace('阳', '').replace('阴', '') + useWuxing.replace('阳', '').replace('阴', '');
+                result += elementAdvice[key] || '';
+                return result;
+            }
+        },
+        '用克体': {
+            getResult: function(bodyGuaName, useGuaName, bodyInfo, useInfo, bodyWuxing, useWuxing) {
+                var result = '✨ 体用关系：用卦克体卦（' + useWuxing + '克' + bodyWuxing + '）→ 外界制约您\n\n';
+                result += '【吉凶判断】凶象，需谨慎。外部环境对您有压力，所问之事有阻力。\n\n';
+                result += '【卦象寓意】' + useGuaName + useInfo.nature + '（' + useWuxing + '）制约' + bodyGuaName +
+                    bodyInfo.nature + '（' + bodyWuxing + '）。';
+                var elementAdvice = {
+                    '金木': '金能克木，象征外部规则（乾/兑金）可能限制您的行动（震/巽木）。',
+                    '木土': '木能克土，象征外部变动（震/巽木）可能冲击您的稳定（坤/艮土）。',
+                    '土水': '土能克水，象征外部阻力（坤/艮土）可能压制您的智慧（坎水）。',
+                    '水火': '水能克火，象征外部风险（坎水）可能冷却您的热情（离火）。',
+                    '火金': '火能克金，象征外部动荡（离火）可能冲击您的决断（乾/兑金）。'
+                };
+                var key = useWuxing.replace('阳', '').replace('阴', '') + bodyWuxing.replace('阳', '').replace('阴', '');
+                result += elementAdvice[key] || '';
+                return result;
+            }
+        }
+    };
+
+    /**
+     * 六亲解读映射
+     */
+    const LIUQIN_INTERPRETATION = {
+        '兄弟爻': '象征同伴、竞争者、朋友。此事多与人际关系相关，需注意合作与竞争。',
+        '父母爻': '象征长辈、文书、庇护。此事得长辈或上级帮助，或与文书、合同相关。',
+        '子孙爻': '象征晚辈、福神、产出。此事有福佑，付出有回报，或与子女、下属相关。',
+        '官鬼爻': '象征事业、官运、压力。此事与工作、官运相关，或有压力需要化解。',
+        '妻财爻': '象征财富、妻子、资源。此事与财运、资源相关，易得利益。'
+    };
+
+    /**
+     * 本卦解读映射表（AI生成用）
+     */
+    const BEN_INTERPRETATION = {
+        '乾': '乾为天，刚健不息。您当前所问之事，宜主动进取，但需谨防过刚易折。互卦与变卦提示环境变化中当以柔济刚。动爻在关键位置，决策时刻将至。',
+        '坤': '坤厚载物，柔顺包容。此事根基尚稳，不宜冒进。坚守正道，厚德载物，自能逢凶化吉。动爻提醒您关注内在积累。',
+        '震': '震动不安，临事而惧。变化骤起，机遇与挑战并存。需冷静观察，利用互卦中的转化能量，变卦指向新开端。',
+        '巽': '巽风入，柔顺渗透。行事圆融则吉，注意沟通协商。目前的困惑如风无形，但变卦见明朗之象。',
+        '坎': '坎为水，险陷重重。当前处境须谨慎小心，但水能载舟，智慧可化解危难。动爻暗示转折即将到来。',
+        '离': '离为火，文明依附。您的问题关乎光明与热情，宜展现才华，但勿浮躁。互卦火风鼎，革新之意，变卦启示最终得贵人扶持。',
+        '艮': '艮为山，止其所止。此事宜缓不宜急，暂停反思为上。山中有泽，积蓄能量后可再动。',
+        '兑': '兑为泽，喜悦言说。沟通愉快能解决问题，但也需防备巧言令色。变卦引导以诚相待。'
+    };
+
+    // ============================================================
+    // 二、状态变量
+    // ============================================================
+
+    /** 当前起卦结果缓存 */
+    var currentResult = null;
+    var currentBenGua = null;
+    var currentHuGua = null;
+    var currentBianGua = null;
+    var currentDongYao = null;
+
+
+    // ============================================================
+    // 三、核心工具函数
+    // ============================================================
+
+    /**
+     * 根据卦序数获取八卦信息
+     * @param {number} num - 1~8 的卦序数
+     * @returns {Object} 八卦信息对象
+     */
+    function getGuaInfo(num) {
+        var n = ((num - 1) % 8) + 1;
+        return BA_GUA[n];
+    }
+
+    /**
+     * 获取64卦名称
+     * @param {number} shang - 上卦序数
+     * @param {number} xia - 下卦序数
+     * @returns {string} 卦名
+     */
+    function getGuaName(shang, xia) {
+        var s = ((shang - 1) % 8) + 1;
+        var x = ((xia - 1) % 8) + 1;
+        return GUA_NAMES[s + ',' + x] || (getGuaInfo(s).name + getGuaInfo(x).name + '卦');
+    }
+
+    /**
+     * 计算互卦
+     * @param {number} shang - 上卦序数
+     * @param {number} xia - 下卦序数
+     * @returns {number[]} [上卦序数, 下卦序数]
+     */
+    function getHuGua(shang, xia) {
+        var yao = [];
+        var xiaBin = ((xia - 1) % 8).toString(2).padStart(3, '0');
+        var shangBin = ((shang - 1) % 8).toString(2).padStart(3, '0');
+        var i, ch;
+
+        for (i = 0; i < xiaBin.length; i++) {
+            yao.push(parseInt(xiaBin[i]));
+        }
+        for (i = 0; i < shangBin.length; i++) {
+            yao.push(parseInt(shangBin[i]));
+        }
+
+        var xiaHu = [yao[1], yao[2], yao[3]];
+        var shangHu = [yao[2], yao[3], yao[4]];
+
+        var shangVal = parseInt(shangHu.join(''), 2) + 1;
+        var xiaVal = parseInt(xiaHu.join(''), 2) + 1;
+
+        return [shangVal, xiaVal];
+    }
+
+    /**
+     * 计算变卦
+     * @param {number} shang - 上卦序数
+     * @param {number} xia - 下卦序数
+     * @param {number} dongYao - 动爻位置 (1~6)
+     * @returns {number[]} [上卦序数, 下卦序数]
+     */
+    function getBianGua(shang, xia, dongYao) {
+        var yao = [];
+        var xiaBin = ((xia - 1) % 8).toString(2).padStart(3, '0');
+        var shangBin = ((shang - 1) % 8).toString(2).padStart(3, '0');
+        var i, ch;
+
+        for (i = 0; i < xiaBin.length; i++) {
+            yao.push(parseInt(xiaBin[i]));
+        }
+        for (i = 0; i < shangBin.length; i++) {
+            yao.push(parseInt(shangBin[i]));
+        }
+
+        var idx = dongYao - 1;
+        yao[idx] = 1 - yao[idx];
+
+        var xiaNew = yao.slice(0, 3);
+        var shangNew = yao.slice(3, 6);
+
+        var shangVal = parseInt(shangNew.join(''), 2) + 1;
+        var xiaVal = parseInt(xiaNew.join(''), 2) + 1;
+
+        return [shangVal, xiaVal];
+    }
+
+    /**
+     * 判断体卦与用卦的定位
+     * @param {number} dongYao - 动爻位置 (1~6)
+     * @returns {string} 体用关系描述
+     */
+    function getYongTi(dongYao) {
+        if (dongYao >= 1 && dongYao <= 3) {
+            return '动爻在下卦（1-3爻）→ 体卦为上卦，用卦为下卦';
+        }
+        return '动爻在上卦（4-6爻）→ 体卦为下卦，用卦为上卦';
+    }
+
+    /**
+     * 判断体卦与用卦的五行生克关系
+     * @param {string} bodyWuxing - 体卦五行
+     * @param {string} useWuxing - 用卦五行
+     * @returns {string} 关系类型：比和/体生用/用生体/体克用/用克体
+     */
+    function getRelationType(bodyWuxing, useWuxing) {
+        var bodyCore = bodyWuxing.replace('阳', '').replace('阴', '');
+        var useCore = useWuxing.replace('阳', '').replace('阴', '');
+
+        if (bodyCore === useCore) {
+            return '比和';
+        }
+
+        var shengMap = { '木': '火', '火': '土', '土': '金', '金': '水', '水': '木' };
+        var keMap = { '木': '土', '土': '水', '水': '火', '火': '金', '金': '木' };
+
+        if (shengMap[bodyCore] === useCore) return '体生用';
+        if (shengMap[useCore] === bodyCore) return '用生体';
+        if (keMap[bodyCore] === useCore) return '体克用';
+        if (keMap[useCore] === bodyCore) return '用克体';
+
+        return '未知';
+    }
+
+    /**
+     * 获取体卦和用卦的名称
+     * @param {number[]} benGua - [上卦序数, 下卦序数]
+     * @param {boolean} isBodyUpper - 体卦是否为上卦
+     * @returns {Object} { bodyGuaName, useGuaName }
+     */
+    function getBodyAndUseGuaName(benGua, isBodyUpper) {
+        var shangNum = benGua[0];
+        var xiaNum = benGua[1];
+        var shangName = getGuaInfo(shangNum).name;
+        var xiaName = getGuaInfo(xiaNum).name;
+
+        if (isBodyUpper) {
+            return { bodyGuaName: shangName, useGuaName: xiaName };
+        }
+        return { bodyGuaName: xiaName, useGuaName: shangName };
+    }
+
+    /**
+     * 获取卦象启示文本
+     */
+    function getInsightText(ben, hu, bian) {
+        var benName = getGuaName(ben[0], ben[1]);
+        var huName = getGuaName(hu[0], hu[1]);
+        var bianName = getGuaName(bian[0], bian[1]);
+        return '本卦「' + benName + '」代表当前状态与初始条件。\n互卦「' + huName + '」揭示事物发展变化的过程。\n变卦「' + bianName + '」预示最终结果与未来趋势。';
+    }
+
+
+    // ============================================================
+    // 四、《周易》原文获取
+    // ============================================================
+
+    /**
+     * 获取完整的《周易》原文（本卦卦辞+动爻爻辞+互卦卦辞+变卦卦辞+变爻爻辞）
+     * @param {string} benName - 本卦名称
+     * @param {string} huName - 互卦名称
+     * @param {string} bianName - 变卦名称
+     * @param {number} dongYao - 动爻位置
+     * @returns {string} 格式化的原文文本
+     */
+    function getFullZhouyiText(benName, huName, bianName, dongYao) {
+        var db = ZHOUYI_QUANJI || {};
+        
+        if (!db || Object.keys(db).length === 0) {
+            return '（《周易》数据库未加载，请刷新页面或检查 zhouyi-db.js 是否正常加载）';
+        }
+
+        var benGua = db[benName];
+        var benGuaCi = benGua ? benGua.guaCi : '（原文待补充）';
+        var benYaoCi = '';
+        if (benGua && benGua.yaoCi) {
+            benYaoCi = benGua.yaoCi[dongYao] || benGua.yaoCi[String(dongYao)] || '（原文待补充）';
+        } else {
+            benYaoCi = '（原文待补充）';
+        }
+
+        var huGua = db[huName];
+        var huGuaCi = huGua ? huGua.guaCi : '（原文待补充）';
+
+        var bianGua = db[bianName];
+        var bianGuaCi = bianGua ? bianGua.guaCi : '（原文待补充）';
+        var bianYaoCi = '';
+        if (bianGua && bianGua.yaoCi) {
+            bianYaoCi = bianGua.yaoCi[dongYao] || bianGua.yaoCi[String(dongYao)] || '（原文待补充）';
+        } else {
+            bianYaoCi = '（原文待补充）';
+        }
+
+        var dongName = '';
+        if (dongYao === 1) dongName = '初爻';
+        else if (dongYao === 2) dongName = '二爻';
+        else if (dongYao === 3) dongName = '三爻';
+        else if (dongYao === 4) dongName = '四爻';
+        else if (dongYao === 5) dongName = '五爻';
+        else if (dongYao === 6) dongName = '上爻';
+
+        return '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n' +
+            '📖 本卦 · ' + benName + '\n' +
+            '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n' +
+            '【卦辞】：' + benGuaCi + '\n' +
+            '【动爻（' + dongName + '）爻辞】' + benYaoCi + '\n\n' +
+            '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n' +
+            '🔄 互卦 · ' + huName + '\n' +
+            '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n' +
+            '【卦辞】：' + huGuaCi + '\n\n' +
+            '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n' +
+            '⚡ 变卦 · ' + bianName + '\n' +
+            '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n' +
+            '【卦辞】：' + bianGuaCi + '\n' +
+            '【变爻（' + dongName + '）爻辞】' + bianYaoCi;
+    }
+
+
+    // ============================================================
+    // 五、体用生克模块
+    // ============================================================
+
+    /**
+     * 获取高级体用生克解读
+     * @param {string} bodyGuaName - 体卦名称
+     * @param {string} useGuaName - 用卦名称
+     * @param {string} relationType - 关系类型
+     * @param {boolean} isBodyUpper - 体卦是否为上卦
+     * @returns {string} 解读文本
+     */
+    function getAdvancedShengkeInterpretation(bodyGuaName, useGuaName, relationType, isBodyUpper) {
+        var bodyInfo = GUA_MEANING[bodyGuaName];
+        var useInfo = GUA_MEANING[useGuaName];
+        var bodyWuxing = GUA_WUXING[bodyGuaName];
+        var useWuxing = GUA_WUXING[useGuaName];
+
+        var result = '';
+
+        if (isBodyUpper) {
+            result += '🔍 体用定位：体卦为上卦' + bodyGuaName + '（' + bodyInfo.nature +
+                '），代表您自身的内在状态与主体能量；用卦为下卦' + useGuaName + '（' + useInfo.nature +
+                '），代表外部环境、所问之事或对方。\n\n';
+        } else {
+            result += '🔍 体用定位：体卦为下卦' + bodyGuaName + '（' + bodyInfo.nature +
+                '），代表您自身的根基与核心状态；用卦为上卦' + useGuaName + '（' + useInfo.nature +
+                '），代表外部环境、所问之事或对方。\n\n';
+        }
+
+        result += '🌿 五行属性：体卦' + bodyGuaName + '属' + bodyWuxing + '，用卦' + useGuaName + '属' + useWuxing +
+            '。\n\n';
+
+        var handler = SHENGKE_INTERPRETATION[relationType];
+        if (handler) {
+            result += handler.getResult(bodyGuaName, useGuaName, bodyInfo, useInfo, bodyWuxing, useWuxing);
+        } else {
+            result += '（体用关系待分析）';
+        }
+
+        return result;
+    }
+
+    /**
+     * 更新体用生克简析框
+     */
+    function updateShengkeBox() {
+        if (!currentBenGua || !currentDongYao || !currentHuGua || !currentBianGua) return;
+
+        var yongtiStr = getYongTi(currentDongYao);
+        var isBodyUpper = yongtiStr.includes('体卦为上卦');
+
+        // ---- 本卦体用 ----
+        var benData = getBodyAndUseGuaName(currentBenGua, isBodyUpper);
+        var benBodyWuxing = GUA_WUXING[benData.bodyGuaName];
+        var benUseWuxing = GUA_WUXING[benData.useGuaName];
+        var benRelation = getRelationType(benBodyWuxing, benUseWuxing);
+        var benResult = getAdvancedShengkeInterpretation(benData.bodyGuaName, benData.useGuaName, benRelation,
+            isBodyUpper);
+
+        // ---- 互卦体用 ----
+        var huShangNum = currentHuGua[0];
+        var huXiaNum = currentHuGua[1];
+        var huShangName = getGuaInfo(huShangNum).name;
+        var huXiaName = getGuaInfo(huXiaNum).name;
+
+        var huBodyName, huUseName;
+        if (isBodyUpper) {
+            huBodyName = huShangName;
+            huUseName = huXiaName;
+        } else {
+            huBodyName = huXiaName;
+            huUseName = huShangName;
+        }
+
+        var huBodyWuxing = GUA_WUXING[huBodyName];
+        var huUseWuxing = GUA_WUXING[huUseName];
+        var huRelation = getRelationType(huBodyWuxing, huUseWuxing);
+        var huResult = getAdvancedShengkeInterpretation(huBodyName, huUseName, huRelation, isBodyUpper);
+
+        // ---- 变卦体用 ----
+        var bianShangNum = currentBianGua[0];
+        var bianXiaNum = currentBianGua[1];
+        var bianShangName = getGuaInfo(bianShangNum).name;
+        var bianXiaName = getGuaInfo(bianXiaNum).name;
+
+        var bianBodyName, bianUseName;
+        if (isBodyUpper) {
+            bianBodyName = bianShangName;
+            bianUseName = bianXiaName;
+        } else {
+            bianBodyName = bianXiaName;
+            bianUseName = bianShangName;
+        }
+
+        var bianBodyWuxing = GUA_WUXING[bianBodyName];
+        var bianUseWuxing = GUA_WUXING[bianUseName];
+        var bianRelation = getRelationType(bianBodyWuxing, bianUseWuxing);
+        var bianResult = getAdvancedShengkeInterpretation(bianBodyName, bianUseName, bianRelation, isBodyUpper);
+
+        // ---- 组合输出 ----
+        var finalResult =
+            '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n' +
+            '📊 本卦体用生克（初始状态）\n' +
+            '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n' +
+            benResult + '\n\n' +
+            '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n' +
+            '🔄 互卦体用生克（发展过程）\n' +
+            '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n' +
+            huResult + '\n\n' +
+            '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n' +
+            '⚡ 变卦体用生克（最终结果）\n' +
+            '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n' +
+            bianResult;
+
+        document.getElementById('shengkeBox').innerHTML = finalResult;
+    }
+
+
+    // ============================================================
+    // 六、方位吉凶模块
+    // ============================================================
+
+    /**
+     * 获取单个卦的方位解读
+     */
+    function getSingleGuaDirection(guaName, guaType) {
+        var dir = GUA_DIRECTION[guaName];
+        if (!dir) return '';
+        return guaType + '：' + guaName + '（' + dir.direction + '）→ ' + dir.action;
+    }
+
+    /**
+     * 获取三卦完整方位解读
+     */
+    function getFullDirectionAdvice(benGua, huGua, bianGua) {
+        var benShangName = getGuaInfo(benGua[0]).name;
+        var benXiaName = getGuaInfo(benGua[1]).name;
+        var huShangName = getGuaInfo(huGua[0]).name;
+        var huXiaName = getGuaInfo(huGua[1]).name;
+        var bianShangName = getGuaInfo(bianGua[0]).name;
+        var bianXiaName = getGuaInfo(bianGua[1]).name;
+
+        var result =
+            '***********方位主要看本卦***********\n' +
+            '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n' +
+            '📊 本卦方位（当前状态）\n' +
+            '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n' +
+            getSingleGuaDirection(benShangName, '上卦') + '（外在环境、贵人方向）\n' +
+            getSingleGuaDirection(benXiaName, '下卦') + '（自身立足、内部方向）\n\n' +
+            '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n' +
+            '🔄 互卦方位（发展过程）\n' +
+            '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n' +
+            getSingleGuaDirection(huShangName, '上卦') + '（过程中外部变化方向）\n' +
+            getSingleGuaDirection(huXiaName, '下卦') + '（过程中自身调整方向）\n\n' +
+            '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n' +
+            '⚡ 变卦方位（最终结果）\n' +
+            '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n' +
+            getSingleGuaDirection(bianShangName, '上卦') + '（最终结果所在方位）\n' +
+            getSingleGuaDirection(bianXiaName, '下卦') + '（最终自身状态方位）\n\n' +
+            '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n' +
+            '✨ 综合建议\n' +
+            '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n';
+
+        if (benShangName === '乾' && benXiaName === '坤') {
+            result += '本卦天地交泰，西北至西南方向最利，宜求贵人相助。';
+        } else if (benShangName === '坤' && benXiaName === '乾') {
+            result += '本卦地天泰，西南至西北方向顺遂，宜合作共赢。';
+        } else if (benShangName === '震' && benXiaName === '巽') {
+            result += '本卦雷风相薄，东方至东南方向利行动与谋划。';
+        } else if (benShangName === benXiaName) {
+            result += '本卦上下方位一致，宜专注' + GUA_DIRECTION[benShangName].direction + '方向之事。';
+        } else {
+            result += '本卦建议优先考虑上卦' + GUA_DIRECTION[benShangName].direction +
+                '方向，兼顾下卦' + GUA_DIRECTION[benXiaName].direction + '方向。';
+        }
+
+        if (huShangName === '坎' || huXiaName === '坎') {
+            result += '\n互卦见坎水，过程中需注意北方（坎）相关的风险或智慧决策。';
+        } else if (huShangName === '离' || huXiaName === '离') {
+            result += '\n互卦见离火，过程中南方（离）方向可能有贵人相助。';
+        }
+
+        if (bianShangName === '乾' || bianXiaName === '乾') {
+            result += '\n变卦见乾天，最终结果与西北（乾）方向相关，宜关注该方位机遇。';
+        } else if (bianShangName === '坤' || bianXiaName === '坤') {
+            result += '\n变卦见坤地，最终结果与西南（坤）方向相关，宜以柔顺包容之心应对。';
+        }
+
+        return result;
+    }
+
+    /**
+     * 更新方位吉凶框
+     */
+    function updateDirectionBox() {
+        if (!currentBenGua || !currentHuGua || !currentBianGua) return;
+        var result = getFullDirectionAdvice(currentBenGua, currentHuGua, currentBianGua);
+        document.getElementById('directionBox').innerHTML = result;
+    }
+
+
+    // ============================================================
+    // 七、六爻纳甲模块
+    // ============================================================
+
+    /**
+     * 获取六亲关系
+     */
+    function getLiuQin(bodyElement, useElement) {
+        var body = bodyElement;
+        var use = useElement;
+        var shengMap = { '木': '火', '火': '土', '土': '金', '金': '水', '水': '木' };
+        var keMap = { '木': '土', '土': '水', '水': '火', '火': '金', '金': '木' };
+
+        var liuqin, relation;
+
+        if (body === use) {
+            liuqin = '兄弟爻';
+            relation = '同我者为兄弟';
+        } else if (shengMap[use] === body) {
+            liuqin = '父母爻';
+            relation = '生我者为父母';
+        } else if (shengMap[body] === use) {
+            liuqin = '子孙爻';
+            relation = '我生者为子孙';
+        } else if (keMap[use] === body) {
+            liuqin = '官鬼爻';
+            relation = '克我者为官鬼';
+        } else if (keMap[body] === use) {
+            liuqin = '妻财爻';
+            relation = '我克者为妻财';
+        } else {
+            liuqin = '待分析';
+            relation = '五行关系待定';
+        }
+
+        return { liuqin: liuqin, relation: relation };
+    }
+
+    /**
+     * 获取六爻纳甲解读
+     */
+    function getLiuQinAdvice(bodyGuaName, useGuaName) {
+        var bodyElement = GUA_ELEMENT[bodyGuaName];
+        var useElement = GUA_ELEMENT[useGuaName];
+        var result = getLiuQin(bodyElement, useElement);
+        var interpretation = LIUQIN_INTERPRETATION[result.liuqin] || '六亲关系待分析，需结合具体卦象。';
+        return '体卦' + bodyGuaName + '属' + bodyElement + '，用卦' + useGuaName + '属' + useElement + '\n' +
+            result.relation + ' → ' + result.liuqin + '\n\n' + interpretation;
+    }
+
+    /**
+     * 更新六爻纳甲框
+     */
+    function updateNajiaBox() {
+        if (!currentBenGua || !currentDongYao) return;
+
+        var yongtiStr = getYongTi(currentDongYao);
+        var isBodyUpper = yongtiStr.includes('体卦为上卦');
+        var data = getBodyAndUseGuaName(currentBenGua, isBodyUpper);
+
+        var result = getLiuQinAdvice(data.bodyGuaName, data.useGuaName);
+        document.getElementById('najiaBox').innerHTML = result;
+    }
+
+
+    // ============================================================
+    // 八、节气时间调整模块
+    // ============================================================
+
+    /**
+     * 获取当前节气（简化版）
+     */
+    function getCurrentSolarTerm() {
+        var now = new Date();
+        var month = now.getMonth() + 1;
+        var day = now.getDate();
+
+        if ((month === 2 && day >= 4) || (month === 1 && day >= 20)) return '立春';
+        if (month === 2 && day >= 19) return '雨水';
+        if (month === 3 && day >= 5) return '惊蛰';
+        if (month === 3 && day >= 20) return '春分';
+        if (month === 4 && day >= 5) return '清明';
+        if (month === 4 && day >= 20) return '谷雨';
+        if (month === 5 && day >= 5) return '立夏';
+        if (month === 5 && day >= 21) return '小满';
+        if (month === 6 && day >= 5) return '芒种';
+        if (month === 6 && day >= 21) return '夏至';
+        if (month === 7 && day >= 7) return '小暑';
+        if (month === 7 && day >= 23) return '大暑';
+        if (month === 8 && day >= 7) return '立秋';
+        if (month === 8 && day >= 23) return '处暑';
+        if (month === 9 && day >= 7) return '白露';
+        if (month === 9 && day >= 23) return '秋分';
+        if (month === 10 && day >= 8) return '寒露';
+        if (month === 10 && day >= 23) return '霜降';
+        if (month === 11 && day >= 7) return '立冬';
+        if (month === 11 && day >= 22) return '小雪';
+        if (month === 12 && day >= 7) return '大雪';
+        if (month === 12 && day >= 21) return '冬至';
+        if (month === 1 && day >= 5) return '小寒';
+        if (month === 1 && day >= 20) return '大寒';
+
+        return '春分';
+    }
+
+    /**
+     * 获取节气对五行的影响
+     */
+    function getSolarTermInfluence() {
+        var term = getCurrentSolarTerm();
+        var wuxing = SOLAR_TERM_WUXING[term] || '木';
+
+        var influence = '';
+        if (wuxing === '木') influence = '春季木旺，木属性卦象（震、巽）能量增强，木生火（离）亦得利。';
+        else if (wuxing === '火') influence = '夏季火旺，火属性卦象（离）能量增强，火生土（艮、坤）亦得利。';
+        else if (wuxing === '金') influence = '秋季金旺，金属性卦象（乾、兑）能量增强，金生水（坎）亦得利。';
+        else if (wuxing === '水') influence = '冬季水旺，水属性卦象（坎）能量增强，水生木（震、巽）亦得利。';
+
+        return { term: term, wuxing: wuxing, influence: influence };
+    }
+
+    /**
+     * 获取节气时间调整建议
+     */
+    function getSolarTermAdvice(bodyGuaName) {
+        var info = getSolarTermInfluence();
+        var bodyElement = GUA_ELEMENT[bodyGuaName];
+
+        var result = '当前节气：' + info.term + '，五行' + info.wuxing + '当令\n' + info.influence + '\n\n';
+
+        if (bodyElement === info.wuxing) {
+            result += '✨ 体卦' + bodyGuaName + '属' + bodyElement +
+                '，与节气五行相同（当令），此时行事事半功倍，吉。';
+        } else if (bodyElement === '木' && info.wuxing === '水') {
+            result += '✨ 体卦' + bodyGuaName + '属木，节气水旺（水生木），得时节之助，利发展。';
+        } else if (bodyElement === '火' && info.wuxing === '木') {
+            result += '✨ 体卦' + bodyGuaName + '属火，节气木旺（木生火），得时节之助，利展现才华。';
+        } else if (bodyElement === '土' && info.wuxing === '火') {
+            result += '✨ 体卦' + bodyGuaName + '属土，节气火旺（火生土），得时节之助，利稳定积累。';
+        } else if (bodyElement === '金' && info.wuxing === '土') {
+            result += '✨ 体卦' + bodyGuaName + '属金，节气土旺（土生金），得时节之助，利求财求名。';
+        } else if (bodyElement === '水' && info.wuxing === '金') {
+            result += '✨ 体卦' + bodyGuaName + '属水，节气金旺（金生水），得时节之助，利智慧谋划。';
+        } else if (bodyElement === '木' && info.wuxing === '金') {
+            result += '⚠️ 体卦' + bodyGuaName + '属木，节气金旺（金克木），时节不利，需谨慎行事。';
+        } else if (bodyElement === '火' && info.wuxing === '水') {
+            result += '⚠️ 体卦' + bodyGuaName + '属火，节气水旺（水克火），时节不利，宜静不宜动。';
+        } else if (bodyElement === '土' && info.wuxing === '木') {
+            result += '⚠️ 体卦' + bodyGuaName + '属土，节气木旺（木克土），时节不利，需防范阻碍。';
+        } else if (bodyElement === '金' && info.wuxing === '火') {
+            result += '⚠️ 体卦' + bodyGuaName + '属金，节气火旺（火克金），时节不利，宜保守。';
+        } else if (bodyElement === '水' && info.wuxing === '土') {
+            result += '⚠️ 体卦' + bodyGuaName + '属水，节气土旺（土克水），时节不利，需耐心等待。';
+        } else {
+            result += '✨ 体卦' + bodyGuaName + '属' + bodyElement +
+                '，与节气' + info.wuxing + '无直接生克，可按常规判断。';
+        }
+
+        return result;
+    }
+
+    /**
+     * 更新节气时间调整框
+     */
+    function updateSolarTermBox() {
+        if (!currentBenGua || !currentDongYao) return;
+
+        var yongtiStr = getYongTi(currentDongYao);
+        var isBodyUpper = yongtiStr.includes('体卦为上卦');
+        var data = getBodyAndUseGuaName(currentBenGua, isBodyUpper);
+
+        var result = getSolarTermAdvice(data.bodyGuaName);
+        document.getElementById('solarTermBox').innerHTML = result;
+    }
+
+
+    // ============================================================
+    // 九、数字能量分析模块
+    // ============================================================
+
+    /**
+     * 获取单个数字的五行信息
+     */
+    function getNumInfo(num) {
+        var lastDigit = Math.abs(num) % 10;
+        var info = NUM_WUXING[lastDigit] || NUM_WUXING[0];
+        var luck = NUM_LUCK[lastDigit] || { type: '平', meaning: '中和、平衡' };
+        return {
+            original: num,
+            lastDigit: lastDigit,
+            wuxing: info.wuxing,
+            yao: info.yao,
+            color: info.color,
+            direction: info.direction,
+            meaning: info.meaning,
+            luckType: luck.type,
+            luckMeaning: luck.meaning
         };
+    }
 
-        /**
-         * 64卦名称映射表
-         * key: "上卦数,下卦数"（如 "1,1" 表示乾上乾下）
-         * value: 卦名
-         */
-        const GUA_NAMES = {
-            '1,1': '乾为天', '1,2': '天泽履', '1,3': '天火同人', '1,4': '天雷无妄',
-            '1,5': '天风姤', '1,6': '天水讼', '1,7': '天山遁', '1,8': '天地否',
-            '2,1': '泽天夬', '2,2': '兑为泽', '2,3': '泽火革', '2,4': '泽雷随',
-            '2,5': '泽风大过', '2,6': '泽水困', '2,7': '泽山咸', '2,8': '泽地萃',
-            '3,1': '火天大有', '3,2': '火泽睽', '3,3': '离为火', '3,4': '火雷噬嗑',
-            '3,5': '火风鼎', '3,6': '火水未济', '3,7': '火山旅', '3,8': '火地晋',
-            '4,1': '雷天大壮', '4,2': '雷泽归妹', '4,3': '雷火丰', '4,4': '震为雷',
-            '4,5': '雷风恒', '4,6': '雷水解', '4,7': '雷山小过', '4,8': '雷地豫',
-            '5,1': '风天小畜', '5,2': '风泽中孚', '5,3': '风火家人', '5,4': '风雷益',
-            '5,5': '巽为风', '5,6': '风水涣', '5,7': '风山渐', '5,8': '风地观',
-            '6,1': '水天需', '6,2': '水泽节', '6,3': '水火既济', '6,4': '水雷屯',
-            '6,5': '水风井', '6,6': '坎为水', '6,7': '水山蹇', '6,8': '水地比',
-            '7,1': '山天大畜', '7,2': '山泽损', '7,3': '山火贲', '7,4': '山雷颐',
-            '7,5': '山风蛊', '7,6': '山水蒙', '7,7': '艮为山', '7,8': '山地剥',
-            '8,1': '地天泰', '8,2': '地泽临', '8,3': '地火明夷', '8,4': '地雷复',
-            '8,5': '地风升', '8,6': '地水师', '8,7': '地山谦', '8,8': '坤为地'
-        };
+    /**
+     * 获取当前激活的选项卡ID
+     */
+    function getCurrentTabId() {
+        var activeTab = document.querySelector('.tab-btn.active');
+        if (activeTab) {
+            return activeTab.getAttribute('data-tab');
+        }
+        return 'numTab';
+    }
 
-        /**
-         * 八卦列表（用于UI渲染）
-         */
-        const BAGUA_LIST = [
-            { num: 1, name: '乾', symbol: '☰' },
-            { num: 2, name: '兑', symbol: '☱' },
-            { num: 3, name: '离', symbol: '☲' },
-            { num: 4, name: '震', symbol: '☳' },
-            { num: 5, name: '巽', symbol: '☴' },
-            { num: 6, name: '坎', symbol: '☵' },
-            { num: 7, name: '艮', symbol: '☶' },
-            { num: 8, name: '坤', symbol: '☷' }
-        ];
+    /**
+     * 更新数字能量分析框
+     */
+    function updateNumberEnergyBox() {
+        var currentTab = getCurrentTabId();
+        var isNumberTab = (currentTab === 'numTab');
+        var isTimeTab = (currentTab === 'timeTab');
 
-        /**
-         * 八卦五行属性映射
-         */
-        const GUA_WUXING = {
-            '乾': '阳金',
-            '兑': '阴金',
-            '离': '火',
-            '震': '阳木',
-            '巽': '阴木',
-            '坎': '水',
-            '艮': '阳土',
-            '坤': '阴土'
-        };
-
-        /**
-         * 八卦寓意详解
-         */
-        const GUA_MEANING = {
-            '乾': { nature: '天', symbol: '☰', positive: '刚健、创造、领导', negative: '过刚易折、独断专行',
-            advice: '保持谦逊，刚柔并济' },
-            '兑': { nature: '泽', symbol: '☱', positive: '喜悦、沟通、亲和', negative: '巧言令色、谄媚取宠',
-            advice: '真诚待人，言而有信' },
-            '离': { nature: '火', symbol: '☲', positive: '光明、热情、文明', negative: '浮躁、依附、虚华',
-            advice: '保持冷静，脚踏实地' },
-            '震': { nature: '雷', symbol: '☳', positive: '行动、变革、活力', negative: '冲动、惊惧、冒进',
-            advice: '谋定后动，稳中求进' },
-            '巽': { nature: '风', symbol: '☴', positive: '柔顺、渗透、顺势', negative: '犹豫、盲从、无主见',
-            advice: '坚定立场，顺势而为' },
-            '坎': { nature: '水', symbol: '☵', positive: '智慧、流动、适应', negative: '险陷、劳苦、曲折',
-            advice: '以智取胜，耐心等待' },
-            '艮': { nature: '山', symbol: '☶', positive: '稳定、停止、沉淀', negative: '固执、保守、停滞',
-            advice: '适时而动，不可固守' },
-            '坤': { nature: '地', symbol: '☷', positive: '包容、柔顺、承载', negative: '被动、软弱、无主',
-            advice: '厚德载物，柔中带刚' }
-        };
-
-        /**
-         * 八卦方位映射
-         */
-        const GUA_DIRECTION = {
-            '乾': { direction: '西北', action: '宜见贵人、求官、求名', avoid: '不宜独断专行' },
-            '兑': { direction: '西', action: '宜沟通、谈判、聚会', avoid: '不宜口舌之争' },
-            '离': { direction: '南', action: '宜展示才华、求光明之事', avoid: '不宜急躁冒进' },
-            '震': { direction: '东', action: '宜行动、创业、开拓', avoid: '不宜冲动决策' },
-            '巽': { direction: '东南', action: '宜计划、谋略、学习', avoid: '不宜犹豫不决' },
-            '坎': { direction: '北', action: '宜谋划、静养、等待', avoid: '不宜冒险涉水' },
-            '艮': { direction: '东北', action: '宜守成、休息、积蓄', avoid: '不宜强求改变' },
-            '坤': { direction: '西南', action: '宜合作、包容、求稳', avoid: '不宜单独行动' }
-        };
-
-        /**
-         * 八卦五行核心（去阴阳前缀）
-         */
-        const GUA_ELEMENT = {
-            '乾': '金',
-            '兑': '金',
-            '离': '火',
-            '震': '木',
-            '巽': '木',
-            '坎': '水',
-            '艮': '土',
-            '坤': '土'
-        };
-
-        /**
-         * 数字五行属性（河图数）
-         */
-        const NUM_WUXING = {
-            0: { wuxing: '土', yao: '阴', color: '黄', direction: '中', meaning: '包容、承载、转化' },
-            1: { wuxing: '水', yao: '阳', color: '黑', direction: '北', meaning: '起源、智慧、流动' },
-            2: { wuxing: '火', yao: '阴', color: '红', direction: '南', meaning: '热情、光明、文明' },
-            3: { wuxing: '木', yao: '阳', color: '青', direction: '东', meaning: '生长、行动、创造' },
-            4: { wuxing: '金', yao: '阴', color: '白', direction: '西', meaning: '收敛、决断、刚毅' },
-            5: { wuxing: '土', yao: '阳', color: '黄', direction: '中', meaning: '稳定、包容、承载' },
-            6: { wuxing: '水', yao: '阴', color: '黑', direction: '北', meaning: '智慧、流动、险陷' },
-            7: { wuxing: '火', yao: '阳', color: '红', direction: '南', meaning: '热情、光明、突破' },
-            8: { wuxing: '木', yao: '阴', color: '青', direction: '东', meaning: '生长、柔顺、渗透' },
-            9: { wuxing: '金', yao: '阳', color: '白', direction: '西', meaning: '决断、刚毅、改革' }
-        };
-
-        /**
-         * 数字吉凶寓意
-         */
-        const NUM_LUCK = {
-            1: { type: '吉', meaning: '开端、领导、独立' },
-            2: { type: '吉', meaning: '合作、平衡、柔和' },
-            3: { type: '吉', meaning: '创造、行动、活力' },
-            4: { type: '平', meaning: '稳定、守成、规矩' },
-            5: { type: '大吉', meaning: '中心、权威、丰盛' },
-            6: { type: '平', meaning: '顺利、和谐、安泰' },
-            7: { type: '吉', meaning: '突破、变革、创新' },
-            8: { type: '吉', meaning: '发展、通达、富有' },
-            9: { type: '大吉', meaning: '圆满、成就、尊贵' }
-        };
-
-        /**
-         * 天干数据
-         */
-        const GAN = ['甲', '乙', '丙', '丁', '戊', '己', '庚', '辛', '壬', '癸'];
-
-        /**
-         * 地支数据
-         */
-        const ZHI = ['子', '丑', '寅', '卯', '辰', '巳', '午', '未', '申', '酉', '戌', '亥'];
-
-        /**
-         * 天干五行
-         */
-        const GAN_WUXING = {
-            '甲': '木', '乙': '木',
-            '丙': '火', '丁': '火',
-            '戊': '土', '己': '土',
-            '庚': '金', '辛': '金',
-            '壬': '水', '癸': '水'
-        };
-
-        /**
-         * 地支五行
-         */
-        const ZHI_WUXING = {
-            '寅': '木', '卯': '木',
-            '巳': '火', '午': '火',
-            '辰': '土', '戌': '土', '丑': '土', '未': '土',
-            '申': '金', '酉': '金',
-            '子': '水', '亥': '水'
-        };
-
-        /**
-         * 节气五行旺衰表
-         */
-        const SOLAR_TERM_WUXING = {
-            '立春': '木', '雨水': '木', '惊蛰': '木', '春分': '木', '清明': '木', '谷雨': '木',
-            '立夏': '火', '小满': '火', '芒种': '火', '夏至': '火', '小暑': '火', '大暑': '火',
-            '立秋': '金', '处暑': '金', '白露': '金', '秋分': '金', '寒露': '金', '霜降': '金',
-            '立冬': '水', '小雪': '水', '大雪': '水', '冬至': '水', '小寒': '水', '大寒': '水'
-        };
-
-        /**
-         * 体用生克解读映射表
-         */
-        const SHENGKE_INTERPRETATION = {
-            '比和': {
-                getResult: function(bodyGuaName, useGuaName, bodyInfo, useInfo, bodyWuxing, useWuxing) {
-                    let result = '✨ 体用关系：体用比和（' + bodyWuxing + '与' + useWuxing + '同类相助）\n\n';
-                    result += '【吉凶判断】大吉之象。内外和谐，天人合一，所谋之事顺遂如意。\n\n';
-                    result += '【卦象寓意】' + bodyGuaName + bodyInfo.nature + '与' + useGuaName + useInfo.nature +
-                        '本质相通，如同同声相应、同气相求。\n\n';
-                    var extraAdvice = {
-                        '乾': '乾为天，刚健中正，比和意味着您处于主动地位，宜发挥领导力。',
-                        '坤': '坤为地，厚德载物，比和意味着您应以柔顺包容之心应对，自然得吉。',
-                        '震': '震为雷，变动不居，比和意味着变革顺利，顺势而为可得成功。',
-                        '巽': '巽为风，无孔不入，比和意味着您的策略能够渗透各方，事半功倍。',
-                        '坎': '坎为水，智慧流动，比和意味着以智取胜，险中求稳。',
-                        '离': '离为火，光明依附，比和意味着热情与才华能够被看见，宜展现自己。',
-                        '艮': '艮为山，止其所止，比和意味着静待时机比贸然行动更有利。',
-                        '兑': '兑为泽，喜悦言说，比和意味着良好沟通是关键，以诚待人可得助。'
-                    };
-                    result += extraAdvice[bodyGuaName] || '';
-                    return result;
-                }
-            },
-            '用生体': {
-                getResult: function(bodyGuaName, useGuaName, bodyInfo, useInfo, bodyWuxing, useWuxing) {
-                    var result = '✨ 体用关系：用卦生体卦（' + useWuxing + '生' + bodyWuxing + '）→ 外界生助您\n\n';
-                    result += '【吉凶判断】上吉之象。外部环境对您有利，贵人相助，事半功倍。\n\n';
-                    result += '【卦象寓意】' + useGuaName + useInfo.nature + '（' + useWuxing + '）滋养' + bodyGuaName +
-                        bodyInfo.nature + '（' + bodyWuxing + '）。';
-                    var elementAdvice = {
-                        '水火': '水能生木，象征智慧（坎水）滋养行动（震/巽木）。您当前的谋划和策略能够有效推动事情发展。',
-                        '木火': '木能生火，象征计划（震/巽木）点燃热情（离火）。您的创意和想法将转化为实际行动力。',
-                        '火土': '火能生土，象征热情（离火）夯实基础（坤/艮土）。您的积极态度将带来实质性成果。',
-                        '土金': '土能生金，象征包容（坤/艮土）孕育价值（乾/兑金）。您的积累和沉淀将产生实际收益。',
-                        '金水': '金能生水，象征决断（乾/兑金）催生智慧（坎水）。您的果断决策将带来明智的方案。'
-                    };
-                    var key = useWuxing.replace('阳', '').replace('阴', '') + bodyWuxing.replace('阳', '').replace('阴', '');
-                    result += elementAdvice[key] || '';
-                    return result;
-                }
-            },
-            '体生用': {
-                getResult: function(bodyGuaName, useGuaName, bodyInfo, useInfo, bodyWuxing, useWuxing) {
-                    var result = '✨ 体用关系：体卦生用卦（' + bodyWuxing + '生' + useWuxing + '）→ 您付出于外界\n\n';
-                    result += '【吉凶判断】平中之象，有付出之劳。事虽可成，但需投入心力。\n\n';
-                    result += '【卦象寓意】' + bodyGuaName + bodyInfo.nature + '（' + bodyWuxing + '）滋养' + useGuaName +
-                        useInfo.nature + '（' + useWuxing + '）。';
-                    var elementAdvice = {
-                        '木火': '木能生火，象征您的行动（震/巽木）在推动事情（离火）发展，但也在消耗您的精力。',
-                        '火土': '火能生土，象征您的热情（离火）在夯实外部基础（坤/艮土），但需注意劳逸结合。',
-                        '土金': '土能生金，象征您的包容（坤/艮土）在滋养结果（乾/兑金），付出终有回报。',
-                        '金水': '金能生水，象征您的决断（乾/兑金）在催生外界变化（坎水），但需量力而行。',
-                        '水木': '水能生木，象征您的智慧（坎水）在滋养事态发展（震/巽木），谋略付出较多。'
-                    };
-                    var key = bodyWuxing.replace('阳', '').replace('阴', '') + useWuxing.replace('阳', '').replace('阴', '');
-                    result += elementAdvice[key] || '';
-                    return result;
-                }
-            },
-            '体克用': {
-                getResult: function(bodyGuaName, useGuaName, bodyInfo, useInfo, bodyWuxing, useWuxing) {
-                    var result = '✨ 体用关系：体卦克用卦（' + bodyWuxing + '克' + useWuxing + '）→ 您掌控局面\n\n';
-                    result += '【吉凶判断】吉象，但需努力。您有能力驾驭此事，虽有阻碍但可克服。\n\n';
-                    result += '【卦象寓意】' + bodyGuaName + bodyInfo.nature + '（' + bodyWuxing + '）制约' + useGuaName +
-                        useInfo.nature + '（' + useWuxing + '）。';
-                    var elementAdvice = {
-                        '木土': '木能克土，象征您的行动力（震/巽木）能够突破外部阻碍（坤/艮土）。',
-                        '土水': '土能克水，象征您的稳重（坤/艮土）能够控制风险（坎水）。',
-                        '水火': '水能克火，象征您的智慧（坎水）能够调节外部热情（离火），避免过热。',
-                        '火金': '火能克金，象征您的热情（离火）能够打破外部僵化规则（乾/兑金）。',
-                        '金木': '金能克木，象征您的决断（乾/兑金）能够约束外部变动（震/巽木）。'
-                    };
-                    var key = bodyWuxing.replace('阳', '').replace('阴', '') + useWuxing.replace('阳', '').replace('阴', '');
-                    result += elementAdvice[key] || '';
-                    return result;
-                }
-            },
-            '用克体': {
-                getResult: function(bodyGuaName, useGuaName, bodyInfo, useInfo, bodyWuxing, useWuxing) {
-                    var result = '✨ 体用关系：用卦克体卦（' + useWuxing + '克' + bodyWuxing + '）→ 外界制约您\n\n';
-                    result += '【吉凶判断】凶象，需谨慎。外部环境对您有压力，所问之事有阻力。\n\n';
-                    result += '【卦象寓意】' + useGuaName + useInfo.nature + '（' + useWuxing + '）制约' + bodyGuaName +
-                        bodyInfo.nature + '（' + bodyWuxing + '）。';
-                    var elementAdvice = {
-                        '金木': '金能克木，象征外部规则（乾/兑金）可能限制您的行动（震/巽木）。',
-                        '木土': '木能克土，象征外部变动（震/巽木）可能冲击您的稳定（坤/艮土）。',
-                        '土水': '土能克水，象征外部阻力（坤/艮土）可能压制您的智慧（坎水）。',
-                        '水火': '水能克火，象征外部风险（坎水）可能冷却您的热情（离火）。',
-                        '火金': '火能克金，象征外部动荡（离火）可能冲击您的决断（乾/兑金）。'
-                    };
-                    var key = useWuxing.replace('阳', '').replace('阴', '') + bodyWuxing.replace('阳', '').replace('阴', '');
-                    result += elementAdvice[key] || '';
-                    return result;
-                }
-            }
-        };
-
-        /**
-         * 六亲解读映射
-         */
-        const LIUQIN_INTERPRETATION = {
-            '兄弟爻': '象征同伴、竞争者、朋友。此事多与人际关系相关，需注意合作与竞争。',
-            '父母爻': '象征长辈、文书、庇护。此事得长辈或上级帮助，或与文书、合同相关。',
-            '子孙爻': '象征晚辈、福神、产出。此事有福佑，付出有回报，或与子女、下属相关。',
-            '官鬼爻': '象征事业、官运、压力。此事与工作、官运相关，或有压力需要化解。',
-            '妻财爻': '象征财富、妻子、资源。此事与财运、资源相关，易得利益。'
-        };
-
-        /**
-         * 本卦解读映射表（AI生成用）
-         */
-        const BEN_INTERPRETATION = {
-            '乾': '乾为天，刚健不息。您当前所问之事，宜主动进取，但需谨防过刚易折。互卦与变卦提示环境变化中当以柔济刚。动爻在关键位置，决策时刻将至。',
-            '坤': '坤厚载物，柔顺包容。此事根基尚稳，不宜冒进。坚守正道，厚德载物，自能逢凶化吉。动爻提醒您关注内在积累。',
-            '震': '震动不安，临事而惧。变化骤起，机遇与挑战并存。需冷静观察，利用互卦中的转化能量，变卦指向新开端。',
-            '巽': '巽风入，柔顺渗透。行事圆融则吉，注意沟通协商。目前的困惑如风无形，但变卦见明朗之象。',
-            '坎': '坎为水，险陷重重。当前处境须谨慎小心，但水能载舟，智慧可化解危难。动爻暗示转折即将到来。',
-            '离': '离为火，文明依附。您的问题关乎光明与热情，宜展现才华，但勿浮躁。互卦火风鼎，革新之意，变卦启示最终得贵人扶持。',
-            '艮': '艮为山，止其所止。此事宜缓不宜急，暂停反思为上。山中有泽，积蓄能量后可再动。',
-            '兑': '兑为泽，喜悦言说。沟通愉快能解决问题，但也需防备巧言令色。变卦引导以诚相待。'
-        };
-
-        /**
-         * 《周易》64卦数据库
-         * 已从外部文件 zhouyi-db.js 加载
-         * 使用 window.ZHOUYI_QUANJI 访问
-         */
-        // 如果外部数据库未加载，提供空对象作为降级方案
-        var ZHOUYI_QUANJI = window.ZHOUYI_QUANJI || {};
-
-
-        // ============================================================
-        // 二、状态变量
-        // ============================================================
-
-        /** 当前起卦结果缓存 */
-        var currentResult = null;
-        var currentBenGua = null;
-        var currentHuGua = null;
-        var currentBianGua = null;
-        var currentDongYao = null;
-
-
-        // ============================================================
-        // 三、核心工具函数
-        // ============================================================
-
-        /**
-         * 根据卦序数获取八卦信息
-         * @param {number} num - 1~8 的卦序数
-         * @returns {Object} 八卦信息对象
-         */
-        function getGuaInfo(num) {
-            var n = ((num - 1) % 8) + 1;
-            return BA_GUA[n];
+        if (!isNumberTab && !isTimeTab) {
+            document.getElementById('numberEnergyBox').innerHTML =
+                '（数字能量分析仅在使用「数字起卦」或「时间起卦」时显示）';
+            return;
         }
 
-        /**
-         * 获取64卦名称
-         * @param {number} shang - 上卦序数
-         * @param {number} xia - 下卦序数
-         * @returns {string} 卦名
-         */
-        function getGuaName(shang, xia) {
-            var s = ((shang - 1) % 8) + 1;
-            var x = ((xia - 1) % 8) + 1;
-            return GUA_NAMES[s + ',' + x] || (getGuaInfo(s).name + getGuaInfo(x).name + '卦');
+        var n1 = parseInt(document.getElementById('num1').value);
+        var n2 = parseInt(document.getElementById('num2').value);
+        var n3 = parseInt(document.getElementById('num3').value);
+
+        var hasValidNumbers = false;
+        var num1 = n1,
+            num2 = n2,
+            num3 = n3;
+
+        if (!isNaN(n1) && !isNaN(n2) && !isNaN(n3) &&
+            document.getElementById('num1').value !== '' &&
+            document.getElementById('num2').value !== '' &&
+            document.getElementById('num3').value !== '') {
+            hasValidNumbers = true;
         }
 
-        /**
-         * 计算互卦
-         * @param {number} shang - 上卦序数
-         * @param {number} xia - 下卦序数
-         * @returns {number[]} [上卦序数, 下卦序数]
-         */
-        function getHuGua(shang, xia) {
-            var yao = [];
-            var xiaBin = ((xia - 1) % 8).toString(2).padStart(3, '0');
-            var shangBin = ((shang - 1) % 8).toString(2).padStart(3, '0');
-            var i, ch;
-
-            for (i = 0; i < xiaBin.length; i++) {
-                yao.push(parseInt(xiaBin[i]));
-            }
-            for (i = 0; i < shangBin.length; i++) {
-                yao.push(parseInt(shangBin[i]));
-            }
-
-            var xiaHu = [yao[1], yao[2], yao[3]];
-            var shangHu = [yao[2], yao[3], yao[4]];
-
-            var shangVal = parseInt(shangHu.join(''), 2) + 1;
-            var xiaVal = parseInt(xiaHu.join(''), 2) + 1;
-
-            return [shangVal, xiaVal];
-        }
-
-        /**
-         * 计算变卦
-         * @param {number} shang - 上卦序数
-         * @param {number} xia - 下卦序数
-         * @param {number} dongYao - 动爻位置 (1~6)
-         * @returns {number[]} [上卦序数, 下卦序数]
-         */
-        function getBianGua(shang, xia, dongYao) {
-            var yao = [];
-            var xiaBin = ((xia - 1) % 8).toString(2).padStart(3, '0');
-            var shangBin = ((shang - 1) % 8).toString(2).padStart(3, '0');
-            var i, ch;
-
-            for (i = 0; i < xiaBin.length; i++) {
-                yao.push(parseInt(xiaBin[i]));
-            }
-            for (i = 0; i < shangBin.length; i++) {
-                yao.push(parseInt(shangBin[i]));
-            }
-
-            var idx = dongYao - 1;
-            yao[idx] = 1 - yao[idx];
-
-            var xiaNew = yao.slice(0, 3);
-            var shangNew = yao.slice(3, 6);
-
-            var shangVal = parseInt(shangNew.join(''), 2) + 1;
-            var xiaVal = parseInt(xiaNew.join(''), 2) + 1;
-
-            return [shangVal, xiaVal];
-        }
-
-        /**
-         * 判断体卦与用卦的定位
-         * @param {number} dongYao - 动爻位置 (1~6)
-         * @returns {string} 体用关系描述
-         */
-        function getYongTi(dongYao) {
-            if (dongYao >= 1 && dongYao <= 3) {
-                return '动爻在下卦（1-3爻）→ 体卦为上卦，用卦为下卦';
-            }
-            return '动爻在上卦（4-6爻）→ 体卦为下卦，用卦为上卦';
-        }
-
-        /**
-         * 判断体卦与用卦的五行生克关系
-         * @param {string} bodyWuxing - 体卦五行
-         * @param {string} useWuxing - 用卦五行
-         * @returns {string} 关系类型：比和/体生用/用生体/体克用/用克体
-         */
-        function getRelationType(bodyWuxing, useWuxing) {
-            var bodyCore = bodyWuxing.replace('阳', '').replace('阴', '');
-            var useCore = useWuxing.replace('阳', '').replace('阴', '');
-
-            if (bodyCore === useCore) {
-                return '比和';
-            }
-
-            var shengMap = { '木': '火', '火': '土', '土': '金', '金': '水', '水': '木' };
-            var keMap = { '木': '土', '土': '水', '水': '火', '火': '金', '金': '木' };
-
-            if (shengMap[bodyCore] === useCore) return '体生用';
-            if (shengMap[useCore] === bodyCore) return '用生体';
-            if (keMap[bodyCore] === useCore) return '体克用';
-            if (keMap[useCore] === bodyCore) return '用克体';
-
-            return '未知';
-        }
-
-        /**
-         * 获取体卦和用卦的名称
-         * @param {number[]} benGua - [上卦序数, 下卦序数]
-         * @param {boolean} isBodyUpper - 体卦是否为上卦
-         * @returns {Object} { bodyGuaName, useGuaName }
-         */
-        function getBodyAndUseGuaName(benGua, isBodyUpper) {
-            var shangNum = benGua[0];
-            var xiaNum = benGua[1];
-            var shangName = getGuaInfo(shangNum).name;
-            var xiaName = getGuaInfo(xiaNum).name;
-
-            if (isBodyUpper) {
-                return { bodyGuaName: shangName, useGuaName: xiaName };
-            }
-            return { bodyGuaName: xiaName, useGuaName: shangName };
-        }
-
-        /**
-         * 获取卦象启示文本
-         */
-        function getInsightText(ben, hu, bian) {
-            var benName = getGuaName(ben[0], ben[1]);
-            var huName = getGuaName(hu[0], hu[1]);
-            var bianName = getGuaName(bian[0], bian[1]);
-            return '本卦「' + benName + '」代表当前状态与初始条件。\n互卦「' + huName + '」揭示事物发展变化的过程。\n变卦「' + bianName + '」预示最终结果与未来趋势。';
-        }
-
-
-        // ============================================================
-        // 四、《周易》原文获取
-        // ============================================================
-
-        /**
-         * 获取完整的《周易》原文（本卦卦辞+动爻爻辞+互卦卦辞+变卦卦辞+变爻爻辞）
-         * @param {string} benName - 本卦名称
-         * @param {string} huName - 互卦名称
-         * @param {string} bianName - 变卦名称
-         * @param {number} dongYao - 动爻位置
-         * @returns {string} 格式化的原文文本
-         */
-        function getFullZhouyiText(benName, huName, bianName, dongYao) {
-            // 兼容外部加载和内部定义的数据库
-            var db = window.ZHOUYI_QUANJI || ZHOUYI_QUANJI || {};
-            
-            if (!db || Object.keys(db).length === 0) {
-                return '（《周易》数据库未加载，请刷新页面或检查 zhouyi-db.js 是否正常加载）';
-            }
-
-            var benGua = db[benName];
-            var benGuaCi = benGua ? benGua.guaCi : '（原文待补充）';
-            var benYaoCi = '';
-            if (benGua && benGua.yaoCi) {
-                benYaoCi = benGua.yaoCi[dongYao] || benGua.yaoCi[String(dongYao)] || '（原文待补充）';
-            } else {
-                benYaoCi = '（原文待补充）';
-            }
-
-            var huGua = db[huName];
-            var huGuaCi = huGua ? huGua.guaCi : '（原文待补充）';
-
-            var bianGua = db[bianName];
-            var bianGuaCi = bianGua ? bianGua.guaCi : '（原文待补充）';
-            var bianYaoCi = '';
-            if (bianGua && bianGua.yaoCi) {
-                bianYaoCi = bianGua.yaoCi[dongYao] || bianGua.yaoCi[String(dongYao)] || '（原文待补充）';
-            } else {
-                bianYaoCi = '（原文待补充）';
-            }
-
-            var dongName = '';
-            if (dongYao === 1) dongName = '初爻';
-            else if (dongYao === 2) dongName = '二爻';
-            else if (dongYao === 3) dongName = '三爻';
-            else if (dongYao === 4) dongName = '四爻';
-            else if (dongYao === 5) dongName = '五爻';
-            else if (dongYao === 6) dongName = '上爻';
-
-            return '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n' +
-                '📖 本卦 · ' + benName + '\n' +
-                '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n' +
-                '【卦辞】：' + benGuaCi + '\n' +
-                '【动爻（' + dongName + '）爻辞】' + benYaoCi + '\n\n' +
-                '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n' +
-                '🔄 互卦 · ' + huName + '\n' +
-                '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n' +
-                '【卦辞】：' + huGuaCi + '\n\n' +
-                '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n' +
-                '⚡ 变卦 · ' + bianName + '\n' +
-                '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n' +
-                '【卦辞】：' + bianGuaCi + '\n' +
-                '【变爻（' + dongName + '）爻辞】' + bianYaoCi;
-        }
-
-
-        // ============================================================
-        // 五、体用生克模块
-        // ============================================================
-
-        /**
-         * 获取高级体用生克解读
-         * @param {string} bodyGuaName - 体卦名称
-         * @param {string} useGuaName - 用卦名称
-         * @param {string} relationType - 关系类型
-         * @param {boolean} isBodyUpper - 体卦是否为上卦
-         * @returns {string} 解读文本
-         */
-        function getAdvancedShengkeInterpretation(bodyGuaName, useGuaName, relationType, isBodyUpper) {
-            var bodyInfo = GUA_MEANING[bodyGuaName];
-            var useInfo = GUA_MEANING[useGuaName];
-            var bodyWuxing = GUA_WUXING[bodyGuaName];
-            var useWuxing = GUA_WUXING[useGuaName];
-
-            var result = '';
-
-            if (isBodyUpper) {
-                result += '🔍 体用定位：体卦为上卦' + bodyGuaName + '（' + bodyInfo.nature +
-                    '），代表您自身的内在状态与主体能量；用卦为下卦' + useGuaName + '（' + useInfo.nature +
-                    '），代表外部环境、所问之事或对方。\n\n';
-            } else {
-                result += '🔍 体用定位：体卦为下卦' + bodyGuaName + '（' + bodyInfo.nature +
-                    '），代表您自身的根基与核心状态；用卦为上卦' + useGuaName + '（' + useInfo.nature +
-                    '），代表外部环境、所问之事或对方。\n\n';
-            }
-
-            result += '🌿 五行属性：体卦' + bodyGuaName + '属' + bodyWuxing + '，用卦' + useGuaName + '属' + useWuxing +
-                '。\n\n';
-
-            var handler = SHENGKE_INTERPRETATION[relationType];
-            if (handler) {
-                result += handler.getResult(bodyGuaName, useGuaName, bodyInfo, useInfo, bodyWuxing, useWuxing);
-            } else {
-                result += '（体用关系待分析）';
-            }
-
-            return result;
-        }
-
-        /**
-         * 更新体用生克简析框
-         */
-        function updateShengkeBox() {
-            if (!currentBenGua || !currentDongYao || !currentHuGua || !currentBianGua) return;
-
-            var yongtiStr = getYongTi(currentDongYao);
-            var isBodyUpper = yongtiStr.includes('体卦为上卦');
-
-            // ---- 本卦体用 ----
-            var benData = getBodyAndUseGuaName(currentBenGua, isBodyUpper);
-            var benBodyWuxing = GUA_WUXING[benData.bodyGuaName];
-            var benUseWuxing = GUA_WUXING[benData.useGuaName];
-            var benRelation = getRelationType(benBodyWuxing, benUseWuxing);
-            var benResult = getAdvancedShengkeInterpretation(benData.bodyGuaName, benData.useGuaName, benRelation,
-                isBodyUpper);
-
-            // ---- 互卦体用 ----
-            var huShangNum = currentHuGua[0];
-            var huXiaNum = currentHuGua[1];
-            var huShangName = getGuaInfo(huShangNum).name;
-            var huXiaName = getGuaInfo(huXiaNum).name;
-
-            var huBodyName, huUseName;
-            if (isBodyUpper) {
-                huBodyName = huShangName;
-                huUseName = huXiaName;
-            } else {
-                huBodyName = huXiaName;
-                huUseName = huShangName;
-            }
-
-            var huBodyWuxing = GUA_WUXING[huBodyName];
-            var huUseWuxing = GUA_WUXING[huUseName];
-            var huRelation = getRelationType(huBodyWuxing, huUseWuxing);
-            var huResult = getAdvancedShengkeInterpretation(huBodyName, huUseName, huRelation, isBodyUpper);
-
-            // ---- 变卦体用 ----
-            var bianShangNum = currentBianGua[0];
-            var bianXiaNum = currentBianGua[1];
-            var bianShangName = getGuaInfo(bianShangNum).name;
-            var bianXiaName = getGuaInfo(bianXiaNum).name;
-
-            var bianBodyName, bianUseName;
-            if (isBodyUpper) {
-                bianBodyName = bianShangName;
-                bianUseName = bianXiaName;
-            } else {
-                bianBodyName = bianXiaName;
-                bianUseName = bianShangName;
-            }
-
-            var bianBodyWuxing = GUA_WUXING[bianBodyName];
-            var bianUseWuxing = GUA_WUXING[bianUseName];
-            var bianRelation = getRelationType(bianBodyWuxing, bianUseWuxing);
-            var bianResult = getAdvancedShengkeInterpretation(bianBodyName, bianUseName, bianRelation, isBodyUpper);
-
-            // ---- 组合输出 ----
-            var finalResult =
-                '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n' +
-                '📊 本卦体用生克（初始状态）\n' +
-                '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n' +
-                benResult + '\n\n' +
-                '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n' +
-                '🔄 互卦体用生克（发展过程）\n' +
-                '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n' +
-                huResult + '\n\n' +
-                '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n' +
-                '⚡ 变卦体用生克（最终结果）\n' +
-                '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n' +
-                bianResult;
-
-            document.getElementById('shengkeBox').innerHTML = finalResult;
-        }
-
-
-        // ============================================================
-        // 六、方位吉凶模块
-        // ============================================================
-
-        /**
-         * 获取单个卦的方位解读
-         */
-        function getSingleGuaDirection(guaName, guaType) {
-            var dir = GUA_DIRECTION[guaName];
-            if (!dir) return '';
-            return guaType + '：' + guaName + '（' + dir.direction + '）→ ' + dir.action;
-        }
-
-        /**
-         * 获取三卦完整方位解读
-         */
-        function getFullDirectionAdvice(benGua, huGua, bianGua) {
-            var benShangName = getGuaInfo(benGua[0]).name;
-            var benXiaName = getGuaInfo(benGua[1]).name;
-            var huShangName = getGuaInfo(huGua[0]).name;
-            var huXiaName = getGuaInfo(huGua[1]).name;
-            var bianShangName = getGuaInfo(bianGua[0]).name;
-            var bianXiaName = getGuaInfo(bianGua[1]).name;
-
-            var result =
-                '***********方位主要看本卦***********\n' +
-                '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n' +
-                '📊 本卦方位（当前状态）\n' +
-                '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n' +
-                getSingleGuaDirection(benShangName, '上卦') + '（外在环境、贵人方向）\n' +
-                getSingleGuaDirection(benXiaName, '下卦') + '（自身立足、内部方向）\n\n' +
-                '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n' +
-                '🔄 互卦方位（发展过程）\n' +
-                '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n' +
-                getSingleGuaDirection(huShangName, '上卦') + '（过程中外部变化方向）\n' +
-                getSingleGuaDirection(huXiaName, '下卦') + '（过程中自身调整方向）\n\n' +
-                '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n' +
-                '⚡ 变卦方位（最终结果）\n' +
-                '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n' +
-                getSingleGuaDirection(bianShangName, '上卦') + '（最终结果所在方位）\n' +
-                getSingleGuaDirection(bianXiaName, '下卦') + '（最终自身状态方位）\n\n' +
-                '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n' +
-                '✨ 综合建议\n' +
-                '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n';
-
-            if (benShangName === '乾' && benXiaName === '坤') {
-                result += '本卦天地交泰，西北至西南方向最利，宜求贵人相助。';
-            } else if (benShangName === '坤' && benXiaName === '乾') {
-                result += '本卦地天泰，西南至西北方向顺遂，宜合作共赢。';
-            } else if (benShangName === '震' && benXiaName === '巽') {
-                result += '本卦雷风相薄，东方至东南方向利行动与谋划。';
-            } else if (benShangName === benXiaName) {
-                result += '本卦上下方位一致，宜专注' + GUA_DIRECTION[benShangName].direction + '方向之事。';
-            } else {
-                result += '本卦建议优先考虑上卦' + GUA_DIRECTION[benShangName].direction +
-                    '方向，兼顾下卦' + GUA_DIRECTION[benXiaName].direction + '方向。';
-            }
-
-            if (huShangName === '坎' || huXiaName === '坎') {
-                result += '\n互卦见坎水，过程中需注意北方（坎）相关的风险或智慧决策。';
-            } else if (huShangName === '离' || huXiaName === '离') {
-                result += '\n互卦见离火，过程中南方（离）方向可能有贵人相助。';
-            }
-
-            if (bianShangName === '乾' || bianXiaName === '乾') {
-                result += '\n变卦见乾天，最终结果与西北（乾）方向相关，宜关注该方位机遇。';
-            } else if (bianShangName === '坤' || bianXiaName === '坤') {
-                result += '\n变卦见坤地，最终结果与西南（坤）方向相关，宜以柔顺包容之心应对。';
-            }
-
-            return result;
-        }
-
-        /**
-         * 更新方位吉凶框
-         */
-        function updateDirectionBox() {
-            if (!currentBenGua || !currentHuGua || !currentBianGua) return;
-            var result = getFullDirectionAdvice(currentBenGua, currentHuGua, currentBianGua);
-            document.getElementById('directionBox').innerHTML = result;
-        }
-
-
-        // ============================================================
-        // 七、六爻纳甲模块
-        // ============================================================
-
-        /**
-         * 获取六亲关系
-         */
-        function getLiuQin(bodyElement, useElement) {
-            var body = bodyElement;
-            var use = useElement;
-            var shengMap = { '木': '火', '火': '土', '土': '金', '金': '水', '水': '木' };
-            var keMap = { '木': '土', '土': '水', '水': '火', '火': '金', '金': '木' };
-
-            var liuqin, relation;
-
-            if (body === use) {
-                liuqin = '兄弟爻';
-                relation = '同我者为兄弟';
-            } else if (shengMap[use] === body) {
-                liuqin = '父母爻';
-                relation = '生我者为父母';
-            } else if (shengMap[body] === use) {
-                liuqin = '子孙爻';
-                relation = '我生者为子孙';
-            } else if (keMap[use] === body) {
-                liuqin = '官鬼爻';
-                relation = '克我者为官鬼';
-            } else if (keMap[body] === use) {
-                liuqin = '妻财爻';
-                relation = '我克者为妻财';
-            } else {
-                liuqin = '待分析';
-                relation = '五行关系待定';
-            }
-
-            return { liuqin: liuqin, relation: relation };
-        }
-
-        /**
-         * 获取六爻纳甲解读
-         */
-        function getLiuQinAdvice(bodyGuaName, useGuaName) {
-            var bodyElement = GUA_ELEMENT[bodyGuaName];
-            var useElement = GUA_ELEMENT[useGuaName];
-            var result = getLiuQin(bodyElement, useElement);
-            var interpretation = LIUQIN_INTERPRETATION[result.liuqin] || '六亲关系待分析，需结合具体卦象。';
-            return '体卦' + bodyGuaName + '属' + bodyElement + '，用卦' + useGuaName + '属' + useElement + '\n' +
-                result.relation + ' → ' + result.liuqin + '\n\n' + interpretation;
-        }
-
-        /**
-         * 更新六爻纳甲框
-         */
-        function updateNajiaBox() {
-            if (!currentBenGua || !currentDongYao) return;
-
-            var yongtiStr = getYongTi(currentDongYao);
-            var isBodyUpper = yongtiStr.includes('体卦为上卦');
-            var data = getBodyAndUseGuaName(currentBenGua, isBodyUpper);
-
-            var result = getLiuQinAdvice(data.bodyGuaName, data.useGuaName);
-            document.getElementById('najiaBox').innerHTML = result;
-        }
-
-
-        // ============================================================
-        // 八、节气时间调整模块
-        // ============================================================
-
-        /**
-         * 获取当前节气（简化版）
-         */
-        function getCurrentSolarTerm() {
-            var now = new Date();
-            var month = now.getMonth() + 1;
-            var day = now.getDate();
-
-            if ((month === 2 && day >= 4) || (month === 1 && day >= 20)) return '立春';
-            if (month === 2 && day >= 19) return '雨水';
-            if (month === 3 && day >= 5) return '惊蛰';
-            if (month === 3 && day >= 20) return '春分';
-            if (month === 4 && day >= 5) return '清明';
-            if (month === 4 && day >= 20) return '谷雨';
-            if (month === 5 && day >= 5) return '立夏';
-            if (month === 5 && day >= 21) return '小满';
-            if (month === 6 && day >= 5) return '芒种';
-            if (month === 6 && day >= 21) return '夏至';
-            if (month === 7 && day >= 7) return '小暑';
-            if (month === 7 && day >= 23) return '大暑';
-            if (month === 8 && day >= 7) return '立秋';
-            if (month === 8 && day >= 23) return '处暑';
-            if (month === 9 && day >= 7) return '白露';
-            if (month === 9 && day >= 23) return '秋分';
-            if (month === 10 && day >= 8) return '寒露';
-            if (month === 10 && day >= 23) return '霜降';
-            if (month === 11 && day >= 7) return '立冬';
-            if (month === 11 && day >= 22) return '小雪';
-            if (month === 12 && day >= 7) return '大雪';
-            if (month === 12 && day >= 21) return '冬至';
-            if (month === 1 && day >= 5) return '小寒';
-            if (month === 1 && day >= 20) return '大寒';
-
-            return '春分';
-        }
-
-        /**
-         * 获取节气对五行的影响
-         */
-        function getSolarTermInfluence() {
-            var term = getCurrentSolarTerm();
-            var wuxing = SOLAR_TERM_WUXING[term] || '木';
-
-            var influence = '';
-            if (wuxing === '木') influence = '春季木旺，木属性卦象（震、巽）能量增强，木生火（离）亦得利。';
-            else if (wuxing === '火') influence = '夏季火旺，火属性卦象（离）能量增强，火生土（艮、坤）亦得利。';
-            else if (wuxing === '金') influence = '秋季金旺，金属性卦象（乾、兑）能量增强，金生水（坎）亦得利。';
-            else if (wuxing === '水') influence = '冬季水旺，水属性卦象（坎）能量增强，水生木（震、巽）亦得利。';
-
-            return { term: term, wuxing: wuxing, influence: influence };
-        }
-
-        /**
-         * 获取节气时间调整建议
-         */
-        function getSolarTermAdvice(bodyGuaName) {
-            var info = getSolarTermInfluence();
-            var bodyElement = GUA_ELEMENT[bodyGuaName];
-
-            var result = '当前节气：' + info.term + '，五行' + info.wuxing + '当令\n' + info.influence + '\n\n';
-
-            if (bodyElement === info.wuxing) {
-                result += '✨ 体卦' + bodyGuaName + '属' + bodyElement +
-                    '，与节气五行相同（当令），此时行事事半功倍，吉。';
-            } else if (bodyElement === '木' && info.wuxing === '水') {
-                result += '✨ 体卦' + bodyGuaName + '属木，节气水旺（水生木），得时节之助，利发展。';
-            } else if (bodyElement === '火' && info.wuxing === '木') {
-                result += '✨ 体卦' + bodyGuaName + '属火，节气木旺（木生火），得时节之助，利展现才华。';
-            } else if (bodyElement === '土' && info.wuxing === '火') {
-                result += '✨ 体卦' + bodyGuaName + '属土，节气火旺（火生土），得时节之助，利稳定积累。';
-            } else if (bodyElement === '金' && info.wuxing === '土') {
-                result += '✨ 体卦' + bodyGuaName + '属金，节气土旺（土生金），得时节之助，利求财求名。';
-            } else if (bodyElement === '水' && info.wuxing === '金') {
-                result += '✨ 体卦' + bodyGuaName + '属水，节气金旺（金生水），得时节之助，利智慧谋划。';
-            } else if (bodyElement === '木' && info.wuxing === '金') {
-                result += '⚠️ 体卦' + bodyGuaName + '属木，节气金旺（金克木），时节不利，需谨慎行事。';
-            } else if (bodyElement === '火' && info.wuxing === '水') {
-                result += '⚠️ 体卦' + bodyGuaName + '属火，节气水旺（水克火），时节不利，宜静不宜动。';
-            } else if (bodyElement === '土' && info.wuxing === '木') {
-                result += '⚠️ 体卦' + bodyGuaName + '属土，节气木旺（木克土），时节不利，需防范阻碍。';
-            } else if (bodyElement === '金' && info.wuxing === '火') {
-                result += '⚠️ 体卦' + bodyGuaName + '属金，节气火旺（火克金），时节不利，宜保守。';
-            } else if (bodyElement === '水' && info.wuxing === '土') {
-                result += '⚠️ 体卦' + bodyGuaName + '属水，节气土旺（土克水），时节不利，需耐心等待。';
-            } else {
-                result += '✨ 体卦' + bodyGuaName + '属' + bodyElement +
-                    '，与节气' + info.wuxing + '无直接生克，可按常规判断。';
-            }
-
-            return result;
-        }
-
-        /**
-         * 更新节气时间调整框
-         */
-        function updateSolarTermBox() {
-            if (!currentBenGua || !currentDongYao) return;
-
-            var yongtiStr = getYongTi(currentDongYao);
-            var isBodyUpper = yongtiStr.includes('体卦为上卦');
-            var data = getBodyAndUseGuaName(currentBenGua, isBodyUpper);
-
-            var result = getSolarTermAdvice(data.bodyGuaName);
-            document.getElementById('solarTermBox').innerHTML = result;
-        }
-
-
-        // ============================================================
-        // 九、数字能量分析模块
-        // ============================================================
-
-        /**
-         * 获取单个数字的五行信息
-         */
-        function getNumInfo(num) {
-            var lastDigit = Math.abs(num) % 10;
-            var info = NUM_WUXING[lastDigit] || NUM_WUXING[0];
-            var luck = NUM_LUCK[lastDigit] || { type: '平', meaning: '中和、平衡' };
-            return {
-                original: num,
-                lastDigit: lastDigit,
-                wuxing: info.wuxing,
-                yao: info.yao,
-                color: info.color,
-                direction: info.direction,
-                meaning: info.meaning,
-                luckType: luck.type,
-                luckMeaning: luck.meaning
-            };
-        }
-
-        /**
-         * 获取当前激活的选项卡ID
-         */
-        function getCurrentTabId() {
-            var activeTab = document.querySelector('.tab-btn.active');
-            if (activeTab) {
-                return activeTab.getAttribute('data-tab');
-            }
-            return 'numTab';
-        }
-
-        /**
-         * 更新数字能量分析框
-         */
-        function updateNumberEnergyBox() {
-            var currentTab = getCurrentTabId();
-            var isNumberTab = (currentTab === 'numTab');
-            var isTimeTab = (currentTab === 'timeTab');
-
-            if (!isNumberTab && !isTimeTab) {
-                document.getElementById('numberEnergyBox').innerHTML =
-                    '（数字能量分析仅在使用「数字起卦」或「时间起卦」时显示）';
-                return;
-            }
-
-            var n1 = parseInt(document.getElementById('num1').value);
-            var n2 = parseInt(document.getElementById('num2').value);
-            var n3 = parseInt(document.getElementById('num3').value);
-
-            var hasValidNumbers = false;
-            var num1 = n1,
-                num2 = n2,
-                num3 = n3;
-
-            if (!isNaN(n1) && !isNaN(n2) && !isNaN(n3) &&
-                document.getElementById('num1').value !== '' &&
-                document.getElementById('num2').value !== '' &&
-                document.getElementById('num3').value !== '') {
+        if (isTimeTab && !hasValidNumbers) {
+            var year = parseInt(document.getElementById('yearInp').value);
+            var month = parseInt(document.getElementById('monthInp').value);
+            var day = parseInt(document.getElementById('dayInp').value);
+            var hour = parseInt(document.getElementById('hourInp').value);
+
+            if (!isNaN(year) && !isNaN(month) && !isNaN(day) && !isNaN(hour) &&
+                document.getElementById('yearInp').value !== '' &&
+                document.getElementById('monthInp').value !== '' &&
+                document.getElementById('dayInp').value !== '' &&
+                document.getElementById('hourInp').value !== '') {
+                num1 = year;
+                num2 = month + day;
+                num3 = hour;
                 hasValidNumbers = true;
             }
-
-            if (isTimeTab && !hasValidNumbers) {
-                var year = parseInt(document.getElementById('yearInp').value);
-                var month = parseInt(document.getElementById('monthInp').value);
-                var day = parseInt(document.getElementById('dayInp').value);
-                var hour = parseInt(document.getElementById('hourInp').value);
-
-                if (!isNaN(year) && !isNaN(month) && !isNaN(day) && !isNaN(hour) &&
-                    document.getElementById('yearInp').value !== '' &&
-                    document.getElementById('monthInp').value !== '' &&
-                    document.getElementById('dayInp').value !== '' &&
-                    document.getElementById('hourInp').value !== '') {
-                    num1 = year;
-                    num2 = month + day;
-                    num3 = hour;
-                    hasValidNumbers = true;
-                }
-            }
-
-            if (!hasValidNumbers) {
-                document.getElementById('numberEnergyBox').innerHTML =
-                    '（数字能量分析：请先在「数字起卦」中输入三个数字，或在「时间起卦」中填写完整时间）';
-                return;
-            }
-
-            var info1 = getNumInfo(num1);
-            var info2 = getNumInfo(num2);
-            var info3 = getNumInfo(num3);
-
-            var result =
-                '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n' +
-                '📊 起卦数字能量解析\n' +
-                '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n' +
-                '【上卦数字】' + num1 + '\n' +
-                '末位 ' + info1.lastDigit + ' → 五行：' + info1.wuxing + '（' + info1.yao + '），方位：' + info1
-                .direction + '，颜色：' + info1.color + '\n' +
-                '寓意：' + info1.meaning + '\n' +
-                '吉凶：' + info1.luckType + ' — ' + info1.luckMeaning + '\n\n' +
-                '【下卦数字】' + num2 + '\n' +
-                '末位 ' + info2.lastDigit + ' → 五行：' + info2.wuxing + '（' + info2.yao + '），方位：' + info2
-                .direction + '，颜色：' + info2.color + '\n' +
-                '寓意：' + info2.meaning + '\n' +
-                '吉凶：' + info2.luckType + ' — ' + info2.luckMeaning + '\n\n' +
-                '【动爻数字】' + num3 + '\n' +
-                '末位 ' + info3.lastDigit + ' → 五行：' + info3.wuxing + '（' + info3.yao + '），方位：' + info3
-                .direction + '，颜色：' + info3.color + '\n' +
-                '寓意：' + info3.meaning + '\n' +
-                '吉凶：' + info3.luckType + ' — ' + info3.luckMeaning + '\n\n' +
-                '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n' +
-                '✨ 综合能量建议\n' +
-                '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n';
-
-            if (info1.wuxing === info2.wuxing) {
-                result += '上卦与下卦五行同为' + info1.wuxing + '，能量共振，此事内外一致。';
-            } else if ((info1.wuxing === '木' && info2.wuxing === '火') ||
-                (info1.wuxing === '火' && info2.wuxing === '土') ||
-                (info1.wuxing === '土' && info2.wuxing === '金') ||
-                (info1.wuxing === '金' && info2.wuxing === '水') ||
-                (info1.wuxing === '水' && info2.wuxing === '木')) {
-                result += '上卦' + info1.wuxing + '生下卦' + info2.wuxing + '，能量相生，事情发展顺畅。';
-            } else if ((info1.wuxing === '木' && info2.wuxing === '土') ||
-                (info1.wuxing === '火' && info2.wuxing === '金') ||
-                (info1.wuxing === '土' && info2.wuxing === '水') ||
-                (info1.wuxing === '金' && info2.wuxing === '木') ||
-                (info1.wuxing === '水' && info2.wuxing === '火')) {
-                result += '上卦' + info1.wuxing + '克下卦' + info2.wuxing + '，能量相克，需注意协调。';
-            } else {
-                result += '上下卦五行关系平和，能量均衡发展。';
-            }
-
-            result += '\n动爻数字末位' + info3.lastDigit + '（' + info3.wuxing + '），关键变动与此五行相关。';
-
-            var goodCount = [info1.luckType, info2.luckType, info3.luckType].filter(
-                function(t) { return t === '吉' || t === '大吉'; }
-            ).length;
-
-            if (goodCount >= 2) {
-                result += '\n\n✨ 整体数字能量偏吉，起卦数字祥和，此事发展前景向好。';
-            } else if (goodCount === 1) {
-                result += '\n\n⚠️ 整体数字能量平和中略带波动，建议顺势而为。';
-            } else {
-                result += '\n\n💫 整体数字能量较为复杂，建议多方考量，谨慎行事。';
-            }
-
-            document.getElementById('numberEnergyBox').innerHTML = result;
         }
 
-
-        // ============================================================
-        // 十、四柱分析模块
-        // ============================================================
-
-        /**
-         * 获取年柱干支
-         */
-        function getYearGanZhi(date) {
-            var year = date.getFullYear();
-            var ganIndex = ((year - 4) % 10 + 10) % 10;
-            var zhiIndex = ((year - 4) % 12 + 12) % 12;
-            var gan = GAN[ganIndex];
-            var zhi = ZHI[zhiIndex];
-            return {
-                gan: gan,
-                zhi: zhi,
-                ganWuxing: GAN_WUXING[gan],
-                zhiWuxing: ZHI_WUXING[zhi]
-            };
+        if (!hasValidNumbers) {
+            document.getElementById('numberEnergyBox').innerHTML =
+                '（数字能量分析：请先在「数字起卦」中输入三个数字，或在「时间起卦」中填写完整时间）';
+            return;
         }
 
-        /**
-         * 获取月支（基于节气）
-         */
-        function getMonthZhi(date) {
-            var month = date.getMonth() + 1;
-            var day = date.getDate();
+        var info1 = getNumInfo(num1);
+        var info2 = getNumInfo(num2);
+        var info3 = getNumInfo(num3);
 
-            if ((month === 2 && day >= 4) || (month === 3 && day < 6)) return '寅';
-            if ((month === 3 && day >= 6) || (month === 4 && day < 5)) return '卯';
-            if ((month === 4 && day >= 5) || (month === 5 && day < 6)) return '辰';
-            if ((month === 5 && day >= 6) || (month === 6 && day < 6)) return '巳';
-            if ((month === 6 && day >= 6) || (month === 7 && day < 7)) return '午';
-            if ((month === 7 && day >= 7) || (month === 8 && day < 8)) return '未';
-            if ((month === 8 && day >= 8) || (month === 9 && day < 8)) return '申';
-            if ((month === 9 && day >= 8) || (month === 10 && day < 8)) return '酉';
-            if ((month === 10 && day >= 8) || (month === 11 && day < 7)) return '戌';
-            if ((month === 11 && day >= 7) || (month === 12 && day < 7)) return '亥';
-            if ((month === 12 && day >= 7) || (month === 1 && day < 6)) return '子';
-            if ((month === 1 && day >= 6) || (month === 2 && day < 4)) return '丑';
+        var result =
+            '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n' +
+            '📊 起卦数字能量解析\n' +
+            '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n' +
+            '【上卦数字】' + num1 + '\n' +
+            '末位 ' + info1.lastDigit + ' → 五行：' + info1.wuxing + '（' + info1.yao + '），方位：' + info1
+            .direction + '，颜色：' + info1.color + '\n' +
+            '寓意：' + info1.meaning + '\n' +
+            '吉凶：' + info1.luckType + ' — ' + info1.luckMeaning + '\n\n' +
+            '【下卦数字】' + num2 + '\n' +
+            '末位 ' + info2.lastDigit + ' → 五行：' + info2.wuxing + '（' + info2.yao + '），方位：' + info2
+            .direction + '，颜色：' + info2.color + '\n' +
+            '寓意：' + info2.meaning + '\n' +
+            '吉凶：' + info2.luckType + ' — ' + info2.luckMeaning + '\n\n' +
+            '【动爻数字】' + num3 + '\n' +
+            '末位 ' + info3.lastDigit + ' → 五行：' + info3.wuxing + '（' + info3.yao + '），方位：' + info3
+            .direction + '，颜色：' + info3.color + '\n' +
+            '寓意：' + info3.meaning + '\n' +
+            '吉凶：' + info3.luckType + ' — ' + info3.luckMeaning + '\n\n' +
+            '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n' +
+            '✨ 综合能量建议\n' +
+            '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n';
 
-            return '寅';
+        if (info1.wuxing === info2.wuxing) {
+            result += '上卦与下卦五行同为' + info1.wuxing + '，能量共振，此事内外一致。';
+        } else if ((info1.wuxing === '木' && info2.wuxing === '火') ||
+            (info1.wuxing === '火' && info2.wuxing === '土') ||
+            (info1.wuxing === '土' && info2.wuxing === '金') ||
+            (info1.wuxing === '金' && info2.wuxing === '水') ||
+            (info1.wuxing === '水' && info2.wuxing === '木')) {
+            result += '上卦' + info1.wuxing + '生下卦' + info2.wuxing + '，能量相生，事情发展顺畅。';
+        } else if ((info1.wuxing === '木' && info2.wuxing === '土') ||
+            (info1.wuxing === '火' && info2.wuxing === '金') ||
+            (info1.wuxing === '土' && info2.wuxing === '水') ||
+            (info1.wuxing === '金' && info2.wuxing === '木') ||
+            (info1.wuxing === '水' && info2.wuxing === '火')) {
+            result += '上卦' + info1.wuxing + '克下卦' + info2.wuxing + '，能量相克，需注意协调。';
+        } else {
+            result += '上下卦五行关系平和，能量均衡发展。';
         }
 
-        /**
-         * 获取月柱干支
-         */
-        function getMonthGanZhi(date) {
-            var year = date.getFullYear();
-            var yearGanIndex = ((year - 4) % 10 + 10) % 10;
-            var yearGan = GAN[yearGanIndex];
+        result += '\n动爻数字末位' + info3.lastDigit + '（' + info3.wuxing + '），关键变动与此五行相关。';
 
-            var monthZhi = getMonthZhi(date);
-            var zhiIndex = ZHI.indexOf(monthZhi);
+        var goodCount = [info1.luckType, info2.luckType, info3.luckType].filter(
+            function(t) { return t === '吉' || t === '大吉'; }
+        ).length;
 
-            var startGanIndex = 0;
-            if (yearGan === '甲' || yearGan === '己') startGanIndex = 2;
-            else if (yearGan === '乙' || yearGan === '庚') startGanIndex = 4;
-            else if (yearGan === '丙' || yearGan === '辛') startGanIndex = 6;
-            else if (yearGan === '丁' || yearGan === '壬') startGanIndex = 8;
-            else if (yearGan === '戊' || yearGan === '癸') startGanIndex = 0;
-
-            var offset = zhiIndex - 2;
-            var ganIndex = ((startGanIndex + offset) % 10 + 10) % 10;
-            var monthGan = GAN[ganIndex];
-
-            return {
-                gan: monthGan,
-                zhi: monthZhi,
-                ganWuxing: GAN_WUXING[monthGan],
-                zhiWuxing: ZHI_WUXING[monthZhi]
-            };
+        if (goodCount >= 2) {
+            result += '\n\n✨ 整体数字能量偏吉，起卦数字祥和，此事发展前景向好。';
+        } else if (goodCount === 1) {
+            result += '\n\n⚠️ 整体数字能量平和中略带波动，建议顺势而为。';
+        } else {
+            result += '\n\n💫 整体数字能量较为复杂，建议多方考量，谨慎行事。';
         }
 
-        /**
-         * 获取日柱干支
-         */
-        function getDayGanZhi(date) {
-            var year = date.getFullYear();
-            var month = date.getMonth() + 1;
-            var day = date.getDate();
+        document.getElementById('numberEnergyBox').innerHTML = result;
+    }
 
-            var yearLast2 = year % 100;
-            var century = Math.floor(year / 100);
 
-            var dayBase = 0;
-            if (century === 20) {
-                dayBase = (yearLast2 + 7) * 5 + 15 + Math.floor((yearLast2 + 19) / 4);
-            } else if (century === 19) {
-                dayBase = (yearLast2 + 3) * 5 + 55 + Math.floor((yearLast2 - 1) / 4);
-            } else {
-                dayBase = (yearLast2 + 7) * 5 + 15 + Math.floor((yearLast2 + 19) / 4);
-            }
+    // ============================================================
+    // 十、四柱分析模块
+    // ============================================================
 
-            var totalDays = dayBase % 60;
-            var monthDays = [0, 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
+    /**
+     * 获取年柱干支
+     */
+    function getYearGanZhi(date) {
+        var year = date.getFullYear();
+        var ganIndex = ((year - 4) % 10 + 10) % 10;
+        var zhiIndex = ((year - 4) % 12 + 12) % 12;
+        var gan = GAN[ganIndex];
+        var zhi = ZHI[zhiIndex];
+        return {
+            gan: gan,
+            zhi: zhi,
+            ganWuxing: GAN_WUXING[gan],
+            zhiWuxing: ZHI_WUXING[zhi]
+        };
+    }
 
-            for (var i = 1; i < month; i++) {
-                totalDays += monthDays[i];
-            }
+    /**
+     * 获取月支（基于节气）
+     */
+    function getMonthZhi(date) {
+        var month = date.getMonth() + 1;
+        var day = date.getDate();
 
-            var isLeap = (year % 4 === 0 && year % 100 !== 0) || (year % 400 === 0);
-            if (isLeap && month > 2) {
-                totalDays += 1;
-            }
+        if ((month === 2 && day >= 4) || (month === 3 && day < 6)) return '寅';
+        if ((month === 3 && day >= 6) || (month === 4 && day < 5)) return '卯';
+        if ((month === 4 && day >= 5) || (month === 5 && day < 6)) return '辰';
+        if ((month === 5 && day >= 6) || (month === 6 && day < 6)) return '巳';
+        if ((month === 6 && day >= 6) || (month === 7 && day < 7)) return '午';
+        if ((month === 7 && day >= 7) || (month === 8 && day < 8)) return '未';
+        if ((month === 8 && day >= 8) || (month === 9 && day < 8)) return '申';
+        if ((month === 9 && day >= 8) || (month === 10 && day < 8)) return '酉';
+        if ((month === 10 && day >= 8) || (month === 11 && day < 7)) return '戌';
+        if ((month === 11 && day >= 7) || (month === 12 && day < 7)) return '亥';
+        if ((month === 12 && day >= 7) || (month === 1 && day < 6)) return '子';
+        if ((month === 1 && day >= 6) || (month === 2 && day < 4)) return '丑';
 
-            totalDays += day;
-            totalDays = totalDays % 60;
-            if (totalDays === 0) totalDays = 60;
+        return '寅';
+    }
 
-            var ganIndex = (totalDays - 1) % 10;
-            var zhiIndex = (totalDays - 1) % 12;
+    /**
+     * 获取月柱干支
+     */
+    function getMonthGanZhi(date) {
+        var year = date.getFullYear();
+        var yearGanIndex = ((year - 4) % 10 + 10) % 10;
+        var yearGan = GAN[yearGanIndex];
 
-            var gan = GAN[ganIndex];
-            var zhi = ZHI[zhiIndex];
+        var monthZhi = getMonthZhi(date);
+        var zhiIndex = ZHI.indexOf(monthZhi);
 
-            return {
-                gan: gan,
-                zhi: zhi,
-                ganWuxing: GAN_WUXING[gan],
-                zhiWuxing: ZHI_WUXING[zhi]
-            };
+        var startGanIndex = 0;
+        if (yearGan === '甲' || yearGan === '己') startGanIndex = 2;
+        else if (yearGan === '乙' || yearGan === '庚') startGanIndex = 4;
+        else if (yearGan === '丙' || yearGan === '辛') startGanIndex = 6;
+        else if (yearGan === '丁' || yearGan === '壬') startGanIndex = 8;
+        else if (yearGan === '戊' || yearGan === '癸') startGanIndex = 0;
+
+        var offset = zhiIndex - 2;
+        var ganIndex = ((startGanIndex + offset) % 10 + 10) % 10;
+        var monthGan = GAN[ganIndex];
+
+        return {
+            gan: monthGan,
+            zhi: monthZhi,
+            ganWuxing: GAN_WUXING[monthGan],
+            zhiWuxing: ZHI_WUXING[monthZhi]
+        };
+    }
+
+    /**
+     * 获取日柱干支
+     */
+    function getDayGanZhi(date) {
+        var year = date.getFullYear();
+        var month = date.getMonth() + 1;
+        var day = date.getDate();
+
+        var yearLast2 = year % 100;
+        var century = Math.floor(year / 100);
+
+        var dayBase = 0;
+        if (century === 20) {
+            dayBase = (yearLast2 + 7) * 5 + 15 + Math.floor((yearLast2 + 19) / 4);
+        } else if (century === 19) {
+            dayBase = (yearLast2 + 3) * 5 + 55 + Math.floor((yearLast2 - 1) / 4);
+        } else {
+            dayBase = (yearLast2 + 7) * 5 + 15 + Math.floor((yearLast2 + 19) / 4);
         }
 
-        /**
-         * 获取时柱干支
-         */
-        function getHourGanZhi(date, dayGan) {
-            var hour = date.getHours();
-            var zhiIndex = 0;
-            if (hour >= 23 || hour < 1) zhiIndex = 0;
-            else if (hour >= 1 && hour < 3) zhiIndex = 1;
-            else if (hour >= 3 && hour < 5) zhiIndex = 2;
-            else if (hour >= 5 && hour < 7) zhiIndex = 3;
-            else if (hour >= 7 && hour < 9) zhiIndex = 4;
-            else if (hour >= 9 && hour < 11) zhiIndex = 5;
-            else if (hour >= 11 && hour < 13) zhiIndex = 6;
-            else if (hour >= 13 && hour < 15) zhiIndex = 7;
-            else if (hour >= 15 && hour < 17) zhiIndex = 8;
-            else if (hour >= 17 && hour < 19) zhiIndex = 9;
-            else if (hour >= 19 && hour < 21) zhiIndex = 10;
-            else if (hour >= 21 && hour < 23) zhiIndex = 11;
+        var totalDays = dayBase % 60;
+        var monthDays = [0, 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
 
-            var hourZhi = ZHI[zhiIndex];
-
-            var startGanIndex = 0;
-            if (dayGan === '甲' || dayGan === '己') startGanIndex = 0;
-            else if (dayGan === '乙' || dayGan === '庚') startGanIndex = 2;
-            else if (dayGan === '丙' || dayGan === '辛') startGanIndex = 4;
-            else if (dayGan === '丁' || dayGan === '壬') startGanIndex = 6;
-            else if (dayGan === '戊' || dayGan === '癸') startGanIndex = 8;
-
-            var ganIndex = ((startGanIndex + zhiIndex) % 10 + 10) % 10;
-            var hourGan = GAN[ganIndex];
-
-            var hourNames = ['子时', '丑时', '寅时', '卯时', '辰时', '巳时', '午时', '未时', '申时', '酉时', '戌时', '亥时'];
-            var hourDisplay = hourNames[zhiIndex] + '（' + (hour % 12 || 12) + '-' + (hour % 12 + 1 || 1) + '点）';
-
-            return {
-                gan: hourGan,
-                zhi: hourZhi,
-                ganWuxing: GAN_WUXING[hourGan],
-                zhiWuxing: ZHI_WUXING[hourZhi],
-                hourName: hourDisplay
-            };
+        for (var i = 1; i < month; i++) {
+            totalDays += monthDays[i];
         }
 
-        /**
-         * 获取完整的四柱分析
-         */
-        function getFourPillarsAnalysis() {
-            var now = new Date();
-
-            var yearGZ = getYearGanZhi(now);
-            var monthGZ = getMonthGanZhi(now);
-            var dayGZ = getDayGanZhi(now);
-            var hourGZ = getHourGanZhi(now, dayGZ.gan);
-
-            var result =
-                '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n' +
-                '📅 四柱干支分析（起卦时间）\n' +
-                '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n' +
-                '【年柱】' + yearGZ.gan + yearGZ.zhi + '年\n' +
-                '天干：' + yearGZ.gan + '（' + yearGZ.ganWuxing + '）\n' +
-                '地支：' + yearGZ.zhi + '（' + yearGZ.zhiWuxing + '）\n\n' +
-                '【月柱】' + monthGZ.gan + monthGZ.zhi + '月\n' +
-                '天干：' + monthGZ.gan + '（' + monthGZ.ganWuxing + '）\n' +
-                '地支：' + monthGZ.zhi + '（' + monthGZ.zhiWuxing + '）\n\n' +
-                '【日柱】' + dayGZ.gan + dayGZ.zhi + '日\n' +
-                '天干：' + dayGZ.gan + '（' + dayGZ.ganWuxing + '）\n' +
-                '地支：' + dayGZ.zhi + '（' + dayGZ.zhiWuxing + '）\n\n' +
-                '【时柱】' + hourGZ.gan + hourGZ.zhi + '时（' + hourGZ.hourName + '）\n' +
-                '天干：' + hourGZ.gan + '（' + hourGZ.ganWuxing + '）\n' +
-                '地支：' + hourGZ.zhi + '（' + hourGZ.zhiWuxing + '）\n\n' +
-                '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n' +
-                '✨ 四柱能量解析\n' +
-                '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n';
-
-            if (currentBenGua && currentDongYao) {
-                var yongtiStr = getYongTi(currentDongYao);
-                var isBodyUpper = yongtiStr.includes('体卦为上卦');
-                var data = getBodyAndUseGuaName(currentBenGua, isBodyUpper);
-                var bodyElement = GUA_ELEMENT[data.bodyGuaName];
-
-                result += '体卦' + data.bodyGuaName + '属' + bodyElement + '\n\n';
-
-                result += '【年柱关系】';
-                if (bodyElement === yearGZ.ganWuxing || bodyElement === yearGZ.zhiWuxing) {
-                    result += '体卦与年柱五行相同，得年运相助，一年之内总体顺遂。\n';
-                } else if ((bodyElement === '木' && (yearGZ.ganWuxing === '水' || yearGZ.zhiWuxing === '水')) ||
-                    (bodyElement === '火' && (yearGZ.ganWuxing === '木' || yearGZ.zhiWuxing === '木')) ||
-                    (bodyElement === '土' && (yearGZ.ganWuxing === '火' || yearGZ.zhiWuxing === '火')) ||
-                    (bodyElement === '金' && (yearGZ.ganWuxing === '土' || yearGZ.zhiWuxing === '土')) ||
-                    (bodyElement === '水' && (yearGZ.ganWuxing === '金' || yearGZ.zhiWuxing === '金'))) {
-                    result += '体卦与年柱相生，得年运之助，今年发展顺利。\n';
-                } else if ((bodyElement === '木' && (yearGZ.ganWuxing === '金' || yearGZ.zhiWuxing === '金')) ||
-                    (bodyElement === '火' && (yearGZ.ganWuxing === '水' || yearGZ.zhiWuxing === '水')) ||
-                    (bodyElement === '土' && (yearGZ.ganWuxing === '木' || yearGZ.zhiWuxing === '木')) ||
-                    (bodyElement === '金' && (yearGZ.ganWuxing === '火' || yearGZ.zhiWuxing === '火')) ||
-                    (bodyElement === '水' && (yearGZ.ganWuxing === '土' || yearGZ.zhiWuxing === '土'))) {
-                    result += '体卦与年柱相克，今年需谨慎行事，注意外部环境变化。\n';
-                } else {
-                    result += '体卦与年柱五行平和，今年发展平稳。\n';
-                }
-
-                result += '\n【月柱关系】';
-                if (bodyElement === monthGZ.ganWuxing || bodyElement === monthGZ.zhiWuxing) {
-                    result += '体卦与月柱五行相同，得月令之助，本月运势旺盛。\n';
-                } else if ((bodyElement === '木' && (monthGZ.ganWuxing === '水' || monthGZ.zhiWuxing === '水')) ||
-                    (bodyElement === '火' && (monthGZ.ganWuxing === '木' || monthGZ.zhiWuxing === '木')) ||
-                    (bodyElement === '土' && (monthGZ.ganWuxing === '火' || monthGZ.zhiWuxing === '火')) ||
-                    (bodyElement === '金' && (monthGZ.ganWuxing === '土' || monthGZ.zhiWuxing === '土')) ||
-                    (bodyElement === '水' && (monthGZ.ganWuxing === '金' || monthGZ.zhiWuxing === '金'))) {
-                    result += '体卦与月柱相生，本月得时令之助，利于行动。\n';
-                } else if ((bodyElement === '木' && (monthGZ.ganWuxing === '金' || monthGZ.zhiWuxing === '金')) ||
-                    (bodyElement === '火' && (monthGZ.ganWuxing === '水' || monthGZ.zhiWuxing === '水')) ||
-                    (bodyElement === '土' && (monthGZ.ganWuxing === '木' || monthGZ.zhiWuxing === '木')) ||
-                    (bodyElement === '金' && (monthGZ.ganWuxing === '火' || monthGZ.zhiWuxing === '火')) ||
-                    (bodyElement === '水' && (monthGZ.ganWuxing === '土' || monthGZ.zhiWuxing === '土'))) {
-                    result += '体卦与月柱相克，本月需谨慎，宜静不宜动。\n';
-                } else {
-                    result += '体卦与月柱五行平和，本月发展平稳。\n';
-                }
-            }
-
-            result += '\n【日柱能量】' + dayGZ.gan + dayGZ.zhi + '日是今日的核心能量。';
-            if (dayGZ.gan === '甲' || dayGZ.gan === '乙') {
-                result += '甲乙属木，今日利于行动、开创、决策。';
-            } else if (dayGZ.gan === '丙' || dayGZ.gan === '丁') {
-                result += '丙丁属火，今日利于展现才华、沟通表达。';
-            } else if (dayGZ.gan === '戊' || dayGZ.gan === '己') {
-                result += '戊己属土，今日利于稳定、积累、筹划。';
-            } else if (dayGZ.gan === '庚' || dayGZ.gan === '辛') {
-                result += '庚辛属金，今日利于决断、改革、求财。';
-            } else if (dayGZ.gan === '壬' || dayGZ.gan === '癸') {
-                result += '壬癸属水，今日利于智慧谋划、静养待机。';
-            }
-
-            result += '\n\n【时柱能量】' + hourGZ.hourName + '，' + hourGZ.gan + hourGZ.zhi + '时。';
-            if (hourGZ.gan === '甲' || hourGZ.gan === '乙') {
-                result += '此时木气旺盛，宜行动决策。';
-            } else if (hourGZ.gan === '丙' || hourGZ.gan === '丁') {
-                result += '此时火气旺盛，宜沟通表达。';
-            } else if (hourGZ.gan === '戊' || hourGZ.gan === '己') {
-                result += '此时土气旺盛，宜稳定筹划。';
-            } else if (hourGZ.gan === '庚' || hourGZ.gan === '辛') {
-                result += '此时金气旺盛，宜决断求财。';
-            } else if (hourGZ.gan === '壬' || hourGZ.gan === '癸') {
-                result += '此时水气旺盛，宜静养谋划。';
-            }
-
-            result += '\n\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n' +
-                '📌 提示：四柱分析反映时空能量场，结合卦象综合判断更准确。';
-
-            return result;
+        var isLeap = (year % 4 === 0 && year % 100 !== 0) || (year % 400 === 0);
+        if (isLeap && month > 2) {
+            totalDays += 1;
         }
 
-        /**
-         * 更新四柱分析框
-         */
-        function updateFourPillarsBox() {
-            var result = getFourPillarsAnalysis();
-            document.getElementById('fourPillarsBox').innerHTML = result;
-        }
+        totalDays += day;
+        totalDays = totalDays % 60;
+        if (totalDays === 0) totalDays = 60;
 
+        var ganIndex = (totalDays - 1) % 10;
+        var zhiIndex = (totalDays - 1) % 12;
 
-        // ============================================================
-        // 十一、时间预测模块
-        // ============================================================
+        var gan = GAN[ganIndex];
+        var zhi = ZHI[zhiIndex];
 
-        /**
-         * 获取动爻对应的时间描述
-         */
-        function getDongYaoTimeDesc(dongYao) {
-            if (dongYao === 1) return '此事尚在初期阶段，时间刻度以"天"或"周"为单位更合适。';
-            if (dongYao === 2) return '此事已进入发展前期，时间参考以"周"为单位。';
-            if (dongYao === 3) return '此事处于发展中期，时间参考以"周"或"月"为单位。';
-            if (dongYao === 4) return '此事已到发展后期，时间参考以"月"为单位。';
-            if (dongYao === 5) return '此事处于关键决策期，时间参考以"月"为单位。';
-            if (dongYao === 6) return '此事已到末期，时间参考以"季"或"年"为单位。';
-            return '';
-        }
+        return {
+            gan: gan,
+            zhi: zhi,
+            ganWuxing: GAN_WUXING[gan],
+            zhiWuxing: ZHI_WUXING[zhi]
+        };
+    }
 
-        /**
-         * 生成时间预测（四法合参）
-         */
-        function generateTimePrediction(benName, huName, bianName, dongYao, benRelation, huRelation, bianRelation, benGua) {
-            var shangNum = benGua[0];
-            var xiaNum = benGua[1];
+    /**
+     * 获取时柱干支
+     */
+    function getHourGanZhi(date, dayGan) {
+        var hour = date.getHours();
+        var zhiIndex = 0;
+        if (hour >= 23 || hour < 1) zhiIndex = 0;
+        else if (hour >= 1 && hour < 3) zhiIndex = 1;
+        else if (hour >= 3 && hour < 5) zhiIndex = 2;
+        else if (hour >= 5 && hour < 7) zhiIndex = 3;
+        else if (hour >= 7 && hour < 9) zhiIndex = 4;
+        else if (hour >= 9 && hour < 11) zhiIndex = 5;
+        else if (hour >= 11 && hour < 13) zhiIndex = 6;
+        else if (hour >= 13 && hour < 15) zhiIndex = 7;
+        else if (hour >= 15 && hour < 17) zhiIndex = 8;
+        else if (hour >= 17 && hour < 19) zhiIndex = 9;
+        else if (hour >= 19 && hour < 21) zhiIndex = 10;
+        else if (hour >= 21 && hour < 23) zhiIndex = 11;
 
-            // ---- 方法一：卦数推算 ----
-            var guaSum = shangNum + xiaNum;
-            var baseNumber = guaSum * dongYao;
+        var hourZhi = ZHI[zhiIndex];
 
-            var method1 = '【方法一：卦数推算】\n';
-            method1 += '本卦上卦' + shangNum + ' + 下卦' + xiaNum + ' = ' + guaSum + '，动爻' + dongYao + '\n';
-            method1 += '卦数 ' + guaSum + ' × 动爻 ' + dongYao + ' = ' + baseNumber + '\n';
-            if (baseNumber <= 30) {
-                method1 += '参考时间：约 ' + baseNumber + ' 天 或 ' + Math.ceil(baseNumber / 7) + ' 周（需结合问题性质判断）\n';
-            } else if (baseNumber <= 90) {
-                method1 += '参考时间：约 ' + Math.ceil(baseNumber / 30) + ' 个月 或 ' + baseNumber + ' 天\n';
-            } else {
-                method1 += '参考时间：约 ' + Math.ceil(baseNumber / 30) + ' 个月 或 ' + Math.ceil(baseNumber / 365) + ' 年\n';
-            }
+        var startGanIndex = 0;
+        if (dayGan === '甲' || dayGan === '己') startGanIndex = 0;
+        else if (dayGan === '乙' || dayGan === '庚') startGanIndex = 2;
+        else if (dayGan === '丙' || dayGan === '辛') startGanIndex = 4;
+        else if (dayGan === '丁' || dayGan === '壬') startGanIndex = 6;
+        else if (dayGan === '戊' || dayGan === '癸') startGanIndex = 8;
 
-            // ---- 方法二：体用生克定快慢 ----
-            var method2 = '【方法二：体用生克定快慢】\n';
-            if (benRelation === '用生体') {
-                method2 += '本卦体用：用生体 → 外界生助您，事情发展较快\n判断：1-2周内可见初步进展\n';
-            } else if (benRelation === '体生用') {
-                method2 += '本卦体用：体生用 → 需要您付出推动，发展速度中等偏慢\n判断：2-4周内会有阶段性结果\n';
-            } else if (benRelation === '体克用') {
-                method2 += '本卦体用：体克用 → 您能掌控局面，但有阻碍需要克服\n判断：3-6周内可突破障碍取得进展\n';
-            } else if (benRelation === '用克体') {
-                method2 += '本卦体用：用克体 → 外界有压力，事情发展受阻或延迟\n判断：1-3个月内需耐心等待转机\n';
-            } else if (benRelation === '比和') {
-                method2 += '本卦体用：体用比和 → 内外和谐，事情发展平稳顺利\n判断：2-3周内自然推进，无需刻意干预\n';
-            }
+        var ganIndex = ((startGanIndex + zhiIndex) % 10 + 10) % 10;
+        var hourGan = GAN[ganIndex];
 
-            // ---- 方法三：互卦看过程时间 ----
-            var method3 = '【方法三：互卦看过程时间】\n';
-            method3 += '互卦「' + huName + '」：';
+        var hourNames = ['子时', '丑时', '寅时', '卯时', '辰时', '巳时', '午时', '未时', '申时', '酉时', '戌时', '亥时'];
+        var hourDisplay = hourNames[zhiIndex] + '（' + (hour % 12 || 12) + '-' + (hour % 12 + 1 || 1) + '点）';
 
-            if (huName.includes('既济')) {
-                method3 += '水火既济象征"事已成"，但"初吉终乱"\n过程时间：前期顺利（2-4周），后期可能有反复或转折\n';
-            } else if (huName.includes('未济')) {
-                method3 += '火水未济象征"事未成"，事情仍在发展中\n过程时间：需要较长时间酝酿，约1-2个月才有明显变化\n';
-            } else if (huName.includes('泰')) {
-                method3 += '地天泰象征"天地交泰"，万事亨通\n过程时间：发展顺遂，3-5周内可望达成阶段目标\n';
-            } else if (huName.includes('否')) {
-                method3 += '天地否象征"天地闭塞"，事情受阻\n过程时间：可能遇到阻碍，需要2-3个月才能突破\n';
-            } else if (huName.includes('解')) {
-                method3 += '雷水解象征"解除困厄"，事情逐渐明朗\n过程时间：困境逐步解除，约1-2周可见好转\n';
-            } else if (huName.includes('困')) {
-                method3 += '泽水困象征"陷入困境"，事情胶着\n过程时间：需要较长时间（2-3个月）才能摆脱困局\n';
-            } else if (huName.includes('革')) {
-                method3 += '泽火革象征"变革"，事情将发生改变\n过程时间：1个月内可能有重要变化或转折\n';
-            } else if (huName.includes('鼎')) {
-                method3 += '火风鼎象征"鼎新"，事情进入新阶段\n过程时间：3-5周内会有新气象\n';
-            } else if (huRelation === '用生体') {
-                method3 += '互卦用生体，发展过程中得助力\n过程时间：进展顺利，2-4周可推进到下一阶段\n';
-            } else if (huRelation === '体克用') {
-                method3 += '互卦体克用，过程虽有小阻但能克服\n过程时间：1-2个月内可化解障碍\n';
-            } else if (huRelation === '用克体') {
-                method3 += '互卦用克体，过程中有外部压力\n过程时间：可能需要3-5个月才能突破瓶颈\n';
-            } else {
-                method3 += '互卦揭示了事情发展过程中的状态\n过程时间：请结合互卦卦象综合判断\n';
-            }
+        return {
+            gan: hourGan,
+            zhi: hourZhi,
+            ganWuxing: GAN_WUXING[hourGan],
+            zhiWuxing: ZHI_WUXING[hourZhi],
+            hourName: hourDisplay
+        };
+    }
 
-            // ---- 方法四：变卦看结果时间 ----
-            var method4 = '【方法四：变卦看结果时间】\n';
-            method4 += '变卦「' + bianName + '」：';
+    /**
+     * 获取完整的四柱分析
+     */
+    function getFourPillarsAnalysis() {
+        var now = new Date();
 
-            if (bianName.includes('归妹')) {
-                method4 += '雷泽归妹卦辞"征凶，无攸利"，用克体（金克木）\n结果时间：较慢，可能需要1-3个月才能最终确定\n';
-            } else if (bianName.includes('泰')) {
-                method4 += '地天泰象征亨通顺利\n结果时间：较快，2-4周内可有圆满结果\n';
-            } else if (bianName.includes('否')) {
-                method4 += '天地否象征闭塞不通\n结果时间：较慢，可能需要2-4个月才能好转\n';
-            } else if (bianName.includes('既济')) {
-                method4 += '水火既济象征"事已成"，但易盛极而衰\n结果时间：1个月内可见结果，但需防范后续变化\n';
-            } else if (bianName.includes('未济')) {
-                method4 += '火水未济象征"事未成"，结果尚未确定\n结果时间：需要继续等待，约2-3个月才有明确结果\n';
-            } else if (bianName.includes('大有')) {
-                method4 += '火天大有象征丰收、圆满\n结果时间：3-5周内可望获得满意结果\n';
-            } else if (bianName.includes('谦')) {
-                method4 += '地山谦象征谦虚、待时\n结果时间：需要耐心等待，1-2个月内会有答案\n';
-            } else if (bianName.includes('豫')) {
-                method4 += '雷地豫象征愉悦、顺利\n结果时间：2-4周内可有好消息\n';
-            } else if (bianRelation === '用生体') {
-                method4 += '变卦体用用生体，最终结果对您有利\n结果时间：结果出现较快，1-2个月内可见分晓\n';
-            } else if (bianRelation === '体克用') {
-                method4 += '变卦体克用，最终结果您能主导\n结果时间：约1-3个月可达成\n';
-            } else if (bianRelation === '用克体') {
-                method4 += '变卦用克体，最终结果受外部制约\n结果时间：较慢，可能需要3-6个月\n';
-            } else if (bianRelation === '比和') {
-                method4 += '变卦体用比和，最终结果和谐圆满\n结果时间：2-5周内自然呈现\n';
-            } else {
-                method4 += '变卦揭示了最终结果的走向\n结果时间：请结合变卦卦象和体用关系综合判断\n';
-            }
+        var yearGZ = getYearGanZhi(now);
+        var monthGZ = getMonthGanZhi(now);
+        var dayGZ = getDayGanZhi(now);
+        var hourGZ = getHourGanZhi(now, dayGZ.gan);
 
-            // ---- 综合总结 ----
-            var summary =
-                '\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n' +
-                '⚠️ 提示：时间预测仅为易理参考，实际以现实发展为准。\n' +
-                '四种方法各有侧重，建议综合参考：\n' +
-                '• 方法一给出数字参考，可结合问题性质选择单位（天/周/月）\n' +
-                '• 方法二看开局快慢，方法三看过程长短，方法四看结果时间\n' +
-                '• 动爻在' + dongYao + '爻，' + getDongYaoTimeDesc(dongYao);
+        var result =
+            '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n' +
+            '📅 四柱干支分析（起卦时间）\n' +
+            '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n' +
+            '【年柱】' + yearGZ.gan + yearGZ.zhi + '年\n' +
+            '天干：' + yearGZ.gan + '（' + yearGZ.ganWuxing + '）\n' +
+            '地支：' + yearGZ.zhi + '（' + yearGZ.zhiWuxing + '）\n\n' +
+            '【月柱】' + monthGZ.gan + monthGZ.zhi + '月\n' +
+            '天干：' + monthGZ.gan + '（' + monthGZ.ganWuxing + '）\n' +
+            '地支：' + monthGZ.zhi + '（' + monthGZ.zhiWuxing + '）\n\n' +
+            '【日柱】' + dayGZ.gan + dayGZ.zhi + '日\n' +
+            '天干：' + dayGZ.gan + '（' + dayGZ.ganWuxing + '）\n' +
+            '地支：' + dayGZ.zhi + '（' + dayGZ.zhiWuxing + '）\n\n' +
+            '【时柱】' + hourGZ.gan + hourGZ.zhi + '时（' + hourGZ.hourName + '）\n' +
+            '天干：' + hourGZ.gan + '（' + hourGZ.ganWuxing + '）\n' +
+            '地支：' + hourGZ.zhi + '（' + hourGZ.zhiWuxing + '）\n\n' +
+            '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n' +
+            '✨ 四柱能量解析\n' +
+            '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n';
 
-            return method1 + '\n' + method2 + '\n' + method3 + '\n' + method4 + '\n' + summary;
-        }
-
-        /**
-         * 更新时间预测框
-         */
-        function updateTimePrediction() {
-            if (!currentBenGua || !currentDongYao || !currentHuGua || !currentBianGua) return;
-
-            var benName = getGuaName(currentBenGua[0], currentBenGua[1]);
-            var huName = getGuaName(currentHuGua[0], currentHuGua[1]);
-            var bianName = getGuaName(currentBianGua[0], currentBianGua[1]);
-
+        if (currentBenGua && currentDongYao) {
             var yongtiStr = getYongTi(currentDongYao);
             var isBodyUpper = yongtiStr.includes('体卦为上卦');
+            var data = getBodyAndUseGuaName(currentBenGua, isBodyUpper);
+            var bodyElement = GUA_ELEMENT[data.bodyGuaName];
 
-            // 本卦体用
-            var benData = getBodyAndUseGuaName(currentBenGua, isBodyUpper);
-            var benRelation = getRelationType(GUA_WUXING[benData.bodyGuaName], GUA_WUXING[benData.useGuaName]);
+            result += '体卦' + data.bodyGuaName + '属' + bodyElement + '\n\n';
 
-            // 互卦体用
-            var huShangNum = currentHuGua[0];
-            var huXiaNum = currentHuGua[1];
-            var huShangName = getGuaInfo(huShangNum).name;
-            var huXiaName = getGuaInfo(huXiaNum).name;
-            var huBodyName, huUseName;
-            if (isBodyUpper) {
-                huBodyName = huShangName;
-                huUseName = huXiaName;
+            result += '【年柱关系】';
+            if (bodyElement === yearGZ.ganWuxing || bodyElement === yearGZ.zhiWuxing) {
+                result += '体卦与年柱五行相同，得年运相助，一年之内总体顺遂。\n';
+            } else if ((bodyElement === '木' && (yearGZ.ganWuxing === '水' || yearGZ.zhiWuxing === '水')) ||
+                (bodyElement === '火' && (yearGZ.ganWuxing === '木' || yearGZ.zhiWuxing === '木')) ||
+                (bodyElement === '土' && (yearGZ.ganWuxing === '火' || yearGZ.zhiWuxing === '火')) ||
+                (bodyElement === '金' && (yearGZ.ganWuxing === '土' || yearGZ.zhiWuxing === '土')) ||
+                (bodyElement === '水' && (yearGZ.ganWuxing === '金' || yearGZ.zhiWuxing === '金'))) {
+                result += '体卦与年柱相生，得年运之助，今年发展顺利。\n';
+            } else if ((bodyElement === '木' && (yearGZ.ganWuxing === '金' || yearGZ.zhiWuxing === '金')) ||
+                (bodyElement === '火' && (yearGZ.ganWuxing === '水' || yearGZ.zhiWuxing === '水')) ||
+                (bodyElement === '土' && (yearGZ.ganWuxing === '木' || yearGZ.zhiWuxing === '木')) ||
+                (bodyElement === '金' && (yearGZ.ganWuxing === '火' || yearGZ.zhiWuxing === '火')) ||
+                (bodyElement === '水' && (yearGZ.ganWuxing === '土' || yearGZ.zhiWuxing === '土'))) {
+                result += '体卦与年柱相克，今年需谨慎行事，注意外部环境变化。\n';
             } else {
-                huBodyName = huXiaName;
-                huUseName = huShangName;
+                result += '体卦与年柱五行平和，今年发展平稳。\n';
             }
-            var huRelation = getRelationType(GUA_WUXING[huBodyName], GUA_WUXING[huUseName]);
 
-            // 变卦体用
-            var bianShangNum = currentBianGua[0];
-            var bianXiaNum = currentBianGua[1];
-            var bianShangName = getGuaInfo(bianShangNum).name;
-            var bianXiaName = getGuaInfo(bianXiaNum).name;
-            var bianBodyName, bianUseName;
-            if (isBodyUpper) {
-                bianBodyName = bianShangName;
-                bianUseName = bianXiaName;
+            result += '\n【月柱关系】';
+            if (bodyElement === monthGZ.ganWuxing || bodyElement === monthGZ.zhiWuxing) {
+                result += '体卦与月柱五行相同，得月令之助，本月运势旺盛。\n';
+            } else if ((bodyElement === '木' && (monthGZ.ganWuxing === '水' || monthGZ.zhiWuxing === '水')) ||
+                (bodyElement === '火' && (monthGZ.ganWuxing === '木' || monthGZ.zhiWuxing === '木')) ||
+                (bodyElement === '土' && (monthGZ.ganWuxing === '火' || monthGZ.zhiWuxing === '火')) ||
+                (bodyElement === '金' && (monthGZ.ganWuxing === '土' || monthGZ.zhiWuxing === '土')) ||
+                (bodyElement === '水' && (monthGZ.ganWuxing === '金' || monthGZ.zhiWuxing === '金'))) {
+                result += '体卦与月柱相生，本月得时令之助，利于行动。\n';
+            } else if ((bodyElement === '木' && (monthGZ.ganWuxing === '金' || monthGZ.zhiWuxing === '金')) ||
+                (bodyElement === '火' && (monthGZ.ganWuxing === '水' || monthGZ.zhiWuxing === '水')) ||
+                (bodyElement === '土' && (monthGZ.ganWuxing === '木' || monthGZ.zhiWuxing === '木')) ||
+                (bodyElement === '金' && (monthGZ.ganWuxing === '火' || monthGZ.zhiWuxing === '火')) ||
+                (bodyElement === '水' && (monthGZ.ganWuxing === '土' || monthGZ.zhiWuxing === '土'))) {
+                result += '体卦与月柱相克，本月需谨慎，宜静不宜动。\n';
             } else {
-                bianBodyName = bianXiaName;
-                bianUseName = bianShangName;
+                result += '体卦与月柱五行平和，本月发展平稳。\n';
             }
-            var bianRelation = getRelationType(GUA_WUXING[bianBodyName], GUA_WUXING[bianUseName]);
-
-            var timePrediction = generateTimePrediction(benName, huName, bianName, currentDongYao,
-                benRelation, huRelation, bianRelation, currentBenGua);
-
-            document.getElementById('timePredictionBox').innerHTML = timePrediction;
         }
 
-
-        // ============================================================
-        // 十二、AI深度解读模块
-        // ============================================================
-
-        /**
-         * 生成 AI 深度解读
-         */
-        function generateDeepInsight(ben, hu, bian, dong, yongti, question) {
-            var wisdom = '🌿 您所问：「' + question + '」\n\n' +
-                '卦象已成：本卦「' + ben + '」→ 互卦「' + hu + '」→ 变卦「' + bian + '」，动在' + dong + '爻。' + yongti + '。\n\n';
-
-            var body = '';
-            var matched = false;
-
-            for (var key in BEN_INTERPRETATION) {
-                if (ben.includes(key)) {
-                    body = BEN_INTERPRETATION[key];
-                    matched = true;
-                    break;
-                }
-            }
-
-            if (!matched) {
-                body = '阴阳相推，生化无穷。您心中所问恰逢易理玄机，互卦所示过程曲折但变卦蕴含生机，秉持中正之心，自然吉祥。';
-            }
-
-            var shengkeAdvice = '';
-            if (yongti.includes('体卦为上卦')) {
-                shengkeAdvice = '\n\n✨ 体用精微：上卦为本体，下卦为客体，体用生克中宜看清自身优势，外缘变化不妨顺势而为。';
-            } else {
-                shengkeAdvice = '\n\n✨ 体用精微：下卦为本心，上卦为外境，目前用卦主导动势，留心外部环境对您的影响。';
-            }
-
-            return wisdom + body + shengkeAdvice + '\n\n🔮 梅花易数教导：勿执吉凶，修心为要。愿此卦点亮您心中的明灯。';
+        result += '\n【日柱能量】' + dayGZ.gan + dayGZ.zhi + '日是今日的核心能量。';
+        if (dayGZ.gan === '甲' || dayGZ.gan === '乙') {
+            result += '甲乙属木，今日利于行动、开创、决策。';
+        } else if (dayGZ.gan === '丙' || dayGZ.gan === '丁') {
+            result += '丙丁属火，今日利于展现才华、沟通表达。';
+        } else if (dayGZ.gan === '戊' || dayGZ.gan === '己') {
+            result += '戊己属土，今日利于稳定、积累、筹划。';
+        } else if (dayGZ.gan === '庚' || dayGZ.gan === '辛') {
+            result += '庚辛属金，今日利于决断、改革、求财。';
+        } else if (dayGZ.gan === '壬' || dayGZ.gan === '癸') {
+            result += '壬癸属水，今日利于智慧谋划、静养待机。';
         }
 
-        /**
-         * AI 解读按钮处理函数
-         */
-        async function askAIInterpretation() {
-            if (!currentBenGua) {
-                alert('请先完成起卦！');
-                return;
+        result += '\n\n【时柱能量】' + hourGZ.hourName + '，' + hourGZ.gan + hourGZ.zhi + '时。';
+        if (hourGZ.gan === '甲' || hourGZ.gan === '乙') {
+            result += '此时木气旺盛，宜行动决策。';
+        } else if (hourGZ.gan === '丙' || hourGZ.gan === '丁') {
+            result += '此时火气旺盛，宜沟通表达。';
+        } else if (hourGZ.gan === '戊' || hourGZ.gan === '己') {
+            result += '此时土气旺盛，宜稳定筹划。';
+        } else if (hourGZ.gan === '庚' || hourGZ.gan === '辛') {
+            result += '此时金气旺盛，宜决断求财。';
+        } else if (hourGZ.gan === '壬' || hourGZ.gan === '癸') {
+            result += '此时水气旺盛，宜静养谋划。';
+        }
+
+        result += '\n\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n' +
+            '📌 提示：四柱分析反映时空能量场，结合卦象综合判断更准确。';
+
+        return result;
+    }
+
+    /**
+     * 更新四柱分析框
+     */
+    function updateFourPillarsBox() {
+        var result = getFourPillarsAnalysis();
+        document.getElementById('fourPillarsBox').innerHTML = result;
+    }
+
+
+    // ============================================================
+    // 十一、时间预测模块
+    // ============================================================
+
+    /**
+     * 获取动爻对应的时间描述
+     */
+    function getDongYaoTimeDesc(dongYao) {
+        if (dongYao === 1) return '此事尚在初期阶段，时间刻度以"天"或"周"为单位更合适。';
+        if (dongYao === 2) return '此事已进入发展前期，时间参考以"周"为单位。';
+        if (dongYao === 3) return '此事处于发展中期，时间参考以"周"或"月"为单位。';
+        if (dongYao === 4) return '此事已到发展后期，时间参考以"月"为单位。';
+        if (dongYao === 5) return '此事处于关键决策期，时间参考以"月"为单位。';
+        if (dongYao === 6) return '此事已到末期，时间参考以"季"或"年"为单位。';
+        return '';
+    }
+
+    /**
+     * 生成时间预测（四法合参）
+     */
+    function generateTimePrediction(benName, huName, bianName, dongYao, benRelation, huRelation, bianRelation, benGua) {
+        var shangNum = benGua[0];
+        var xiaNum = benGua[1];
+
+        // ---- 方法一：卦数推算 ----
+        var guaSum = shangNum + xiaNum;
+        var baseNumber = guaSum * dongYao;
+
+        var method1 = '【方法一：卦数推算】\n';
+        method1 += '本卦上卦' + shangNum + ' + 下卦' + xiaNum + ' = ' + guaSum + '，动爻' + dongYao + '\n';
+        method1 += '卦数 ' + guaSum + ' × 动爻 ' + dongYao + ' = ' + baseNumber + '\n';
+        if (baseNumber <= 30) {
+            method1 += '参考时间：约 ' + baseNumber + ' 天 或 ' + Math.ceil(baseNumber / 7) + ' 周（需结合问题性质判断）\n';
+        } else if (baseNumber <= 90) {
+            method1 += '参考时间：约 ' + Math.ceil(baseNumber / 30) + ' 个月 或 ' + baseNumber + ' 天\n';
+        } else {
+            method1 += '参考时间：约 ' + Math.ceil(baseNumber / 30) + ' 个月 或 ' + Math.ceil(baseNumber / 365) + ' 年\n';
+        }
+
+        // ---- 方法二：体用生克定快慢 ----
+        var method2 = '【方法二：体用生克定快慢】\n';
+        if (benRelation === '用生体') {
+            method2 += '本卦体用：用生体 → 外界生助您，事情发展较快\n判断：1-2周内可见初步进展\n';
+        } else if (benRelation === '体生用') {
+            method2 += '本卦体用：体生用 → 需要您付出推动，发展速度中等偏慢\n判断：2-4周内会有阶段性结果\n';
+        } else if (benRelation === '体克用') {
+            method2 += '本卦体用：体克用 → 您能掌控局面，但有阻碍需要克服\n判断：3-6周内可突破障碍取得进展\n';
+        } else if (benRelation === '用克体') {
+            method2 += '本卦体用：用克体 → 外界有压力，事情发展受阻或延迟\n判断：1-3个月内需耐心等待转机\n';
+        } else if (benRelation === '比和') {
+            method2 += '本卦体用：体用比和 → 内外和谐，事情发展平稳顺利\n判断：2-3周内自然推进，无需刻意干预\n';
+        }
+
+        // ---- 方法三：互卦看过程时间 ----
+        var method3 = '【方法三：互卦看过程时间】\n';
+        method3 += '互卦「' + huName + '」：';
+
+        if (huName.includes('既济')) {
+            method3 += '水火既济象征"事已成"，但"初吉终乱"\n过程时间：前期顺利（2-4周），后期可能有反复或转折\n';
+        } else if (huName.includes('未济')) {
+            method3 += '火水未济象征"事未成"，事情仍在发展中\n过程时间：需要较长时间酝酿，约1-2个月才有明显变化\n';
+        } else if (huName.includes('泰')) {
+            method3 += '地天泰象征"天地交泰"，万事亨通\n过程时间：发展顺遂，3-5周内可望达成阶段目标\n';
+        } else if (huName.includes('否')) {
+            method3 += '天地否象征"天地闭塞"，事情受阻\n过程时间：可能遇到阻碍，需要2-3个月才能突破\n';
+        } else if (huName.includes('解')) {
+            method3 += '雷水解象征"解除困厄"，事情逐渐明朗\n过程时间：困境逐步解除，约1-2周可见好转\n';
+        } else if (huName.includes('困')) {
+            method3 += '泽水困象征"陷入困境"，事情胶着\n过程时间：需要较长时间（2-3个月）才能摆脱困局\n';
+        } else if (huName.includes('革')) {
+            method3 += '泽火革象征"变革"，事情将发生改变\n过程时间：1个月内可能有重要变化或转折\n';
+        } else if (huName.includes('鼎')) {
+            method3 += '火风鼎象征"鼎新"，事情进入新阶段\n过程时间：3-5周内会有新气象\n';
+        } else if (huRelation === '用生体') {
+            method3 += '互卦用生体，发展过程中得助力\n过程时间：进展顺利，2-4周可推进到下一阶段\n';
+        } else if (huRelation === '体克用') {
+            method3 += '互卦体克用，过程虽有小阻但能克服\n过程时间：1-2个月内可化解障碍\n';
+        } else if (huRelation === '用克体') {
+            method3 += '互卦用克体，过程中有外部压力\n过程时间：可能需要3-5个月才能突破瓶颈\n';
+        } else {
+            method3 += '互卦揭示了事情发展过程中的状态\n过程时间：请结合互卦卦象综合判断\n';
+        }
+
+        // ---- 方法四：变卦看结果时间 ----
+        var method4 = '【方法四：变卦看结果时间】\n';
+        method4 += '变卦「' + bianName + '」：';
+
+        if (bianName.includes('归妹')) {
+            method4 += '雷泽归妹卦辞"征凶，无攸利"，用克体（金克木）\n结果时间：较慢，可能需要1-3个月才能最终确定\n';
+        } else if (bianName.includes('泰')) {
+            method4 += '地天泰象征亨通顺利\n结果时间：较快，2-4周内可有圆满结果\n';
+        } else if (bianName.includes('否')) {
+            method4 += '天地否象征闭塞不通\n结果时间：较慢，可能需要2-4个月才能好转\n';
+        } else if (bianName.includes('既济')) {
+            method4 += '水火既济象征"事已成"，但易盛极而衰\n结果时间：1个月内可见结果，但需防范后续变化\n';
+        } else if (bianName.includes('未济')) {
+            method4 += '火水未济象征"事未成"，结果尚未确定\n结果时间：需要继续等待，约2-3个月才有明确结果\n';
+        } else if (bianName.includes('大有')) {
+            method4 += '火天大有象征丰收、圆满\n结果时间：3-5周内可望获得满意结果\n';
+        } else if (bianName.includes('谦')) {
+            method4 += '地山谦象征谦虚、待时\n结果时间：需要耐心等待，1-2个月内会有答案\n';
+        } else if (bianName.includes('豫')) {
+            method4 += '雷地豫象征愉悦、顺利\n结果时间：2-4周内可有好消息\n';
+        } else if (bianRelation === '用生体') {
+            method4 += '变卦体用用生体，最终结果对您有利\n结果时间：结果出现较快，1-2个月内可见分晓\n';
+        } else if (bianRelation === '体克用') {
+            method4 += '变卦体克用，最终结果您能主导\n结果时间：约1-3个月可达成\n';
+        } else if (bianRelation === '用克体') {
+            method4 += '变卦用克体，最终结果受外部制约\n结果时间：较慢，可能需要3-6个月\n';
+        } else if (bianRelation === '比和') {
+            method4 += '变卦体用比和，最终结果和谐圆满\n结果时间：2-5周内自然呈现\n';
+        } else {
+            method4 += '变卦揭示了最终结果的走向\n结果时间：请结合变卦卦象和体用关系综合判断\n';
+        }
+
+        // ---- 综合总结 ----
+        var summary =
+            '\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n' +
+            '⚠️ 提示：时间预测仅为易理参考，实际以现实发展为准。\n' +
+            '四种方法各有侧重，建议综合参考：\n' +
+            '• 方法一给出数字参考，可结合问题性质选择单位（天/周/月）\n' +
+            '• 方法二看开局快慢，方法三看过程长短，方法四看结果时间\n' +
+            '• 动爻在' + dongYao + '爻，' + getDongYaoTimeDesc(dongYao);
+
+        return method1 + '\n' + method2 + '\n' + method3 + '\n' + method4 + '\n' + summary;
+    }
+
+    /**
+     * 更新时间预测框
+     */
+    function updateTimePrediction() {
+        if (!currentBenGua || !currentDongYao || !currentHuGua || !currentBianGua) return;
+
+        var benName = getGuaName(currentBenGua[0], currentBenGua[1]);
+        var huName = getGuaName(currentHuGua[0], currentHuGua[1]);
+        var bianName = getGuaName(currentBianGua[0], currentBianGua[1]);
+
+        var yongtiStr = getYongTi(currentDongYao);
+        var isBodyUpper = yongtiStr.includes('体卦为上卦');
+
+        // 本卦体用
+        var benData = getBodyAndUseGuaName(currentBenGua, isBodyUpper);
+        var benRelation = getRelationType(GUA_WUXING[benData.bodyGuaName], GUA_WUXING[benData.useGuaName]);
+
+        // 互卦体用
+        var huShangNum = currentHuGua[0];
+        var huXiaNum = currentHuGua[1];
+        var huShangName = getGuaInfo(huShangNum).name;
+        var huXiaName = getGuaInfo(huXiaNum).name;
+        var huBodyName, huUseName;
+        if (isBodyUpper) {
+            huBodyName = huShangName;
+            huUseName = huXiaName;
+        } else {
+            huBodyName = huXiaName;
+            huUseName = huShangName;
+        }
+        var huRelation = getRelationType(GUA_WUXING[huBodyName], GUA_WUXING[huUseName]);
+
+        // 变卦体用
+        var bianShangNum = currentBianGua[0];
+        var bianXiaNum = currentBianGua[1];
+        var bianShangName = getGuaInfo(bianShangNum).name;
+        var bianXiaName = getGuaInfo(bianXiaNum).name;
+        var bianBodyName, bianUseName;
+        if (isBodyUpper) {
+            bianBodyName = bianShangName;
+            bianUseName = bianXiaName;
+        } else {
+            bianBodyName = bianXiaName;
+            bianUseName = bianShangName;
+        }
+        var bianRelation = getRelationType(GUA_WUXING[bianBodyName], GUA_WUXING[bianUseName]);
+
+        var timePrediction = generateTimePrediction(benName, huName, bianName, currentDongYao,
+            benRelation, huRelation, bianRelation, currentBenGua);
+
+        document.getElementById('timePredictionBox').innerHTML = timePrediction;
+    }
+
+
+    // ============================================================
+    // 十二、AI深度解读模块
+    // ============================================================
+
+    /**
+     * 生成 AI 深度解读
+     */
+    function generateDeepInsight(ben, hu, bian, dong, yongti, question) {
+        var wisdom = '🌿 您所问：「' + question + '」\n\n' +
+            '卦象已成：本卦「' + ben + '」→ 互卦「' + hu + '」→ 变卦「' + bian + '」，动在' + dong + '爻。' + yongti + '。\n\n';
+
+        var body = '';
+        var matched = false;
+
+        for (var key in BEN_INTERPRETATION) {
+            if (ben.includes(key)) {
+                body = BEN_INTERPRETATION[key];
+                matched = true;
+                break;
             }
+        }
 
-            var userQ = document.getElementById('userQuestion').value.trim();
-            if (!userQ) {
-                alert('请在提问区写下您心中所惑，以便结合卦象深度解读。');
-                return;
-            }
+        if (!matched) {
+            body = '阴阳相推，生化无穷。您心中所问恰逢易理玄机，互卦所示过程曲折但变卦蕴含生机，秉持中正之心，自然吉祥。';
+        }
 
-            var loadingDiv = document.getElementById('aiLoadingMsg');
-            var aiContentDiv = document.getElementById('aiDeepInsight');
+        var shengkeAdvice = '';
+        if (yongti.includes('体卦为上卦')) {
+            shengkeAdvice = '\n\n✨ 体用精微：上卦为本体，下卦为客体，体用生克中宜看清自身优势，外缘变化不妨顺势而为。';
+        } else {
+            shengkeAdvice = '\n\n✨ 体用精微：下卦为本心，上卦为外境，目前用卦主导动势，留心外部环境对您的影响。';
+        }
 
-            loadingDiv.style.display = 'block';
+        return wisdom + body + shengkeAdvice + '\n\n🔮 梅花易数教导：勿执吉凶，修心为要。愿此卦点亮您心中的明灯。';
+    }
 
-            var benName = getGuaName(currentBenGua[0], currentBenGua[1]);
-            var huName = getGuaName(currentHuGua[0], currentHuGua[1]);
-            var bianName = getGuaName(currentBianGua[0], currentBianGua[1]);
-            var dongYaoPos = currentDongYao;
-            var yongtiDesc = getYongTi(currentDongYao);
+    /**
+     * AI 解读按钮处理函数
+     */
+    async function askAIInterpretation() {
+        if (!currentBenGua) {
+            alert('请先完成起卦！');
+            return;
+        }
 
-            setTimeout(function() {
-                var interpretation = generateDeepInsight(benName, huName, bianName, dongYaoPos, yongtiDesc,
+        var userQ = document.getElementById('userQuestion').value.trim();
+        if (!userQ) {
+            alert('请在提问区写下您心中所惑，以便结合卦象深度解读。');
+            return;
+        }
+
+        var loadingDiv = document.getElementById('aiLoadingMsg');
+        var aiContentDiv = document.getElementById('aiDeepInsight');
+
+        loadingDiv.style.display = 'block';
+
+        var benName = getGuaName(currentBenGua[0], currentBenGua[1]);
+        var huName = getGuaName(currentHuGua[0], currentHuGua[1]);
+        var bianName = getGuaName(currentBianGua[0], currentBianGua[1]);
+        var dongYaoPos = currentDongYao;
+        var yongtiDesc = getYongTi(currentDongYao);
+
+        setTimeout(function() {
+            var interpretation = generateDeepInsight(benName, huName, bianName, dongYaoPos, yongtiDesc,
                 userQ);
-                aiContentDiv.innerHTML = interpretation;
-                loadingDiv.style.display = 'none';
-            }, 500);
+            aiContentDiv.innerHTML = interpretation;
+            loadingDiv.style.display = 'none';
+        }, 500);
+    }
+
+
+    // ============================================================
+    // 十三、界面渲染与主流程
+    // ============================================================
+
+    /**
+     * 显示起卦结果
+     */
+    function displayResult(benGua, huGua, bianGua, dongYao) {
+        var shangB = benGua[0],
+            xiaB = benGua[1];
+        var shangH = huGua[0],
+            xiaH = huGua[1];
+        var shangBi = bianGua[0],
+            xiaBi = bianGua[1];
+
+        var sBin = getGuaInfo(shangB);
+        var xBin = getGuaInfo(xiaB);
+        var sHin = getGuaInfo(shangH);
+        var xHin = getGuaInfo(xiaH);
+        var sBi = getGuaInfo(shangBi);
+        var xBi = getGuaInfo(xiaBi);
+
+        var benName = getGuaName(shangB, xiaB);
+        var huName = getGuaName(shangH, xiaH);
+        var bianName = getGuaName(shangBi, xiaBi);
+
+        document.getElementById('benShang').innerHTML = sBin.symbol + ' ' + sBin.name + '（' + sBin.nature + '·' + sBin
+            .element + '） 方位：' + sBin.direction;
+        document.getElementById('benXia').innerHTML = xBin.symbol + ' ' + xBin.name + '（' + xBin.nature + '·' + xBin
+            .element + '） 方位：' + xBin.direction;
+        document.getElementById('benName').innerText = benName;
+
+        document.getElementById('huShang').innerHTML = sHin.symbol + ' ' + sHin.name + '（' + sHin.nature + '·' + sHin
+            .element + '）';
+        document.getElementById('huXia').innerHTML = xHin.symbol + ' ' + xHin.name + '（' + xHin.nature + '·' + xHin
+            .element + '）';
+        document.getElementById('huName').innerText = huName;
+
+        document.getElementById('bianShang').innerHTML = sBi.symbol + ' ' + sBi.name + '（' + sBi.nature + '·' + sBi
+            .element + '）';
+        document.getElementById('bianXia').innerHTML = xBi.symbol + ' ' + xBi.name + '（' + xBi.nature + '·' + xBi
+            .element + '）';
+        document.getElementById('bianName').innerText = bianName;
+
+        document.getElementById('dongYao').innerText = '第 ' + dongYao + ' 爻';
+        document.getElementById('yongti').innerText = getYongTi(dongYao);
+        document.getElementById('insightText').innerText = getInsightText(benGua, huGua, bianGua);
+
+        // 缓存结果
+        currentResult = {
+            benName: benName,
+            huName: huName,
+            bianName: bianName,
+            dongYao: dongYao,
+            benShangTxt: document.getElementById('benShang').innerHTML,
+            benXiaTxt: document.getElementById('benXia').innerHTML,
+            huShangTxt: document.getElementById('huShang').innerHTML,
+            huXiaTxt: document.getElementById('huXia').innerHTML,
+            bianShangTxt: document.getElementById('bianShang').innerHTML,
+            bianXiaTxt: document.getElementById('bianXia').innerHTML,
+            insight: document.getElementById('insightText').innerText,
+            yongti: getYongTi(dongYao)
+        };
+
+        currentBenGua = benGua;
+        currentHuGua = huGua;
+        currentBianGua = bianGua;
+        currentDongYao = dongYao;
+
+        // 更新各分析模块
+        var zhouyiText = getFullZhouyiText(benName, huName, bianName, dongYao);
+        document.getElementById('zhouyiText').innerHTML = zhouyiText;
+
+        updateShengkeBox();
+        updateDirectionBox();
+        updateNajiaBox();
+        updateSolarTermBox();
+        updateNumberEnergyBox();
+        updateFourPillarsBox();
+        updateTimePrediction();
+
+        document.getElementById('aiDeepInsight').innerHTML =
+            '✨ 卦象已备，请在左侧/上方"所思所问"中确认您的问题，然后点击"请AI结合卦象解读"获取专属智慧箴言。';
+    }
+
+    /**
+     * 清空记录
+     */
+    function clearResult() {
+        if (!confirm('确定要清空所有卦象记录吗？')) return;
+
+        document.getElementById('benShang').innerHTML = '--';
+        document.getElementById('benXia').innerHTML = '--';
+        document.getElementById('benName').innerText = '--';
+        document.getElementById('huShang').innerHTML = '--';
+        document.getElementById('huXia').innerHTML = '--';
+        document.getElementById('huName').innerText = '--';
+        document.getElementById('bianShang').innerHTML = '--';
+        document.getElementById('bianXia').innerHTML = '--';
+        document.getElementById('bianName').innerText = '--';
+        document.getElementById('dongYao').innerText = '--';
+        document.getElementById('yongti').innerText = '--';
+        document.getElementById('insightText').innerText = '等待起卦...';
+
+        document.getElementById('numberEnergyBox').innerHTML =
+            '✨ 起卦后将自动显示起卦数字的能量分析\n（数字能量分析仅在使用「数字起卦」或「时间起卦」时显示）';
+        document.getElementById('zhouyiText').innerHTML = '✨ 起卦后将自动显示本卦卦辞和动爻爻辞';
+        document.getElementById('shengkeBox').innerHTML =
+            '• 体生用 → 付出之象，宜量力而行\n• 用生体 → 得助之象，顺遂如意\n• 体用比和 → 和谐之象，诸事顺遂\n• 体克用 → 制胜之象，虽有阻碍尚能克服\n• 用克体 → 受制之象，需审慎防范';
+        document.getElementById('directionBox').innerHTML =
+            '✨ 起卦后将自动显示方位吉凶分析\n传统梅花易数 → 本卦 → 本卦代表当前状态和初始条件，方位建议应在行动之初参考。\n邵雍心法 → 本卦 → "体用生克定吉凶，方位随体卦而定"。';
+        document.getElementById('najiaBox').innerHTML = '✨ 起卦后将自动显示六亲关系分析';
+        document.getElementById('solarTermBox').innerHTML = '✨ 起卦后将自动显示节气对卦象的影响';
+        document.getElementById('fourPillarsBox').innerHTML = '✨ 起卦后将自动显示起卦时间的四柱干支分析';
+        document.getElementById('timePredictionBox').innerHTML = '✨ 起卦后将自动显示时间预测分析';
+        document.getElementById('aiDeepInsight').innerHTML =
+            '✨ 请先在左侧/上方「所思所问」中输入您关心的问题，完成起卦后点击"请AI结合卦象深度解读"，智慧箴言将在此呈现。';
+
+        currentResult = null;
+        currentBenGua = null;
+        currentHuGua = null;
+        currentBianGua = null;
+        currentDongYao = null;
+    }
+
+
+    // ============================================================
+    // 十四、起卦函数
+    // ============================================================
+
+    /** 数字起卦 */
+    function qiguaByNumbers() {
+        var n1 = parseInt(document.getElementById('num1').value);
+        var n2 = parseInt(document.getElementById('num2').value);
+        var n3 = parseInt(document.getElementById('num3').value);
+
+        if (isNaN(n1) || isNaN(n2) || isNaN(n3)) {
+            alert('请输入有效数字');
+            return;
         }
 
+        var shang = ((n1 - 1) % 8) + 1;
+        var xia = ((n2 - 1) % 8) + 1;
+        var dong = ((n3 - 1) % 6) + 1;
 
-        // ============================================================
-        // 十三、界面渲染与主流程
-        // ============================================================
+        displayResult([shang, xia], getHuGua(shang, xia), getBianGua(shang, xia, dong), dong);
+    }
 
-        /**
-         * 显示起卦结果
-         */
-        function displayResult(benGua, huGua, bianGua, dongYao) {
-            var shangB = benGua[0],
-                xiaB = benGua[1];
-            var shangH = huGua[0],
-                xiaH = huGua[1];
-            var shangBi = bianGua[0],
-                xiaBi = bianGua[1];
+    /** 当前时间起卦 */
+    function qiguaByNowTime() {
+        var now = new Date();
+        var y = now.getFullYear();
+        var m = now.getMonth() + 1;
+        var d = now.getDate();
+        var h = now.getHours();
 
-            var sBin = getGuaInfo(shangB);
-            var xBin = getGuaInfo(xiaB);
-            var sHin = getGuaInfo(shangH);
-            var xHin = getGuaInfo(xiaH);
-            var sBi = getGuaInfo(shangBi);
-            var xBi = getGuaInfo(xiaBi);
+        var shang = (y + m + d) % 8;
+        if (shang === 0) shang = 8;
+        var xia = (y + m + d + h) % 8;
+        if (xia === 0) xia = 8;
+        var dong = (y + m + d + h) % 6;
+        if (dong === 0) dong = 6;
 
-            var benName = getGuaName(shangB, xiaB);
-            var huName = getGuaName(shangH, xiaH);
-            var bianName = getGuaName(shangBi, xiaBi);
+        displayResult([shang, xia], getHuGua(shang, xia), getBianGua(shang, xia, dong), dong);
+    }
 
-            document.getElementById('benShang').innerHTML = sBin.symbol + ' ' + sBin.name + '（' + sBin.nature + '·' + sBin
-                .element + '） 方位：' + sBin.direction;
-            document.getElementById('benXia').innerHTML = xBin.symbol + ' ' + xBin.name + '（' + xBin.nature + '·' + xBin
-                .element + '） 方位：' + xBin.direction;
-            document.getElementById('benName').innerText = benName;
+    /** 自定义时间起卦 */
+    function qiguaByCustomTime() {
+        var y = parseInt(document.getElementById('yearInp').value);
+        var m = parseInt(document.getElementById('monthInp').value);
+        var d = parseInt(document.getElementById('dayInp').value);
+        var h = parseInt(document.getElementById('hourInp').value);
 
-            document.getElementById('huShang').innerHTML = sHin.symbol + ' ' + sHin.name + '（' + sHin.nature + '·' + sHin
-                .element + '）';
-            document.getElementById('huXia').innerHTML = xHin.symbol + ' ' + xHin.name + '（' + xHin.nature + '·' + xHin
-                .element + '）';
-            document.getElementById('huName').innerText = huName;
-
-            document.getElementById('bianShang').innerHTML = sBi.symbol + ' ' + sBi.name + '（' + sBi.nature + '·' + sBi
-                .element + '）';
-            document.getElementById('bianXia').innerHTML = xBi.symbol + ' ' + xBi.name + '（' + xBi.nature + '·' + xBi
-                .element + '）';
-            document.getElementById('bianName').innerText = bianName;
-
-            document.getElementById('dongYao').innerText = '第 ' + dongYao + ' 爻';
-            document.getElementById('yongti').innerText = getYongTi(dongYao);
-            document.getElementById('insightText').innerText = getInsightText(benGua, huGua, bianGua);
-
-            // 缓存结果
-            currentResult = {
-                benName: benName,
-                huName: huName,
-                bianName: bianName,
-                dongYao: dongYao,
-                benShangTxt: document.getElementById('benShang').innerHTML,
-                benXiaTxt: document.getElementById('benXia').innerHTML,
-                huShangTxt: document.getElementById('huShang').innerHTML,
-                huXiaTxt: document.getElementById('huXia').innerHTML,
-                bianShangTxt: document.getElementById('bianShang').innerHTML,
-                bianXiaTxt: document.getElementById('bianXia').innerHTML,
-                insight: document.getElementById('insightText').innerText,
-                yongti: getYongTi(dongYao)
-            };
-
-            currentBenGua = benGua;
-            currentHuGua = huGua;
-            currentBianGua = bianGua;
-            currentDongYao = dongYao;
-
-            // 更新各分析模块
-            var zhouyiText = getFullZhouyiText(benName, huName, bianName, dongYao);
-            document.getElementById('zhouyiText').innerHTML = zhouyiText;
-
-            updateShengkeBox();
-            updateDirectionBox();
-            updateNajiaBox();
-            updateSolarTermBox();
-            updateNumberEnergyBox();
-            updateFourPillarsBox();
-            updateTimePrediction();
-
-            document.getElementById('aiDeepInsight').innerHTML =
-                '✨ 卦象已备，请在左侧/上方"所思所问"中确认您的问题，然后点击"请AI结合卦象解读"获取专属智慧箴言。';
+        if (isNaN(y) || isNaN(m) || isNaN(d) || isNaN(h)) {
+            alert('请填写完整的年月日时');
+            return;
         }
 
-        /**
-         * 清空记录
-         */
-        function clearResult() {
-            if (!confirm('确定要清空所有卦象记录吗？')) return;
+        var shang = (y + m + d) % 8;
+        if (shang === 0) shang = 8;
+        var xia = (y + m + d + h) % 8;
+        if (xia === 0) xia = 8;
+        var dong = (y + m + d + h) % 6;
+        if (dong === 0) dong = 6;
 
-            document.getElementById('benShang').innerHTML = '--';
-            document.getElementById('benXia').innerHTML = '--';
-            document.getElementById('benName').innerText = '--';
-            document.getElementById('huShang').innerHTML = '--';
-            document.getElementById('huXia').innerHTML = '--';
-            document.getElementById('huName').innerText = '--';
-            document.getElementById('bianShang').innerHTML = '--';
-            document.getElementById('bianXia').innerHTML = '--';
-            document.getElementById('bianName').innerText = '--';
-            document.getElementById('dongYao').innerText = '--';
-            document.getElementById('yongti').innerText = '--';
-            document.getElementById('insightText').innerText = '等待起卦...';
+        displayResult([shang, xia], getHuGua(shang, xia), getBianGua(shang, xia, dong), dong);
+    }
 
-            document.getElementById('numberEnergyBox').innerHTML =
-                '✨ 起卦后将自动显示起卦数字的能量分析\n（数字能量分析仅在使用「数字起卦」或「时间起卦」时显示）';
-            document.getElementById('zhouyiText').innerHTML = '✨ 起卦后将自动显示本卦卦辞和动爻爻辞';
-            document.getElementById('shengkeBox').innerHTML =
-                '• 体生用 → 付出之象，宜量力而行\n• 用生体 → 得助之象，顺遂如意\n• 体用比和 → 和谐之象，诸事顺遂\n• 体克用 → 制胜之象，虽有阻碍尚能克服\n• 用克体 → 受制之象，需审慎防范';
-            document.getElementById('directionBox').innerHTML =
-                '✨ 起卦后将自动显示方位吉凶分析\n传统梅花易数 → 本卦 → 本卦代表当前状态和初始条件，方位建议应在行动之初参考。\n邵雍心法 → 本卦 → "体用生克定吉凶，方位随体卦而定"。';
-            document.getElementById('najiaBox').innerHTML = '✨ 起卦后将自动显示六亲关系分析';
-            document.getElementById('solarTermBox').innerHTML = '✨ 起卦后将自动显示节气对卦象的影响';
-            document.getElementById('fourPillarsBox').innerHTML = '✨ 起卦后将自动显示起卦时间的四柱干支分析';
-            document.getElementById('timePredictionBox').innerHTML = '✨ 起卦后将自动显示时间预测分析';
-            document.getElementById('aiDeepInsight').innerHTML =
-                '✨ 请先在左侧/上方「所思所问」中输入您关心的问题，完成起卦后点击"请AI结合卦象深度解读"，智慧箴言将在此呈现。';
-
-            currentResult = null;
-            currentBenGua = null;
-            currentHuGua = null;
-            currentBianGua = null;
-            currentDongYao = null;
+    /** 汉字起卦 */
+    function qiguaByChinese() {
+        var text = document.getElementById('chineseText').value.trim();
+        if (!text) {
+            alert('请输入汉字');
+            return;
         }
 
+        text = text.replace(/\s/g, '');
+        var len = text.length;
+        var shang, xia, dong;
 
-        // ============================================================
-        // 十四、起卦函数
-        // ============================================================
+        if (len === 1) {
+            var stroke = text.charCodeAt(0) % 100;
+            shang = stroke % 8 || 8;
+            xia = (stroke + 1) % 8 || 8;
+            dong = len % 6 || 6;
+        } else {
+            var mid = Math.floor(len / 2);
+            var first = text.slice(0, mid);
+            var second = text.slice(mid);
+            var sum1 = 0,
+                sum2 = 0;
 
-        /** 数字起卦 */
-        function qiguaByNumbers() {
-            var n1 = parseInt(document.getElementById('num1').value);
-            var n2 = parseInt(document.getElementById('num2').value);
-            var n3 = parseInt(document.getElementById('num3').value);
-
-            if (isNaN(n1) || isNaN(n2) || isNaN(n3)) {
-                alert('请输入有效数字');
-                return;
+            for (var i = 0; i < first.length; i++) {
+                sum1 += first.charCodeAt(i);
+            }
+            for (var j = 0; j < second.length; j++) {
+                sum2 += second.charCodeAt(j);
             }
 
-            var shang = ((n1 - 1) % 8) + 1;
-            var xia = ((n2 - 1) % 8) + 1;
-            var dong = ((n3 - 1) % 6) + 1;
-
-            displayResult([shang, xia], getHuGua(shang, xia), getBianGua(shang, xia, dong), dong);
+            shang = sum1 % 8 || 8;
+            xia = sum2 % 8 || 8;
+            dong = len % 6 || 6;
         }
 
-        /** 当前时间起卦 */
-        function qiguaByNowTime() {
-            var now = new Date();
-            var y = now.getFullYear();
-            var m = now.getMonth() + 1;
-            var d = now.getDate();
-            var h = now.getHours();
+        displayResult([shang, xia], getHuGua(shang, xia), getBianGua(shang, xia, dong), dong);
+    }
 
-            var shang = (y + m + d) % 8;
-            if (shang === 0) shang = 8;
-            var xia = (y + m + d + h) % 8;
-            if (xia === 0) xia = 8;
-            var dong = (y + m + d + h) % 6;
-            if (dong === 0) dong = 6;
+    /** 随机起卦 */
+    function qiguaRandom() {
+        var shang = Math.floor(Math.random() * 8) + 1;
+        var xia = Math.floor(Math.random() * 8) + 1;
+        var dong = Math.floor(Math.random() * 6) + 1;
 
-            displayResult([shang, xia], getHuGua(shang, xia), getBianGua(shang, xia, dong), dong);
+        displayResult([shang, xia], getHuGua(shang, xia), getBianGua(shang, xia, dong), dong);
+
+        // 在随机起卦选项卡中显示本卦上下卦
+        var shangGua = getGuaInfo(shang);
+        var xiaGua = getGuaInfo(xia);
+        var baguaGrid = document.getElementById('baguaGrid');
+
+        if (baguaGrid) {
+            baguaGrid.innerHTML =
+                '<div class="bagua-item" style="grid-column: span 4; justify-self: center;">' +
+                '<div class="bagua-symbol">' + shangGua.symbol + '</div>' +
+                '<div class="bagua-name">' + shangGua.name + '（上卦）</div>' +
+                '</div>' +
+                '<div class="bagua-item" style="grid-column: span 4; justify-self: center;">' +
+                '<div class="bagua-symbol">' + xiaGua.symbol + '</div>' +
+                '<div class="bagua-name">' + xiaGua.name + '（下卦）</div>' +
+                '</div>';
+
+            baguaGrid.style.display = 'flex';
+            baguaGrid.style.flexDirection = 'column';
+            baguaGrid.style.alignItems = 'center';
+            baguaGrid.style.gap = '20px';
         }
+    }
 
-        /** 自定义时间起卦 */
-        function qiguaByCustomTime() {
-            var y = parseInt(document.getElementById('yearInp').value);
-            var m = parseInt(document.getElementById('monthInp').value);
-            var d = parseInt(document.getElementById('dayInp').value);
-            var h = parseInt(document.getElementById('hourInp').value);
 
-            if (isNaN(y) || isNaN(m) || isNaN(d) || isNaN(h)) {
-                alert('请填写完整的年月日时');
-                return;
-            }
+    // ============================================================
+    // 十五、UI渲染与事件绑定
+    // ============================================================
 
-            var shang = (y + m + d) % 8;
-            if (shang === 0) shang = 8;
-            var xia = (y + m + d + h) % 8;
-            if (xia === 0) xia = 8;
-            var dong = (y + m + d + h) % 6;
-            if (dong === 0) dong = 6;
+    /**
+     * 渲染八卦网格
+     */
+    function renderBaguaGrid() {
+        var container = document.getElementById('baguaGrid');
+        if (!container) return;
 
-            displayResult([shang, xia], getHuGua(shang, xia), getBianGua(shang, xia, dong), dong);
+        container.innerHTML = '';
+        for (var i = 0; i < BAGUA_LIST.length; i++) {
+            var gua = BAGUA_LIST[i];
+            var itemDiv = document.createElement('div');
+            itemDiv.className = 'bagua-item';
+            itemDiv.innerHTML = '<div class="bagua-symbol">' + gua.symbol + '</div>' +
+                '<div class="bagua-name">' + gua.name + '</div>';
+            container.appendChild(itemDiv);
         }
+    }
 
-        /** 汉字起卦 */
-        function qiguaByChinese() {
-            var text = document.getElementById('chineseText').value.trim();
-            if (!text) {
-                alert('请输入汉字');
-                return;
-            }
+    /**
+     * 初始化时间输入框
+     */
+    function initTimeInputs() {
+        var d = new Date();
+        document.getElementById('yearInp').value = d.getFullYear();
+        document.getElementById('monthInp').value = d.getMonth() + 1;
+        document.getElementById('dayInp').value = d.getDate();
+        document.getElementById('hourInp').value = d.getHours();
+    }
 
-            text = text.replace(/\s/g, '');
-            var len = text.length;
-            var shang, xia, dong;
+    /**
+     * 初始化选项卡切换
+     */
+    function initTabs() {
+        var btns = document.querySelectorAll('.tab-btn');
+        var panes = document.querySelectorAll('.tab-pane');
 
-            if (len === 1) {
-                var stroke = text.charCodeAt(0) % 100;
-                shang = stroke % 8 || 8;
-                xia = (stroke + 1) % 8 || 8;
-                dong = len % 6 || 6;
-            } else {
-                var mid = Math.floor(len / 2);
-                var first = text.slice(0, mid);
-                var second = text.slice(mid);
-                var sum1 = 0,
-                    sum2 = 0;
+        for (var i = 0; i < btns.length; i++) {
+            btns[i].addEventListener('click', function() {
+                var targetId = this.getAttribute('data-tab');
 
-                for (var i = 0; i < first.length; i++) {
-                    sum1 += first.charCodeAt(i);
+                for (var j = 0; j < btns.length; j++) {
+                    btns[j].classList.remove('active');
                 }
-                for (var j = 0; j < second.length; j++) {
-                    sum2 += second.charCodeAt(j);
+                for (var k = 0; k < panes.length; k++) {
+                    panes[k].classList.remove('active');
                 }
 
-                shang = sum1 % 8 || 8;
-                xia = sum2 % 8 || 8;
-                dong = len % 6 || 6;
-            }
+                this.classList.add('active');
+                document.getElementById(targetId).classList.add('active');
 
-            displayResult([shang, xia], getHuGua(shang, xia), getBianGua(shang, xia, dong), dong);
-        }
+                if (typeof updateNumberEnergyBox === 'function') {
+                    updateNumberEnergyBox();
+                }
 
-        /** 随机起卦 */
-        function qiguaRandom() {
-            var shang = Math.floor(Math.random() * 8) + 1;
-            var xia = Math.floor(Math.random() * 8) + 1;
-            var dong = Math.floor(Math.random() * 6) + 1;
-
-            displayResult([shang, xia], getHuGua(shang, xia), getBianGua(shang, xia, dong), dong);
-
-            // 在随机起卦选项卡中显示本卦上下卦
-            var shangGua = getGuaInfo(shang);
-            var xiaGua = getGuaInfo(xia);
-            var baguaGrid = document.getElementById('baguaGrid');
-
-            if (baguaGrid) {
-                baguaGrid.innerHTML =
-                    '<div class="bagua-item" style="grid-column: span 4; justify-self: center;">' +
-                    '<div class="bagua-symbol">' + shangGua.symbol + '</div>' +
-                    '<div class="bagua-name">' + shangGua.name + '（上卦）</div>' +
-                    '</div>' +
-                    '<div class="bagua-item" style="grid-column: span 4; justify-self: center;">' +
-                    '<div class="bagua-symbol">' + xiaGua.symbol + '</div>' +
-                    '<div class="bagua-name">' + xiaGua.name + '（下卦）</div>' +
-                    '</div>';
-
-                baguaGrid.style.display = 'flex';
-                baguaGrid.style.flexDirection = 'column';
-                baguaGrid.style.alignItems = 'center';
-                baguaGrid.style.gap = '20px';
-            }
-        }
-
-
-        // ============================================================
-        // 十五、UI渲染与事件绑定
-        // ============================================================
-
-        /**
-         * 渲染八卦网格
-         */
-        function renderBaguaGrid() {
-            var container = document.getElementById('baguaGrid');
-            if (!container) return;
-
-            container.innerHTML = '';
-            for (var i = 0; i < BAGUA_LIST.length; i++) {
-                var gua = BAGUA_LIST[i];
-                var itemDiv = document.createElement('div');
-                itemDiv.className = 'bagua-item';
-                itemDiv.innerHTML = '<div class="bagua-symbol">' + gua.symbol + '</div>' +
-                    '<div class="bagua-name">' + gua.name + '</div>';
-                container.appendChild(itemDiv);
-            }
-        }
-
-        /**
-         * 初始化时间输入框
-         */
-        function initTimeInputs() {
-            var d = new Date();
-            document.getElementById('yearInp').value = d.getFullYear();
-            document.getElementById('monthInp').value = d.getMonth() + 1;
-            document.getElementById('dayInp').value = d.getDate();
-            document.getElementById('hourInp').value = d.getHours();
-        }
-
-        /**
-         * 初始化选项卡切换
-         */
-        function initTabs() {
-            var btns = document.querySelectorAll('.tab-btn');
-            var panes = document.querySelectorAll('.tab-pane');
-
-            for (var i = 0; i < btns.length; i++) {
-                btns[i].addEventListener('click', function() {
-                    var targetId = this.getAttribute('data-tab');
-
-                    for (var j = 0; j < btns.length; j++) {
-                        btns[j].classList.remove('active');
+                if (targetId === 'randTab') {
+                    renderBaguaGrid();
+                    var baguaGrid = document.getElementById('baguaGrid');
+                    if (baguaGrid) {
+                        baguaGrid.style.display = 'grid';
+                        baguaGrid.style.flexDirection = '';
+                        baguaGrid.style.alignItems = '';
+                        baguaGrid.style.gap = '';
                     }
-                    for (var k = 0; k < panes.length; k++) {
-                        panes[k].classList.remove('active');
-                    }
-
-                    this.classList.add('active');
-                    document.getElementById(targetId).classList.add('active');
-
-                    if (typeof updateNumberEnergyBox === 'function') {
-                        updateNumberEnergyBox();
-                    }
-
-                    if (targetId === 'randTab') {
-                        renderBaguaGrid();
-                        var baguaGrid = document.getElementById('baguaGrid');
-                        if (baguaGrid) {
-                            baguaGrid.style.display = 'grid';
-                            baguaGrid.style.flexDirection = '';
-                            baguaGrid.style.alignItems = '';
-                            baguaGrid.style.gap = '';
-                        }
-                    }
-                });
-            }
-        }
-
-        /**
-         * DOM 就绪后初始化所有功能
-         */
-        document.addEventListener('DOMContentLoaded', function() {
-            initTimeInputs();
-            initTabs();
-            renderBaguaGrid();
-
-            document.getElementById('btnNumber').addEventListener('click', qiguaByNumbers);
-            document.getElementById('btnNowTime').addEventListener('click', qiguaByNowTime);
-            document.getElementById('btnCustomTime').addEventListener('click', qiguaByCustomTime);
-            document.getElementById('btnChinese').addEventListener('click', qiguaByChinese);
-
-            var randomBtn = document.getElementById('btnRandom');
-            randomBtn.addEventListener('click', function() {
-                randomBtn.classList.add('rolling');
-                setTimeout(function() {
-                    randomBtn.classList.remove('rolling');
-                }, 400);
-                qiguaRandom();
+                }
             });
+        }
+    }
 
-            document.getElementById('clearBtn').addEventListener('click', clearResult);
-            document.getElementById('askAIbtn').addEventListener('click', askAIInterpretation);
+    /**
+     * DOM 就绪后初始化所有功能
+     */
+    document.addEventListener('DOMContentLoaded', function() {
+        initTimeInputs();
+        initTabs();
+        renderBaguaGrid();
+
+        document.getElementById('btnNumber').addEventListener('click', qiguaByNumbers);
+        document.getElementById('btnNowTime').addEventListener('click', qiguaByNowTime);
+        document.getElementById('btnCustomTime').addEventListener('click', qiguaByCustomTime);
+        document.getElementById('btnChinese').addEventListener('click', qiguaByChinese);
+
+        var randomBtn = document.getElementById('btnRandom');
+        randomBtn.addEventListener('click', function() {
+            randomBtn.classList.add('rolling');
+            setTimeout(function() {
+                randomBtn.classList.remove('rolling');
+            }, 400);
+            qiguaRandom();
         });
 
-        // ============================================================
-        // 模块导出（供调试使用）
-        // ============================================================
+        document.getElementById('clearBtn').addEventListener('click', clearResult);
+        document.getElementById('askAIbtn').addEventListener('click', askAIInterpretation);
+    });
 
-        // 将关键函数暴露到全局，方便调试
-        window.meihua = {
-            displayResult: displayResult,
-            clearResult: clearResult,
-            qiguaByNumbers: qiguaByNumbers,
-            qiguaByNowTime: qiguaByNowTime,
-            qiguaByCustomTime: qiguaByCustomTime,
-            qiguaByChinese: qiguaByChinese,
-            qiguaRandom: qiguaRandom,
-            getGuaInfo: getGuaInfo,
-            getGuaName: getGuaName,
-            getHuGua: getHuGua,
-            getBianGua: getBianGua,
-            getYongTi: getYongTi
-        };
+    // ============================================================
+    // 模块导出（供调试使用）
+    // ============================================================
+
+    // 将关键函数暴露到全局，方便调试
+    window.meihua = {
+        displayResult: displayResult,
+        clearResult: clearResult,
+        qiguaByNumbers: qiguaByNumbers,
+        qiguaByNowTime: qiguaByNowTime,
+        qiguaByCustomTime: qiguaByCustomTime,
+        qiguaByChinese: qiguaByChinese,
+        qiguaRandom: qiguaRandom,
+        getGuaInfo: getGuaInfo,
+        getGuaName: getGuaName,
+        getHuGua: getHuGua,
+        getBianGua: getBianGua,
+        getYongTi: getYongTi
+    };
     </script>
 </body>
 </html>
