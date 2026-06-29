@@ -745,7 +745,7 @@
         <button class="home-btn" onclick="location.href='index.html'">🏠 首页</button>
         <span class="home-btn-label" onclick="location.href='index.html'">✦ 返回首页</span>
     </div>
-	
+
     <div class="header">
         <h1>✦ 观音灵签 ✦</h1>
         <div class="sub">第一百签 · 灵应全览</div>
@@ -854,214 +854,221 @@
     </div>
 </div>
 
-<!-- ===== 引用外部签文库 ===== -->
-<script src="guanyinlingqianData.js"></script>
+<!-- ===== 使用 importmap 管理依赖 ===== -->
+<script type="importmap">
+{
+    "imports": {
+        "./guanyinlingqianData.js": "./guanyinlingqianData.js"
+    }
+}
+</script>
 
-<script>
-    (function() {
-        const SIGNS = typeof SIGN_LIBRARY !== 'undefined' ? SIGN_LIBRARY : [];
+<!-- ===== 主脚本改为 type="module" ===== -->
+<script type="module">
+import { SIGN_LIBRARY } from './guanyinlingqianData.js';
 
-        if (SIGNS.length === 0) {
-            console.warn('签文库未加载，请确保 guanyinlingqianData.js 在同一个目录下。');
+// 直接使用导入的数据
+const SIGNS = SIGN_LIBRARY;
+
+if (SIGNS.length === 0) {
+    console.warn('签文库加载失败，请确保 guanyinlingqianData.js 在同一个目录下。');
+}
+
+const drawBtn = document.getElementById('drawBtn');
+const goSignBtn = document.getElementById('goSignBtn');
+const signPicker = document.getElementById('signPicker');
+const signDecBtn = document.getElementById('signDecBtn');
+const signIncBtn = document.getElementById('signIncBtn');
+
+const signNum = document.getElementById('signNum');
+const signBadge = document.getElementById('signBadge');
+const signPoem = document.getElementById('signPoem');
+const dPalace = document.getElementById('dPalace');
+const dLuck = document.getElementById('dLuck');
+const dPoemMeaning = document.getElementById('dPoemMeaning');
+const dExplain = document.getElementById('dExplain');
+const signMeaning = document.getElementById('signMeaning');
+const signPlainSent = document.getElementById('signPlainSent');
+const signShengyi = document.getElementById('signShengyi');
+const signoverExplain = document.getElementById('signoverExplain');
+const signbriefSum = document.getElementById('signbriefSum');
+const signActionGuide = document.getElementById('signActionGuide');
+const signStory = document.getElementById('signStory');
+const drawInfo = document.getElementById('drawInfo');
+
+// 当前签诗版本
+let currentPoemVersion = 1;
+// 当前故事版本
+let currentStoryVersion = 1;
+
+function displaySign(index) {
+    if (SIGNS.length === 0) {
+        alert('签文库加载失败，请检查 guanyinlingqianData.js 文件是否存在。');
+        return;
+    }
+
+    if (index < 1) index = 1;
+    if (index > SIGNS.length) index = SIGNS.length;
+    signPicker.value = index;
+
+    const s = SIGNS[index - 1];
+    if (!s) return;
+
+    // 显示 "第 N 签：标题"
+    signNum.innerHTML = `第 ${index} 签<span class="sign-title">：${s.title || ''}</span>`;
+
+    signBadge.textContent = s.luck || '—';
+    signBadge.style.color = s.luck && s.luck.includes('上') ? '#66bb6a' : (s.luck && s.luck.includes('下') ? '#ff6b6b' : '#f7d44a');
+
+    // ===== 签诗双版本 =====
+    const poemTabs = document.querySelectorAll('.poem-tab');
+    
+    function updatePoem(version) {
+        currentPoemVersion = version;
+        let poemContent;
+        if (version === 1) {
+            poemContent = s.poem1 || s.poem || '（签诗暂缺）';
+        } else {
+            poemContent = s.poem2 || s.poem || '（签诗暂缺）';
         }
+        signPoem.textContent = poemContent;
+        
+        poemTabs.forEach(tab => {
+            const tabVersion = parseInt(tab.dataset.version);
+            tab.classList.toggle('active', tabVersion === version);
+        });
+    }
 
-        const drawBtn = document.getElementById('drawBtn');
-        const goSignBtn = document.getElementById('goSignBtn');
-        const signPicker = document.getElementById('signPicker');
-        const signDecBtn = document.getElementById('signDecBtn');
-        const signIncBtn = document.getElementById('signIncBtn');
-
-        const signNum = document.getElementById('signNum');
-        const signBadge = document.getElementById('signBadge');
-        const signPoem = document.getElementById('signPoem');
-        const dPalace = document.getElementById('dPalace');
-        const dLuck = document.getElementById('dLuck');
-        const dPoemMeaning = document.getElementById('dPoemMeaning');
-        const dExplain = document.getElementById('dExplain');
-        const signMeaning = document.getElementById('signMeaning');
-        const signPlainSent = document.getElementById('signPlainSent');
-        const signShengyi = document.getElementById('signShengyi');
-        const signoverExplain = document.getElementById('signoverExplain');
-        const signbriefSum = document.getElementById('signbriefSum');
-        const signActionGuide = document.getElementById('signActionGuide');
-        const signStory = document.getElementById('signStory');
-        const drawInfo = document.getElementById('drawInfo');
-
-        // 当前签诗版本
-        let currentPoemVersion = 1;
-        // 当前故事版本
-        let currentStoryVersion = 1;
-
-        function displaySign(index) {
-            if (SIGNS.length === 0) {
-                alert('签文库加载失败，请检查 guanyinlingqianData.js 文件是否存在。');
-                return;
-            }
-
-            if (index < 1) index = 1;
-            if (index > SIGNS.length) index = SIGNS.length;
-            signPicker.value = index;
-
-            const s = SIGNS[index - 1];
-            if (!s) return;
-
-            // 显示 "第 N 签：标题"
-            signNum.innerHTML = `第 ${index} 签<span class="sign-title">：${s.title || ''}</span>`;
-
-            signBadge.textContent = s.luck || '—';
-            signBadge.style.color = s.luck && s.luck.includes('上') ? '#66bb6a' : (s.luck && s.luck.includes('下') ? '#ff6b6b' : '#f7d44a');
-
-            // ===== 签诗双版本 =====
-            const poemTabs = document.querySelectorAll('.poem-tab');
-            
-            function updatePoem(version) {
-                currentPoemVersion = version;
-                let poemContent;
-                if (version === 1) {
-                    poemContent = s.poem1 || s.poem || '（签诗暂缺）';
-                } else {
-                    poemContent = s.poem2 || s.poem || '（签诗暂缺）';
-                }
-                signPoem.textContent = poemContent;
-                
-                poemTabs.forEach(tab => {
-                    const tabVersion = parseInt(tab.dataset.version);
-                    tab.classList.toggle('active', tabVersion === version);
-                });
-            }
-
-            if (s.poem1 || s.poem2 || s.poem) {
-                if (s.poem1) {
-                    updatePoem(1);
-                } else if (s.poem2) {
-                    updatePoem(2);
-                } else {
-                    signPoem.textContent = s.poem || '（签诗暂缺）';
-                }
-            } else {
-                signPoem.textContent = '（签诗暂缺）';
-            }
-
-            poemTabs.forEach(tab => {
-                tab.onclick = function(e) {
-                    e.stopPropagation();
-                    const version = parseInt(this.dataset.version);
-                    updatePoem(version);
-                };
-            });
-
-            // ===== 典故故事双故事 =====
-            const storyTabs = document.querySelectorAll('.story-tab');
-            
-            function updateStory(version) {
-                currentStoryVersion = version;
-                let storyContent;
-                if (version === 1) {
-                    storyContent = s.story1 || s.story || '（无典故记载）';
-                } else {
-                    storyContent = s.story2 || s.story || '（无典故记载）';
-                }
-                signStory.textContent = storyContent;
-                
-                storyTabs.forEach(tab => {
-                    const tabVersion = parseInt(tab.dataset.version);
-                    tab.classList.toggle('active', tabVersion === version);
-                });
-            }
-
-            if (s.story1 || s.story2 || s.story) {
-                if (s.story1) {
-                    updateStory(1);
-                } else if (s.story2) {
-                    updateStory(2);
-                } else {
-                    signStory.textContent = s.story || '（无典故记载）';
-                }
-            } else {
-                signStory.textContent = '（无典故记载）';
-            }
-
-            storyTabs.forEach(tab => {
-                tab.onclick = function(e) {
-                    e.stopPropagation();
-                    const version = parseInt(this.dataset.version);
-                    updateStory(version);
-                };
-            });
-
-            // 其他字段赋值
-            dPalace.textContent = s.palace || '—';
-            dLuck.textContent = s.luck || '—';
-            dPoemMeaning.textContent = s.poemMeaning || '—';
-            dExplain.textContent = s.explain || '—';
-
-            signMeaning.textContent = s.essence || '（暂无签文精髓）';
-            signPlainSent.textContent = s.plainSent || '（暂无逐句白话翻译）';
-            signShengyi.textContent = s.shengyi || '（暂无圣意）';
-            signoverExplain.textContent = s.overExplain || '（暂无整体解释）';
-            signbriefSum.textContent = s.briefSum || '（暂无简短总结）';
-            signActionGuide.textContent = s.actionGuide || '（暂无行动指引）';
-
-            const card = document.getElementById('signCard');
-            card.style.transform = 'scale(0.98)';
-            setTimeout(() => card.style.transform = 'scale(1)', 120);
-            drawInfo.innerHTML = `诚心祈愿 · 第 <span>${index}</span> 签 现`;
+    if (s.poem1 || s.poem2 || s.poem) {
+        if (s.poem1) {
+            updatePoem(1);
+        } else if (s.poem2) {
+            updatePoem(2);
+        } else {
+            signPoem.textContent = s.poem || '（签诗暂缺）';
         }
+    } else {
+        signPoem.textContent = '（签诗暂缺）';
+    }
 
-        function drawRandomSign() {
-            if (SIGNS.length === 0) {
-                alert('签文库加载失败，请检查 guanyinlingqianData.js 文件是否存在。');
-                return;
-            }
-            const idx = Math.floor(Math.random() * SIGNS.length) + 1;
-            displaySign(idx);
+    poemTabs.forEach(tab => {
+        tab.onclick = function(e) {
+            e.stopPropagation();
+            const version = parseInt(this.dataset.version);
+            updatePoem(version);
+        };
+    });
+
+    // ===== 典故故事双故事 =====
+    const storyTabs = document.querySelectorAll('.story-tab');
+    
+    function updateStory(version) {
+        currentStoryVersion = version;
+        let storyContent;
+        if (version === 1) {
+            storyContent = s.story1 || s.story || '（无典故记载）';
+        } else {
+            storyContent = s.story2 || s.story || '（无典故记载）';
         }
-
-        drawBtn.addEventListener('click', drawRandomSign);
-
-        goSignBtn.addEventListener('click', function() {
-            let val = parseInt(signPicker.value);
-            if (isNaN(val) || val < 1) val = 1;
-            if (val > SIGNS.length) val = SIGNS.length;
-            displaySign(val);
+        signStory.textContent = storyContent;
+        
+        storyTabs.forEach(tab => {
+            const tabVersion = parseInt(tab.dataset.version);
+            tab.classList.toggle('active', tabVersion === version);
         });
+    }
 
-        signPicker.addEventListener('keydown', function(e) {
-            if (e.key === 'Enter') {
-                goSignBtn.click();
-            }
-        });
+    if (s.story1 || s.story2 || s.story) {
+        if (s.story1) {
+            updateStory(1);
+        } else if (s.story2) {
+            updateStory(2);
+        } else {
+            signStory.textContent = s.story || '（无典故记载）';
+        }
+    } else {
+        signStory.textContent = '（无典故记载）';
+    }
 
-        signPicker.addEventListener('blur', function() {
-            let val = parseInt(this.value);
-            if (isNaN(val) || val < 1) val = 1;
-            if (val > SIGNS.length) val = SIGNS.length;
-            this.value = val;
-        });
+    storyTabs.forEach(tab => {
+        tab.onclick = function(e) {
+            e.stopPropagation();
+            const version = parseInt(this.dataset.version);
+            updateStory(version);
+        };
+    });
 
-        signDecBtn.addEventListener('click', function() {
-            let val = parseInt(signPicker.value) || 1;
-            if (val > 1) val--;
-            displaySign(val);
-        });
+    // 其他字段赋值
+    dPalace.textContent = s.palace || '—';
+    dLuck.textContent = s.luck || '—';
+    dPoemMeaning.textContent = s.poemMeaning || '—';
+    dExplain.textContent = s.explain || '—';
 
-        signIncBtn.addEventListener('click', function() {
-            let val = parseInt(signPicker.value) || 1;
-            if (val < SIGNS.length) val++;
-            displaySign(val);
-        });
+    signMeaning.textContent = s.essence || '（暂无签文精髓）';
+    signPlainSent.textContent = s.plainSent || '（暂无逐句白话翻译）';
+    signShengyi.textContent = s.shengyi || '（暂无圣意）';
+    signoverExplain.textContent = s.overExplain || '（暂无整体解释）';
+    signbriefSum.textContent = s.briefSum || '（暂无简短总结）';
+    signActionGuide.textContent = s.actionGuide || '（暂无行动指引）';
 
-        // 页面加载后保持初始提示状态，不自动显示签文
-        window.addEventListener('load', function() {
-            // 如需自动显示第1签，取消下面注释
-            // if (SIGNS.length > 0) {
-            //     displaySign(1);
-            // }
-        });
+    const card = document.getElementById('signCard');
+    card.style.transform = 'scale(0.98)';
+    setTimeout(() => card.style.transform = 'scale(1)', 120);
+    drawInfo.innerHTML = `诚心祈愿 · 第 <span>${index}</span> 签 现`;
+}
 
-        window.displaySign = displaySign;
-        window.drawRandomSign = drawRandomSign;
-    })();
+function drawRandomSign() {
+    if (SIGNS.length === 0) {
+        alert('签文库加载失败，请检查 guanyinlingqianData.js 文件是否存在。');
+        return;
+    }
+    const idx = Math.floor(Math.random() * SIGNS.length) + 1;
+    displaySign(idx);
+}
+
+drawBtn.addEventListener('click', drawRandomSign);
+
+goSignBtn.addEventListener('click', function() {
+    let val = parseInt(signPicker.value);
+    if (isNaN(val) || val < 1) val = 1;
+    if (val > SIGNS.length) val = SIGNS.length;
+    displaySign(val);
+});
+
+signPicker.addEventListener('keydown', function(e) {
+    if (e.key === 'Enter') {
+        goSignBtn.click();
+    }
+});
+
+signPicker.addEventListener('blur', function() {
+    let val = parseInt(this.value);
+    if (isNaN(val) || val < 1) val = 1;
+    if (val > SIGNS.length) val = SIGNS.length;
+    this.value = val;
+});
+
+signDecBtn.addEventListener('click', function() {
+    let val = parseInt(signPicker.value) || 1;
+    if (val > 1) val--;
+    displaySign(val);
+});
+
+signIncBtn.addEventListener('click', function() {
+    let val = parseInt(signPicker.value) || 1;
+    if (val < SIGNS.length) val++;
+    displaySign(val);
+});
+
+// 页面加载后保持初始提示状态，不自动显示签文
+// 如需自动显示第1签，取消下面注释
+// if (SIGNS.length > 0) {
+//     displaySign(1);
+// }
+
+// 将函数暴露到全局，方便调试
+window.displaySign = displaySign;
+window.drawRandomSign = drawRandomSign;
 </script>
 
 </body>
