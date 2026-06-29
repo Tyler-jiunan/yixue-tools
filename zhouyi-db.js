@@ -713,14 +713,4 @@ var ZHOUYI_QUANJI = {
     }
 };
 
-// 导出模块（支持多种环境）
-if (typeof module !== 'undefined' && module.exports) {
-    module.exports = ZHOUYI_QUANJI;
-}
-if (typeof define === 'function' && define.amd) {
-    define(function() { return ZHOUYI_QUANJI; });
-}
-// 浏览器环境自动挂载到 window
-if (typeof window !== 'undefined') {
-    window.ZHOUYI_QUANJI = ZHOUYI_QUANJI;
-}
+export { ZHOUYI_QUANJI };
