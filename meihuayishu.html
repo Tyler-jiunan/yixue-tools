@@ -653,26 +653,6 @@
             color: #c8d0e0;
         }
 
-        .btn-sm-green {
-            background: rgba(60, 180, 120, 0.10);
-            border-color: rgba(60, 180, 120, 0.15);
-            color: #7ac8a8;
-        }
-
-        .btn-sm-green:hover {
-            background: rgba(60, 180, 120, 0.20);
-        }
-
-        .btn-sm-pink {
-            background: rgba(180, 60, 120, 0.10);
-            border-color: rgba(180, 60, 120, 0.15);
-            color: #cc88bb;
-        }
-
-        .btn-sm-pink:hover {
-            background: rgba(180, 60, 120, 0.20);
-        }
-
         /* ---- 底部哲理栏 ---- */
         .footer-wisdom {
             background: rgba(60, 120, 255, 0.08);
@@ -975,9 +955,6 @@
                         <!-- 底部操作栏 -->
                         <div class="btn-bar">
                             <button class="btn-sm" id="clearBtn">清空记录</button>
-                            <button class="btn-sm btn-sm-green" id="saveBtn">保存卦象</button>
-                            <button class="btn-sm btn-sm-pink" id="copyBtn">复制内容</button>
-                            <button class="btn-sm" id="shareBtn" style="background:rgba(60,120,255,0.15); border-color:rgba(60,120,255,0.2); color:#8ab4ff;">分享图片</button>
                         </div>
                     </div>
                 </div>
@@ -2759,74 +2736,6 @@
             currentDongYao = null;
         }
 
-        /**
-         * 保存卦象为文本文件
-         */
-        function saveResult() {
-            if (!currentResult) {
-                alert('没有可保存的卦象！');
-                return;
-            }
-
-            var now = new Date();
-            var timeStr = now.getFullYear() + '年' + (now.getMonth() + 1) + '月' + now.getDate() +
-                '日 ' + now.getHours() + ':' + now.getMinutes() + ':' + now.getSeconds();
-
-            var content =
-                '🌸 梅 花 易 数 卦 象 🌸\n' +
-                '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n' +
-                '起卦时间：' + timeStr + '\n' +
-                '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n' +
-                '📊 本卦：' + currentResult.benName + '\n' +
-                '   上卦：' + currentResult.benShangTxt + '\n' +
-                '   下卦：' + currentResult.benXiaTxt + '\n' +
-                '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n' +
-                '🔄 互卦：' + currentResult.huName + '\n' +
-                '   上卦：' + currentResult.huShangTxt + '\n' +
-                '   下卦：' + currentResult.huXiaTxt + '\n' +
-                '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n' +
-                '⚡ 变卦：' + currentResult.bianName + '\n' +
-                '   上卦：' + currentResult.bianShangTxt + '\n' +
-                '   下卦：' + currentResult.bianXiaTxt + '\n' +
-                '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n' +
-                '🎲 动爻：第 ' + currentResult.dongYao + ' 爻\n' +
-                '💫 体用：' + currentResult.yongti + '\n' +
-                '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n' +
-                '📖 卦象启示：\n' + currentResult.insight + '\n' +
-                '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━';
-
-            var link = document.createElement('a');
-            var fileName = 'meihua_yi_' + now.getFullYear() + (now.getMonth() + 1) + now.getDate() +
-                '_' + now.getHours() + now.getMinutes() + now.getSeconds() + '.txt';
-            link.href = URL.createObjectURL(new Blob([content], { type: 'text/plain;charset=utf-8' }));
-            link.download = fileName;
-            link.click();
-
-            alert('✅ 卦象已保存');
-        }
-
-        /**
-         * 复制卦象内容
-         */
-        function copyResult() {
-            if (!currentResult) {
-                alert('没有可复制的内容！');
-                return;
-            }
-
-            var content = '梅花易数卦象\n' +
-                '本卦：' + currentResult.benName + '\n' +
-                '互卦：' + currentResult.huName + '\n' +
-                '变卦：' + currentResult.bianName + '\n' +
-                '动爻：第 ' + currentResult.dongYao + ' 爻\n' +
-                currentResult.yongti + '\n\n' +
-                currentResult.insight;
-
-            navigator.clipboard.writeText(content)
-                .then(function() { alert('✅ 卦象已复制到剪贴板！'); })
-                .catch(function() { alert('❌ 复制失败'); });
-        }
-
 
         // ============================================================
         // 十四、起卦函数
@@ -2962,185 +2871,7 @@
 
 
         // ============================================================
-        // 十五、分享功能（导出为图片）
-        // ============================================================
-
-        /**
-         * 动态加载 html2canvas 库
-         */
-        function loadHtml2Canvas() {
-            return new Promise(function(resolve, reject) {
-                if (window.html2canvas) {
-                    resolve(window.html2canvas);
-                    return;
-                }
-
-                var script = document.createElement('script');
-                script.src = 'https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js';
-                script.onload = function() { resolve(window.html2canvas); };
-                script.onerror = function() { reject(new Error('html2canvas 加载失败')); };
-                document.head.appendChild(script);
-            });
-        }
-
-        /**
-         * 分享为图片
-         */
-        async function shareAsImage() {
-            if (!currentBenGua) {
-                alert('请先完成起卦！');
-                return;
-            }
-
-            var loadingDiv = document.getElementById('aiLoadingMsg');
-            var originalText = loadingDiv.innerText;
-
-            loadingDiv.style.display = 'block';
-            loadingDiv.innerHTML = '正在生成分享图片，请稍候...';
-
-            try {
-                var html2canvas = await loadHtml2Canvas();
-
-                var resultScroll = document.getElementById('resultScroll');
-                if (!resultScroll) {
-                    throw new Error('未找到结果区域');
-                }
-
-                // 保存并临时修改样式
-                var originalOverflow = resultScroll.style.overflow;
-                var originalMaxHeight = resultScroll.style.maxHeight;
-                var originalScrollTop = resultScroll.scrollTop;
-
-                resultScroll.style.overflow = 'visible';
-                resultScroll.style.maxHeight = 'none';
-
-                // 创建截图容器
-                var captureContainer = document.createElement('div');
-                captureContainer.style.backgroundColor = '#0d1b2a';
-                captureContainer.style.padding = '20px';
-                captureContainer.style.borderRadius = '0';
-                captureContainer.style.width = '800px';
-                captureContainer.style.fontFamily = "'微软雅黑', 'Segoe UI', 'Noto Sans CJK SC', Roboto, sans-serif";
-                captureContainer.style.color = '#c8d0e0';
-
-                var benNameText = document.getElementById('benName').innerText;
-                var huNameText = document.getElementById('huName').innerText;
-                var bianNameText = document.getElementById('bianName').innerText;
-                var dongYaoText = document.getElementById('dongYao').innerText;
-                var yongtiText = document.getElementById('yongti').innerText;
-
-                var now = new Date();
-                var timeStr = now.getFullYear() + '年' + (now.getMonth() + 1) + '月' + now.getDate() +
-                    '日 ' + now.getHours() + ':' + now.getMinutes() + ':' + now.getSeconds();
-
-                // 获取起卦方式
-                var activeTab = document.querySelector('.tab-btn.active');
-                var qiguaMethod = '未知';
-                if (activeTab) {
-                    var tabId = activeTab.getAttribute('data-tab');
-                    if (tabId === 'numTab') qiguaMethod = '🔢 数字起卦';
-                    else if (tabId === 'timeTab') qiguaMethod = '⏰ 时间起卦';
-                    else if (tabId === 'chineseTab') qiguaMethod = '📝 汉字起卦';
-                    else if (tabId === 'randTab') qiguaMethod = '🎲 随机起卦';
-                }
-
-                // 获取起卦数字
-                var qiguaNumbers = '';
-                if (qiguaMethod === '🔢 数字起卦') {
-                    var n1 = document.getElementById('num1').value;
-                    var n2 = document.getElementById('num2').value;
-                    var n3 = document.getElementById('num3').value;
-                    if (n1 && n2 && n3) {
-                        qiguaNumbers = '（上卦:' + n1 + ' 下卦:' + n2 + ' 动爻:' + n3 + '）';
-                    }
-                } else if (qiguaMethod === '⏰ 时间起卦') {
-                    var year = document.getElementById('yearInp').value;
-                    var month = document.getElementById('monthInp').value;
-                    var day = document.getElementById('dayInp').value;
-                    var hour = document.getElementById('hourInp').value;
-                    if (year && month && day && hour) {
-                        qiguaNumbers = '（' + year + '年' + month + '月' + day + '日 ' + hour + '时）';
-                    }
-                }
-
-                captureContainer.innerHTML =
-                    '<div style="background: linear-gradient(135deg, rgba(60,120,255,0.2) 0%, rgba(60,120,255,0.05) 100%); text-align: center; padding: 30px 20px; margin-bottom: 20px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.06);">' +
-                    '<div style="font-size: 48px;">🌸</div>' +
-                    '<div style="font-size: 28px; font-family: \'华文楷书\', \'KaiTi\', cursive; color: #e8edf5; font-weight: bold;">梅花易数</div>' +
-                    '<div style="font-size: 12px; color: #8899bb; margin-top: 8px;">邵雍心法 · 以简御繁 · 观象玩辞</div>' +
-                    '</div>' +
-                    '<div style="background: rgba(255,255,255,0.05); border-radius: 12px; padding: 12px 20px; margin-bottom: 15px; display: flex; justify-content: space-between; align-items: center; border: 1px solid rgba(255,255,255,0.06);">' +
-                    '<div style="font-size: 13px; font-weight: bold; color: #8ab4ff;">📿 起卦方式：' + qiguaMethod + '</div>' +
-                    '<div style="font-size: 11px; color: #cc88bb;">' + qiguaNumbers + '</div>' +
-                    '</div>' +
-                    '<div style="background: rgba(255,255,255,0.04); border-radius: 12px; padding: 20px; margin-bottom: 15px; border: 1px solid rgba(255,255,255,0.06);">' +
-                    '<div style="font-size: 18px; font-weight: bold; color: #8ab4ff; border-left: 4px solid rgba(60,120,255,0.4); padding-left: 12px; margin-bottom: 15px;">📊 本卦 · ' +
-                    benNameText + '</div>' +
-                    '<div style="font-size: 13px; line-height: 1.8; color: #c8d0e0;">' + document.getElementById(
-                        'benShang').innerHTML + '<br>' + document.getElementById('benXia').innerHTML + '</div>' +
-                    '</div>' +
-                    '<div style="background: rgba(255,255,255,0.04); border-radius: 12px; padding: 20px; margin-bottom: 15px; border: 1px solid rgba(255,255,255,0.06);">' +
-                    '<div style="font-size: 18px; font-weight: bold; color: #8ab4ff; border-left: 4px solid rgba(60,120,255,0.4); padding-left: 12px; margin-bottom: 15px;">🔄 互卦 · ' +
-                    huNameText + '</div>' +
-                    '<div style="font-size: 13px; line-height: 1.8; color: #c8d0e0;">' + document.getElementById(
-                        'huShang').innerHTML + '<br>' + document.getElementById('huXia').innerHTML + '</div>' +
-                    '</div>' +
-                    '<div style="background: rgba(255,255,255,0.04); border-radius: 12px; padding: 20px; margin-bottom: 15px; border: 1px solid rgba(255,255,255,0.06);">' +
-                    '<div style="font-size: 18px; font-weight: bold; color: #8ab4ff; border-left: 4px solid rgba(60,120,255,0.4); padding-left: 12px; margin-bottom: 15px;">⚡ 变卦 · ' +
-                    bianNameText + '</div>' +
-                    '<div style="font-size: 13px; line-height: 1.8; color: #c8d0e0;">' + document.getElementById(
-                        'bianShang').innerHTML + '<br>' + document.getElementById('bianXia').innerHTML + '</div>' +
-                    '</div>' +
-                    '<div style="background: rgba(255,255,255,0.04); border-radius: 12px; padding: 20px; margin-bottom: 15px; border: 1px solid rgba(255,255,255,0.06);">' +
-                    '<div style="font-size: 18px; font-weight: bold; color: #8ab4ff; border-left: 4px solid rgba(60,120,255,0.4); padding-left: 12px; margin-bottom: 15px;">🎲 动爻与体用</div>' +
-                    '<div style="font-size: 13px; line-height: 1.8; color: #c8d0e0;"><strong style="color: #aabbdd;">动爻位置：</strong> ' +
-                    dongYaoText + '<br><strong style="color: #aabbdd;">体用关系：</strong> ' + yongtiText + '</div>' +
-                    '</div>' +
-                    '<div style="text-align: center; margin-top: 20px; padding-top: 15px; border-top: 1px solid rgba(255,255,255,0.06); color: #556688; font-size: 10px;">' +
-                    '起卦时间：' + timeStr + ' | 梅花易数 · 万物皆数，吉凶悔吝，存乎一心' +
-                    '</div>';
-
-                document.body.appendChild(captureContainer);
-                window.scrollTo(0, 0);
-
-                await new Promise(function(resolve) { setTimeout(resolve, 100); });
-
-                var canvas = await html2canvas(captureContainer, {
-                    scale: 2,
-                    backgroundColor: '#0d1b2a',
-                    logging: false,
-                    useCORS: false,
-                    allowTaint: false
-                });
-
-                document.body.removeChild(captureContainer);
-
-                resultScroll.style.overflow = originalOverflow;
-                resultScroll.style.maxHeight = originalMaxHeight;
-                resultScroll.scrollTop = originalScrollTop;
-
-                var link = document.createElement('a');
-                var timestamp = now.getFullYear() + (now.getMonth() + 1) + now.getDate() +
-                    '_' + now.getHours() + now.getMinutes() + now.getSeconds();
-                link.download = 'meihua_yi_' + timestamp + '.png';
-                link.href = canvas.toDataURL('image/png');
-                link.click();
-
-                loadingDiv.style.display = 'none';
-                loadingDiv.innerHTML = originalText;
-                alert('✅ 卦象图片已保存！');
-
-            } catch (error) {
-                console.error('分享失败:', error);
-                loadingDiv.style.display = 'none';
-                loadingDiv.innerHTML = originalText;
-                alert('生成图片失败，请检查网络后重试。\n错误信息：' + error.message);
-            }
-        }
-
-
-        // ============================================================
-        // 十六、UI渲染与事件绑定
+        // 十五、UI渲染与事件绑定
         // ============================================================
 
         /**
@@ -3234,10 +2965,7 @@
             });
 
             document.getElementById('clearBtn').addEventListener('click', clearResult);
-            document.getElementById('saveBtn').addEventListener('click', saveResult);
-            document.getElementById('copyBtn').addEventListener('click', copyResult);
             document.getElementById('askAIbtn').addEventListener('click', askAIInterpretation);
-            document.getElementById('shareBtn').addEventListener('click', shareAsImage);
         });
 
         // ============================================================
@@ -3248,9 +2976,6 @@
         window.meihua = {
             displayResult: displayResult,
             clearResult: clearResult,
-            saveResult: saveResult,
-            copyResult: copyResult,
-            shareAsImage: shareAsImage,
             qiguaByNumbers: qiguaByNumbers,
             qiguaByNowTime: qiguaByNowTime,
             qiguaByCustomTime: qiguaByCustomTime,
